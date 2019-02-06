@@ -8,7 +8,7 @@ cd src
 
 gunicorn cccc_apis:app \
     --config ..\/gunicorn.config.py \
-    --pid .pid.txt \
+    --pid ..\/.pid.txt \
     --daemon \
     --name $PROCESS_NAME --bind '127.0.0.1:5001'
 
