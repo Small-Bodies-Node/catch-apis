@@ -1,6 +1,6 @@
 
 import multiprocessing
-import setproctitle
+# import setproctitle
 
 workers = 3  # multiprocessing.cpu_count() * 2 + 1
 

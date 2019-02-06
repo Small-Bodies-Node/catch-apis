@@ -21,15 +21,18 @@ main()
     printf "\n"
 
     ### 1. Check for existence of VENV
-    if [ ! -d ./.venv ]; then
+    # if [ ! -d ./.venv ]; then
         echo "Virtual Environment Not Found -- Creating './.venv'"
         virtualenv --python=python3 ./.venv
-    fi
+    # fi
 
     ### 2. Activate VENV
     source ./.venv/bin/activate
 
-    ### 3. Install Requirements to VENV
+    ### 3. Upgrade pip
+    pip install --upgrade pip
+
+    ### 4. Install Requirements to VENV
     pip install -r requirements.txt
 }
 

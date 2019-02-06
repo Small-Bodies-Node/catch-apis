@@ -19,3 +19,9 @@ Scripts for working with this code base begin '\_'
 ## GIT COMMITS
 
 ...
+
+## DEVELOPMENT NOTES
+
+-- DWD: I tried using conda virtual environments, but my local version of conda (4.6.2) seem to have breaking changes from remote conda (4.3.30), such as the way in which you `source activate` (the newer version replaces the script `activate` with the command `conda activate`). This made it tricky to coordiante the setup pipeline. Also, using `virtualenv` seemed overall to be simpler in the end.
+
+-- DWD: I tried pip-installing a package `setproctitle` remotely, but it failed (probably because remote doesnt have python-dev package installed). If we get more trouble with installing packages with binary dependencies, etc. then we'll to switch over to conda environments.
