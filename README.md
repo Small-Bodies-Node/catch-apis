@@ -24,6 +24,7 @@ Scripts for working with this code base begin '\_'
 
 [] Add testing
 [] Set up CI
+[] Swagger docs
 
 ## DEVELOPMENT NOTES
 
