@@ -3,4 +3,5 @@
 
 .env
 .venv
+.pid.txt
 __pycache__
