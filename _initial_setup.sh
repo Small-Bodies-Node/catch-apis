@@ -21,10 +21,11 @@ main()
     printf "\n"
 
     ### 1. Check for existence of VENV
-    # if [ ! -d ./.venv ]; then
+    eval $(cat .env | sed 's/^/export /')       ### Load vars defined in .env 
+    if [ ! -d ./.venv ]; then
         echo "Virtual Environment Not Found -- Creating './.venv'"
-        virtualenv --python=python3 ./.venv
-    # fi
+        virtualenv --python=$PY3 ./.venv
+    fi
 
     ### 2. Activate VENV
     source ./.venv/bin/activate
