@@ -1,9 +1,12 @@
+from routes import init_api_routes
 from flask import *
 
 app = Flask(__name__)
 
+init_api_routes(app)
 
-@app.route("/")
+
+@app.route("/test")
 def index():
     return "Hello World!"
 

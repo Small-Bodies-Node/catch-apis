@@ -4,4 +4,6 @@
 .env
 .venv
 .pid.txt
-__pycache__
+**__pycache__**
+generated-models/**
+.vscode

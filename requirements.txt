@@ -1,8 +1,15 @@
+autopep8==1.4.3
 Click==7.0
+configparser==3.7.1
 Flask==1.0.2
 gunicorn==19.9.0
+inflect==2.1.0
 itsdangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.1.0
-# setproctitle==1.1.10
+pycodestyle==2.5.0
+PyMySQL==0.9.3
+python-dotenv==0.10.1
+sqlacodegen==2.0.1
+SQLAlchemy==1.2.17
 Werkzeug==0.14.1
