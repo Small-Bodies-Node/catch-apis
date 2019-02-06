@@ -5,6 +5,7 @@ from flask import current_app
 from flask import abort
 
 from middleware import ztf_data
+from middleware import dosthmsk
 
 
 def init_api_routes(app):
@@ -13,6 +14,8 @@ def init_api_routes(app):
                          methods=['GET'], defaults={'app': app})
         app.add_url_rule('/ztf', 'ztf',
                          ztf_data, methods=['GET'])
+        app.add_url_rule('/dosthmsk', 'dosthmsk',
+                         dosthmsk, methods=['GET'])
 
 
 def list_routes(app):

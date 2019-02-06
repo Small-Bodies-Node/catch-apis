@@ -28,3 +28,10 @@ def ztf_data(serialize=True):
         return jsonify({"candidates": ztf_data, "total": len(ztf_data)})
     else:
         return ztf_data
+
+
+def dosthmsk():
+    '''
+        <This is where you insert a call to your scripts>
+    '''
+    return jsonify({"message": "Hey! MSK just ran a script!"})
