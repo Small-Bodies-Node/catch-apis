@@ -1,5 +1,9 @@
 # CATCH APIS
 
+## Conventions
+
+Scripts for working with this code base begin '\_'
+
 ## OPERATING INSTRUCTIONS
 
 1. Run `source _initial_setup.sh` in order to:
@@ -8,9 +12,9 @@
     2. Activate venv
     3. Install project dependencies
 
-2. Run `_dev_cccc_apis.sh` to start the flask apis locally in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes. (You'll need to install node and nodemon; if you prefer then you can just call `python cccc_apis.py` directly and restart whenever you make changes in development.)
+2. Run `sh _dev_cccc_apis.sh` to start the flask apis locally in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes. (You'll need to install node and nodemon; if you prefer then you can just call `python cccc_apis.py` directly and restart whenever you make changes in development.)
 
-3. Run `_start_cccc_apis.sh` to start the apis in production using gunicorn-worker processes in the background.
+3. Run `sh _start_cccc_apis.sh` to start the apis in production using gunicorn-worker processes in the background.
 
 ## GIT COMMITS
 
