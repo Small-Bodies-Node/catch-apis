@@ -23,7 +23,7 @@ main()
     ### 1. Check for existence of VENV
     if [ ! -d ./.venv ]; then
         echo "Virtual Environment Not Found -- Creating './.venv'"
-        virtualenv ./.venv
+        virtualenv --python=python3 ./.venv
     fi
 
     ### 2. Activate VENV
