@@ -1,3 +1,3 @@
 #! /bin/bash
 
-nodemon --exec python cccc_apis.py
+nodemon --exec python src/cccc_apis.py

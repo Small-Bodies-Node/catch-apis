@@ -34,4 +34,5 @@ def dosthmsk():
     '''
         <This is where you insert a call to your scripts>
     '''
-    return jsonify({"message": "Hey! MSK just ran a script!"})
+
+    return jsonify({"message": "Hey! MSK just ran a script!!!"})

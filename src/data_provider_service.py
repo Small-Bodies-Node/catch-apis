@@ -24,6 +24,8 @@ class DataProviderService:
         all_ztf_data = self.session.query(
             Ztf).order_by(Ztf.obsid).limit(50)
 
+        # Ztf.
+
         if serialize:
             return [cand.serialize() for cand in all_ztf_data]
         else:
