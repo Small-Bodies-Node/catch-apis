@@ -5,7 +5,7 @@ eval $(cat .env | sed 's/^/export /')
 
 ### Enter src, start gunicorn, exit
 cd src
-gunicorn appEntry:app \
+gunicorn app_entry:app \
     --config ..\/gunicorn.config.py \
     --pid ..\/.pid.txt \
     --daemon \

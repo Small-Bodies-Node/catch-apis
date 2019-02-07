@@ -16,7 +16,7 @@ To run/develop this flask API locally on a linux-like machine:
     2. Activate venv
     3. Install project dependencies
 
-3. Run `sh _start_dev_api.sh` to start the flask api locally in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes. (You'll need to install node and nodemon; if you prefer then you can just call `python src/appEntry.py` directly and restart whenever you make changes in development.)
+3. Run `sh _start_dev_api.sh` to start the flask api locally in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes. (You'll need to install node and nodemon; if you prefer then you can just call `python src/app_entry.py` directly and restart whenever you make changes in development.)
 
 4. Run `sh _start_prod_api.sh` to start the api in production mode using gunicorn-worker processes in the background.
 

@@ -1,4 +1,4 @@
-from dataProviderService import DataProviderService
+from data_provider_service import DataProviderService
 import os
 from flask import jsonify
 from flask import abort
