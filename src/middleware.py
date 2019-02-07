@@ -1,14 +1,15 @@
-from data_provider_service import DataProviderService
+from dataProviderService import DataProviderService
 import os
 from flask import jsonify
 from flask import abort
 from flask import make_response
 from flask import request
 from flask import url_for
+
+# Import .env vars and build URI
 from dotenv import load_dotenv
 load_dotenv(verbose=True)
 
-# Import .env vars and build URI
 DB_USERNAME = os.getenv("DB_USERNAME")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")

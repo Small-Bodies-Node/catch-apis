@@ -1,17 +1,15 @@
 #! /bin/bash
 
-eval $(cat .env | sed 's/^/export /')       ### Load vars defined in .env 
+### Load vars defined in .env 
+eval $(cat .env | sed 's/^/export /')       
 
-echo $PROCESS_NAME
-
+### Enter src, start gunicorn, exit
 cd src
-
-gunicorn cccc_apis:app \
+gunicorn appEntry:app \
     --config ..\/gunicorn.config.py \
     --pid ..\/.pid.txt \
     --daemon \
     --name $PROCESS_NAME --bind '127.0.0.1:5001'
-
 cd ..
 
 
