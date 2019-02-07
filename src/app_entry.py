@@ -17,7 +17,7 @@ def test1():
 def test2():
     content = request.get_json(silent=True)
     print(">>>>")
-    print(content)
+    # print(content+"xxx")
     return jsonify(content)
 
 
