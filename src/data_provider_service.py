@@ -48,15 +48,15 @@ def greeting(name: str) -> str:
 # aaa: int = 1.2
 # a: int = 1.10
 
-b: str = "hello"
+# b: str = "hello"
 # c = b * b
 # print(a)
 
 
-class TestClass:
-    def __init__(self, engine):
-        print('yyy')
+# class TestClass:
+#     def __init__(self, engine):
+#         print('yyy')
 
-    def blah(self):
-        print('xxx')
-        aaa: int = 1.2
+#     def blah(self):
+#         print('xxx')
+#         aaa: int = 1.2
