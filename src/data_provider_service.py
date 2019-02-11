@@ -58,7 +58,16 @@ def greeting(name: str) -> str:
 # greeting(3)
 # greeting(b'Alice')
 
-# aaa: int = 1.2
+aaa: int = 1.2
 # a: int = 1.10
 
 # print(a)
+
+
+class test:
+    def __init__(self, engine):
+        print('yyy')
+
+    def blah(self):
+        print('xxx')
+        aaa: int = 1.2

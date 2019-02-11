@@ -4,6 +4,7 @@
 .env
 .venv
 .pid.txt
+.mypy_cache
 **__pycache__**
 generated-models/**
 # .vscode
