@@ -6,4 +6,4 @@
 .pid.txt
 **__pycache__**
 generated-models/**
-.vscode
+# .vscode

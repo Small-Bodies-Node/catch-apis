@@ -2,9 +2,14 @@ from sqlalchemy import Column, Float, ForeignKey, LargeBinary, String, Table
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from typing import Dict
 
 Base = declarative_base()
 metadata = Base.metadata
+
+
+class Test():
+    aaa = "AAA"
 
 
 class Ztf(Base):
@@ -29,7 +34,7 @@ class Ztf(Base):
     ztf_night = relationship('ZtfNight')
     ob = relationship('Ob')
 
-    def serialize(self):
+    def serialize(self: any) -> Dict[str, str]:
         return {
             "obsid": self.obsid,
             "pid": self.pid,
