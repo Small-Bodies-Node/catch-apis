@@ -27,21 +27,8 @@ class DataProviderService:
 
     def get_ztf_data(self, serialize=False):
 
-        # all_ztf_data = []
-
         all_ztf_data: Sequence[Ztf] = self.session.query(
             Ztf).order_by(Ztf.obsid).limit(50)
-
-        # yyy: Ztf = Ztf()
-        #
-        yyy: Test = Test()
-        print(yyy)
-        # yyy.aaa
-        a: int = 1.10
-        b: str = "hello"
-        c = b - a
-        # d = a[1]
-        print("c  " + c + a)
 
         if serialize:
             return [cand.serialize() for (cand) in all_ztf_data]
@@ -58,13 +45,15 @@ def greeting(name: str) -> str:
 # greeting(3)
 # greeting(b'Alice')
 
-aaa: int = 1.2
+# aaa: int = 1.2
 # a: int = 1.10
 
+b: str = "hello"
+# c = b * b
 # print(a)
 
 
-class test:
+class TestClass:
     def __init__(self, engine):
         print('yyy')
 

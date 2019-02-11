@@ -1,8 +1,7 @@
 {
     "python.pythonPath": ".venv/bin/python3.7",
     "python.envFile": "${workspaceRoot}/.venv",
-    "python.linting.flake8Enabled": false,
-    "python.linting.pylintEnabled": false,
     "python.linting.enabled": true,
-    "python.linting.mypyEnabled": true
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintEnabled": true
 }

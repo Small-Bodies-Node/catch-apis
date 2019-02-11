@@ -2,9 +2,9 @@ from sqlalchemy import Column, Float, ForeignKey, LargeBinary, String, Table
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from typing import Dict
+from typing import Dict, Any
 
-Base = declarative_base()
+Base: Any = declarative_base()
 metadata = Base.metadata
 
 
