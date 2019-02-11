@@ -1,37 +1,36 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm.session import Session as xxx
+from sqlalchemy.orm.session import Session
 
 from typing import Sequence, Any
 
 from models import Ztf, Test
 
-x1: str = 'The values specified in engine'
-x2: str = ' parameter has to be supported by SQLAlchemy'
-
 
 class DataProviderService:
+    '>>> Service Class for Querying DB'
 
-    # Init engine
     def __init__(self: Any, engine_uri: str) -> None:
         if not engine_uri:
             raise ValueError(
-                x1 + x2
+                '''
+                The values specified in engine
+                parameter has to be supported by SQLAlchemy
+                '''
             )
         self.engine_uri = engine_uri
         db_engine = create_engine(engine_uri)
         db_session = sessionmaker(bind=db_engine)
-        self.session: xxx = db_session()
+        self.session: Session = db_session()
         # self.session = db_session()
 
     def get_ztf_data(self, serialize=False):
-
+        '>>> Query DB for all ZTF data'
         all_ztf_data: Sequence[Ztf] = self.session.query(
             Ztf).order_by(Ztf.obsid).limit(50)
 
         if serialize:
-            return [cand.serialize() for (cand) in all_ztf_data]
+            return [ztf_row.serialize() for (ztf_row) in all_ztf_data]
         else:
             return all_ztf_data
 
@@ -41,7 +40,7 @@ class DataProviderService:
         start_row: int = 0,
         end_row: int = 10
     ) -> Any:
-        # a: int = 1.2
+        '>>> Query DB for moving-object-search'
         print(str(start_row) + " " + str(end_row))
         # returned_data: Any = self.session.query(
         #     Ztf).order_by(Ztf.obsid).limit(50)
@@ -55,6 +54,7 @@ class DataProviderService:
 
 
 def greeting(name: str) -> str:
+    '>>> Test Doc String'
     return 'Hello ' + name
 
 
