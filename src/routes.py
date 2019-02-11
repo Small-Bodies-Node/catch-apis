@@ -13,6 +13,7 @@ def init_api_routes(app):
         app.add_url_rule('/', 'list_routes', list_routes,
                          methods=['GET'], defaults={'app': app})
         app.add_url_rule('/ztf', 'ztf', ztf_data, methods=['GET'])
+        # app.add_url_rule('/ztf', 'ztf', ztf_data, methods=['GET'])
         app.add_url_rule('/dosthmsk', 'dosthmsk', dosthmsk, methods=['GET'])
 
 

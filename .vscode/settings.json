@@ -3,5 +3,7 @@
     "python.envFile": "${workspaceRoot}/.venv",
     "python.linting.enabled": true,
     "python.linting.mypyEnabled": true,
-    "python.linting.pylintEnabled": true
+    "workbench.settings.openDefaultSettings": true,
+    "python.linting.pylintEnabled": true,
+    "workbench.settings.editor": "json"
 }
