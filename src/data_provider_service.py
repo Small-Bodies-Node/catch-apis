@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
+import sqlalchemy
 from sqlalchemy.orm.session import Session
 
 from typing import Sequence, Any
@@ -19,8 +20,8 @@ class DataProviderService:
                 '''
             )
         self.engine_uri = engine_uri
-        db_engine = create_engine(engine_uri)
-        db_session = sessionmaker(bind=db_engine)
+        db_engine = sqlalchemy.create_engine(engine_uri)
+        db_session = sqlalchemy.orm.sessionmaker(bind=db_engine)
         self.session: Session = db_session()
         # self.session = db_session()
 
