@@ -1,14 +1,17 @@
 """Entry file into the flask API server."""
 
-from typing import Any
+# from typing import Any
+from typing import cast, Any
 
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, Request
 from routes import init_api_routes
 from middleware import moving_object_search
 
 APP: Any = Flask(__name__)
 init_api_routes(APP)
+
+jsn = cast(str, jsonify)
 
 
 @APP.route("/get-test")
@@ -18,20 +21,19 @@ def test1() -> str:
 
 
 @APP.route("/post-test", methods=['POST'])
-def test2() -> str:
+def test2() -> Response:
     '>>> Just a post test'
     content = request.get_json(silent=True)
     print(">>>>"+'Just a post test')
     # print(content+"xxx")
-    x: str = jsonify('')
-    d: str = x * 2
+    d: str = '' * 2
     # print(d)
     # a: int = 1.2
     return jsonify(content)
 
 
 @APP.route("/moving-object-search")
-def test3() -> str:
+def test3() -> Response:
     '>>> Just a db-query test'
     objid: str = str(request.args.get('objid'))
     start: int = int(request.args.get('start'))
@@ -39,9 +41,12 @@ def test3() -> str:
     print(">>>> "+str(start))
     print(">>>> "+str(end))
     x: str = moving_object_search(objid, start, end)
-    return x
-    # return jsonify(x)
+    return jsonify(x)
 
 
 if __name__ == "__main__":
     APP.run(port=5001)
+
+
+desk: str = 'desk' * 2
+blah: int = 1.2

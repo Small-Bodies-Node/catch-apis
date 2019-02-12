@@ -13,6 +13,7 @@ class Test():
 
 
 class Ztf(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'ztf'
     obsid = Column(ForeignKey('obs.obsid'), index=True)
     pid = Column(BIGINT(20), primary_key=True)
@@ -44,6 +45,7 @@ class Ztf(Base):
 
 
 class Obj(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'obj'
 
     objid = Column(INTEGER(11), primary_key=True)
@@ -51,6 +53,7 @@ class Obj(Base):
 
 
 class Ob(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'obs'
 
     obsid = Column(INTEGER(11), primary_key=True)
@@ -102,6 +105,7 @@ t_ztf_found = Table(
 
 
 class ZtfNight(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'ztf_nights'
 
     nightid = Column(INTEGER(11), primary_key=True)
@@ -112,6 +116,7 @@ class ZtfNight(Base):
 
 
 class ZtfPhot(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'ztf_phot'
 
     foundid = Column(INTEGER(11), primary_key=True)
@@ -130,6 +135,7 @@ class ZtfPhot(Base):
 
 
 class ZtfStack(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'ztf_stacks'
 
     stackid = Column(INTEGER(11), primary_key=True)
@@ -145,6 +151,7 @@ t_ztf_stale_files = Table(
 
 
 class Eph(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'eph'
 
     ephid = Column(INTEGER(11), primary_key=True)
@@ -163,6 +170,7 @@ class Eph(Base):
 
 
 class Found(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'found'
 
     foundid = Column(INTEGER(11), primary_key=True)
@@ -190,6 +198,7 @@ class Found(Base):
 
 
 class ZtfCutout(Base):
+    """TODO DOCSTRING"""
     __tablename__ = 'ztf_cutouts'
 
     foundid = Column(ForeignKey('found.foundid'),
