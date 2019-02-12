@@ -35,6 +35,10 @@ main()
 
     ### 4. Install Requirements to VENV
     pip install -r requirements.txt
+
+    ### 5. Export Misc Env Vars
+    ### 5.1. Enable mypy stubs files to be found; see: https://github.com/python/mypy/wiki/Creating-Stubs-For-Python-Modules
+    export MYPYPATH=$PWD/stubs
 }
 
 unset BASH_SOURCE 2>/dev/null

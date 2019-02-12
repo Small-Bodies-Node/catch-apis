@@ -1,9 +1,10 @@
+from typing import Sequence, Any
+
 # from sqlalchemy import create_engine
 # from sqlalchemy.orm import sessionmaker
 import sqlalchemy
 from sqlalchemy.orm.session import Session
-
-from typing import Sequence, Any
+from sqlalchemy.engine.result import ResultProxy
 
 from models import Ztf, Test
 
@@ -45,11 +46,11 @@ class DataProviderService:
         print(str(start_row) + " " + str(end_row))
         # returned_data: Any = self.session.query(
         #     Ztf).order_by(Ztf.obsid).limit(50)
-        returned_data: Any = self.session.execute(
-            ''
+        returned_data: ResultProxy = self.session.execute(
+            "users = Table('users', metadata, Column('id', Integer, primary_key=True),     Column('name', String),   Column('fullname', String)  )"
         )
         print("****************")
-        print(returned_data)
+        print(returned_data.fetchall())
         print("****************")
         return returned_data
 

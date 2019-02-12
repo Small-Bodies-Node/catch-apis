@@ -15,13 +15,17 @@ DB_USERNAME: Optional[str] = os.getenv("DB_USERNAME")
 DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
 DB_HOST: Optional[str] = os.getenv("DB_HOST")
 DB_DATABASE: Optional[str] = os.getenv("DB_DATABASE")
-db_engine_URI: Optional[str] = "mysql+pymysql://"+DB_USERNAME+":" + \
-    DB_PASSWORD + "@" + DB_HOST + "/" + DB_DATABASE
+# db_engine_URI: str = "mysql+pymysql://"+DB_USERNAME+":" + \
+#     DB_PASSWORD + "@" + DB_HOST + "/" + DB_DATABASE
+
+db_engine_URI: str = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
+
 
 DATA_PROVIDER = DataProviderService(db_engine_URI)
 
 
 def ztf_data(serialize=True):
+    '>>> ztf_data handler'
     print("===============")
     print("Running Candidate")
     print("===============")
@@ -32,7 +36,8 @@ def ztf_data(serialize=True):
         return ztf_data
 
 
-def moving_object_search(objid: str, start: int, end: int):
+def moving_object_search(objid: str, start: int, end: int) -> str:
+    '>>> moving_object_search handler'
     print("====================")
     print("MOVING OBJECT SEARCH")
     print("====================")
