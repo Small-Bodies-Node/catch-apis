@@ -15,6 +15,6 @@ def Flask(input: str) -> Any:
 request: Any
 
 
-def jsonify(input_dict: Any) -> str:
+def jsonify(input_dict: Any, blah: int) -> str:
     """Does sth groovy!!!"""
     ...

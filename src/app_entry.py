@@ -25,7 +25,7 @@ def test2() -> str:
     # print(content+"xxx")
     x: str = jsonify('')
     d: str = x * 2
-    print(d)
+    # print(d)
     # a: int = 1.2
     return jsonify(content)
 
