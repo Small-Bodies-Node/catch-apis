@@ -6,5 +6,5 @@
     "python.linting.mypyEnabled": true,
     "workbench.settings.openDefaultSettings": true,
     "workbench.settings.editor": "json",
-    "python.jediEnabled": true
+    "python.jediEnabled": false
 }

@@ -1,17 +1,18 @@
 """Entry file into the flask API server."""
 
 # from typing import Any
-from typing import cast, Any
+from typing import Any
 
 
-from flask import Flask, request, jsonify, Response, Request
+from flask import Flask, request, jsonify
+from flask.wrappers import Response, Request
 from routes import init_api_routes
 from middleware import moving_object_search
 
 APP: Any = Flask(__name__)
 init_api_routes(APP)
 
-jsn = cast(str, jsonify)
+# Request.ma
 
 
 @APP.route("/get-test")
@@ -26,7 +27,7 @@ def test2() -> Response:
     content = request.get_json(silent=True)
     print(">>>>"+'Just a post test')
     # print(content+"xxx")
-    d: str = '' * 2
+    # d: str = '' * 2
     # print(d)
     # a: int = 1.2
     return jsonify(content)
@@ -49,4 +50,4 @@ if __name__ == "__main__":
 
 
 desk: str = 'desk' * 2
-blah: int = 1.2
+# blah: int = 1.2

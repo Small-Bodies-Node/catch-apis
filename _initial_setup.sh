@@ -20,6 +20,10 @@ main()
     printf "\n"
     printf "\n"
 
+    ### 0. Get rid of cached versions
+    rm -rf .mypy_cache
+    rm -rf src/__pycache__
+
     ### 1. Check for existence of VENV
     eval $(cat .env | sed 's/^/export /')       ### Load vars defined in .env 
     if [ ! -d ./.venv ]; then
@@ -37,8 +41,8 @@ main()
     pip install -r requirements.txt
 
     ### 5. Export Misc Env Vars
-    ### 5.1. Enable mypy stubs files to be found; see: https://github.com/python/mypy/wiki/Creating-Stubs-For-Python-Modules
-    export MYPYPATH=$PWD/stubs
+    ### 5.1. VSCode: Need to include in PYTHONPATH any dirs where you want VSCode to look for modules
+    export PYTHONPATH=$PWD/src
 }
 
 unset BASH_SOURCE 2>/dev/null

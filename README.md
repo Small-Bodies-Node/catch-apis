@@ -39,7 +39,7 @@ The following tools/conventions are used to promote codebase quality amidst mult
 ### Tooling
 
 -   mypy (with vscode integration)
-    -   Please add typings to ALL aspects of the code base (all classes, functions, etc.)
+    -   Please add python typings to ALL aspects of the code base (all classes, functions, etc.)
 -   [Black](https://www.mattlayman.com/blog/2018/python-code-black/) pre-commit hooks auto-formatting (TBD)
 
 ## GENERATING SQLALCHEMY-ORM MODELS
