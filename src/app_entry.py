@@ -12,9 +12,6 @@ from middleware import moving_object_search
 APP: Any = Flask(__name__)
 init_api_routes(APP)
 
-# Request.ma
-
-
 @APP.route("/get-test")
 def test1() -> str:
     '>>> Just a get test'
