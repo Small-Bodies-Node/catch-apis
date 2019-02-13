@@ -196,6 +196,12 @@ class Found(Base):
 
     obj = relationship('Obj')
 
+    def serialize(self: Any) -> Dict[str, str]:
+        return {
+            "obsid": self.obsid,
+            "phase": self.phase
+        }
+
 
 class ZtfCutout(Base):
     """TODO DOCSTRING"""

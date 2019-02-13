@@ -43,6 +43,8 @@ main()
     ### 5. Export Misc Env Vars
     ### 5.1. VSCode: Need to include in PYTHONPATH any dirs where you want VSCode to look for modules
     export PYTHONPATH=$PWD/src
+
+    export MYPYPATH=$PWD/stubs
 }
 
 unset BASH_SOURCE 2>/dev/null

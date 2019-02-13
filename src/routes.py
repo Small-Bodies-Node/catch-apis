@@ -5,7 +5,7 @@ from flask import jsonify, Flask
 # from flask import abort
 
 from middleware import ztf_data
-from middleware import dosthmsk
+from middleware import doSthMsk
 
 
 def init_api_routes(app: Flask) -> None:
@@ -14,7 +14,7 @@ def init_api_routes(app: Flask) -> None:
                          methods=['GET'], defaults={'app': app})
         app.add_url_rule('/ztf', 'ztf', ztf_data, methods=['GET'])
         # app.add_url_rule('/ztf', 'ztf', ztf_data, methods=['GET'])
-        app.add_url_rule('/dosthmsk', 'dosthmsk', dosthmsk, methods=['GET'])
+        app.add_url_rule('/dosthmsk', 'dosthmsk', doSthMsk, methods=['GET'])
 
 
 def list_routes(app: Flask) -> str:
