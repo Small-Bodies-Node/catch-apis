@@ -38,6 +38,7 @@ def test3() -> Response:
     objid: str = request.args.get('objid', 'xxxxx', str)
     start: int = request.args.get('start', 0, int)
     end: int = request.args.get('end', 50, int)
+    # xxx: int = 3 + objid
     print(">>>> " + str(start))
     print(">>>> " + str(end))
     moving_object_search_result: Response = moving_object_search(
@@ -47,3 +48,6 @@ def test3() -> Response:
 
 if __name__ == "__main__":
     APP.run(port=5001)
+
+
+# aaa: int = test1()
