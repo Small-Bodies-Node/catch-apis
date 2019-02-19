@@ -1,51 +1,40 @@
 from typing import Sequence, Any, Union, List, Type
 
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker
 import sqlalchemy
 from sqlalchemy.orm.session import Session
-from sqlalchemy.engine.result import ResultProxy
+# from sqlalchemy.engine.result import ResultProxy
 
-from models import Ztf, Test, Found
-
-
-# class ZtfFound(Ztf, Found):
-#     """Union class of Ztf and Found for typings"""
-
-# ZtfFound = type('ZtfFound', (Ztf, Found), dict(a=1))
+from models import Ztf, Found
 
 
-class DataProviderService:
-    '>>> Service Class for Querying DB'
+class DatabaseProvider:
+    """Service class for querying SQL-DB"""
 
     def __init__(self: Any, engine_uri: str) -> None:
         if not engine_uri:
             raise ValueError(
                 '''
-                The values specified in engine
-                parameter has to be supported by SQLAlchemy
+                    The values specified in engine
+                    parameter has to be supported by SQLAlchemy
                 '''
             )
         self.engine_uri = engine_uri
         db_engine = sqlalchemy.create_engine(engine_uri)
         db_session = sqlalchemy.orm.sessionmaker(bind=db_engine)
         self.session: Session = db_session()
-        # self.session = db_session()
 
     def get_ztf_data(self: Any, serialize: bool = False) -> Any:
         '>>> Query DB for all ZTF data'
         all_ztf_data: Sequence[Ztf] = self.session.query(
             Ztf).order_by(Ztf.obsid).limit(50)
 
-        x = self.session.query(Ztf)
-
         if serialize:
             return [ztf_row.serialize() for (ztf_row) in all_ztf_data]
         else:
             return all_ztf_data
 
-    def get_moving_object_search_data(
-            self: Any,
+    def query_moving_object_search(
+            self: 'DatabaseProvider',
             objid: str,
             start_row: int = 0,
             end_row: int = 10
@@ -148,31 +137,6 @@ class DataProviderService:
         #     print(xxx.serialize())
 
         print("****************")
-        print(all_serialized_rows)
+        # print(all_serialized_rows)
         print("****************")
         return all_serialized_rows
-
-
-def greeting(name: str) -> str:
-    '>>> Test Doc String'
-    return 'Hello ' + name
-
-# Argument 1 to "greeting" has incompatible type "int"; expected "str"
-# greeting(3)
-# greeting(b'Alice')
-
-# aaa: int = 1.2
-# a: int = 1.10
-
-# b: str = "hello"
-# c = b * b
-# print(a)
-
-
-# class TestClass:
-#     def __init__(self, engine):
-#         print('yyy')
-
-#     def blah(self):
-#         print('xxx')
-#         aaa: int = 1.2

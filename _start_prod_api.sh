@@ -11,7 +11,7 @@ echo $PWD
 echo "Starting Production API..."
 
 ### GUNICORN SYNTAX: file_name:FLASK_APP_NAME
-gunicorn app_entry:APP \
+gunicorn app_entry:flask_app \
     --config ..\/gunicorn.config.py \
     --pid ..\/.pid.txt \
     --daemon \
