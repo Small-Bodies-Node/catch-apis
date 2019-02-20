@@ -1,3 +1,7 @@
+"""
+These models were generated using script _generate_models.sh
+"""
+
 from typing import Dict, Any
 from sqlalchemy import Column, Float, ForeignKey, LargeBinary, String, Table
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER
@@ -6,10 +10,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 metadata = Base.metadata
-
-
-class Test():
-    aaa = "AAA"
 
 
 class Ztf(Base):

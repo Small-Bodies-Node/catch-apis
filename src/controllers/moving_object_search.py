@@ -1,4 +1,9 @@
-"""Entry file into the Flask-REST API server."""
+from werkzeug.exceptions import BadRequest
+"""
+Moving-Object-Search (MOS) Module
+=================================
+Creates RestPlus namespace for MOS controllers.
+"""
 
 from typing import Any
 from flask import request, jsonify
@@ -31,6 +36,11 @@ class MovingObjectSearch(Resource):
         objid: str = request.args.get('objid', 'xxxxx', str)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
+
+        if not isinstance(objid, int):
+            print("denied~!~")
+            XXX
+            raise BadRequest('My custom message')
 
         # Pass params to data-provider-service
         mos_data = DATA_PROVIDER.query_moving_object_search(

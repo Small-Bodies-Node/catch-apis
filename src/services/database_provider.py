@@ -2,9 +2,9 @@ from typing import Sequence, Any, Union, List, Type
 
 import sqlalchemy
 from sqlalchemy.orm.session import Session
-# from sqlalchemy.engine.result import ResultProxy
+from sqlalchemy.engine.result import ResultProxy
 
-from models import Ztf, Found
+from models.models import Ztf, Found
 
 
 class DatabaseProvider:
@@ -39,12 +39,6 @@ class DatabaseProvider:
             start_row: int = 0,
             end_row: int = 10
     ) -> Any:
-        '>>> Query DB for moving-object-search'
-        print(str(start_row) + " " + str(end_row))
-        # returned_data: Any = self.session.query(
-        #     Ztf).order_by(Ztf.obsid).limit(50)
-        # returned_data: ResultProxy = self.session.execute(
-        #     'select obsjd, ra, `dec`, dra, ddec, ra3sig, dec3sig, vmag, rh, rdot, delta, phase, selong, sangle, vangle, trueanomaly, tmtp, pid, obsdate, infobits, field, ccdid, qid, rcid, fid, filtercode, expid, filefracday, seeing, airmass, moonillf, maglimit from found inner join ztf using(obsid) where objid=909')
 
         all_moving_object_search_data: List[(Any)] = self.session.query(
             Found.obsjd,
@@ -123,20 +117,9 @@ class DatabaseProvider:
                 "maglimit": row.maglimit
             }
             for a in serialized_row:
-                print(a)
-                print(str(serialized_row[a]))
+                # print(a)
+                # print(str(serialized_row[a]))
                 serialized_row[a] = str(serialized_row[a])
             all_serialized_rows.append(serialized_row)
 
-        # # [print(returned_data) for (xxx) in returned_data]
-        # # self.session.query(Found)
-        # for (xxx) in returned_data:
-        #     print("^^^!!!")
-        #     print(xxx)
-        #     print(xxx.objid)
-        #     print(xxx.serialize())
-
-        print("****************")
-        # print(all_serialized_rows)
-        print("****************")
         return all_serialized_rows
