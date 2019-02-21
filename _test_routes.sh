@@ -38,7 +38,9 @@ printf "\n"
 printf "\n"
 
 ### 4. GET moving-object-search
-curl -k $TEST_URL_BASE'/moving-object-search?start=0&end=10&objid=909'
+URL=${TEST_URL_BASE}'/moving-object-search?start=0&end=10&objid=909'
+echo $URL
+curl -k $URL
 
 printf "\n"
 printf "\n"

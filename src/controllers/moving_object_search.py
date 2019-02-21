@@ -1,14 +1,15 @@
-from werkzeug.exceptions import BadRequest
 """
 Moving-Object-Search (MOS) Module
-=================================
 Creates RestPlus namespace for MOS controllers.
 """
 
 from typing import Any
 from flask import request, jsonify
-from flask.wrappers import Response  # , Request
+from flask.wrappers import Response
 from flask_restplus import Namespace, Resource, fields
+from werkzeug.exceptions import BadRequest
+# from controllers import logger
+import logging
 from services import DATA_PROVIDER
 
 API = Namespace('moving-object-search',
@@ -22,13 +23,15 @@ MOS = API.model('MOS-RETURN', {
     'end': fields.Integer(required=False, description='End row for paginated return'),
 })
 
+logger = logging.getLogger(__name__)
+logger.info("<><><> IMPORTING MOS <><><>")
+
 
 @API.route("")
 class MovingObjectSearch(Resource):
     """Controller class for moving-object-search"""
 
     @API.doc('--mos--')
-    # @API.marshal_list_with(MOS)
     def get(self: Any) -> Response:
         """Returns moving-object-search requests"""
 
@@ -37,10 +40,11 @@ class MovingObjectSearch(Resource):
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
 
-        if not isinstance(objid, int):
+        if not isinstance(objid, str):
             print("denied~!~")
-            XXX
             raise BadRequest('My custom message')
+
+        # logger.critical("Test Logging")
 
         # Pass params to data-provider-service
         mos_data = DATA_PROVIDER.query_moving_object_search(
