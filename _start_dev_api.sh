@@ -1,3 +1,3 @@
 #! /bin/bash
 
-nodemon --exec python src/app_entry.py
+PYTHON_ENV=DEV nodemon --exec python src/app_entry.py

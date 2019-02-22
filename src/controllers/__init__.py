@@ -18,7 +18,7 @@ from .ztf_search import API as ns1
 from .moving_object_search import API as ns2
 
 logger: logging.Logger = logging.getLogger(__name__)
-logger.info('<><><> IMPORTING CONTROLLERS <><><>')
+logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 
 # Initiate RestPlusApi object:
 REST_PLUS_APIS = Api(

@@ -41,10 +41,10 @@ class TestRoutes(FRP.Resource):
         """Returns trivial json object"""
 
         # Test logging
-        logger.debug("TEST POST DEBUG ")
-        logger.info("TEST POST INFO ")
-        logger.warning("TEST POST WARNING ")
-        logger.critical("TEST POST CRITICAL ")
+        logger.debug('"TEST POST DEBUG"')
+        logger.info('"TEST POST INFO"')
+        logger.warning('"TEST POST WARNING"')
+        logger.critical('"TEST POST CRITICAL"')
 
         # Extract data from POST body
         data = request.json

@@ -1,7 +1,7 @@
 #! /bin/bash
 
-### Load vars defined in .env 
-eval $(cat .env | sed 's/^/export /')       
+### Load vars defined in .env
+eval $(cat .env | sed 's/^/export /')
 
 ### Enter src, start gunicorn, exit
 cd src
@@ -10,7 +10,7 @@ echo "--------------"
 echo $PWD
 echo "Starting Production API..."
 
-### GUNICORN SYNTAX: file_name:FLASK_APP_NAME
+### Set running mode to production and start gunicorn
 gunicorn app_entry:flask_app \
     --config ..\/gunicorn.config.py \
     --pid ..\/.pid.txt \
