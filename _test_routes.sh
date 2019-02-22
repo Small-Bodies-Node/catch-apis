@@ -1,49 +1,51 @@
 #! /bin/bash
 
-eval $(cat .env | sed 's/^/export /')       ### Load vars defined in .env 
-
 ### This is a script to simply call some routes and print out result:
 
-printf "\n"
-printf "\n"
-printf "============================"
-printf "\n"
-printf "\n"
+printblock()
+{
+    printf "\n"
+    printf "\n"
+    printf "============================"
+    printf "\n"
+    printf "\n"
+}
 
-### 1. GET ROOT
-curl -k $TEST_URL_BASE
+eval $(cat .env | sed 's/^/export /')       ### Load vars defined in .env
 
-printf "\n"
-printf "\n"
-printf '++++++++++++++++++'
-printf "\n"
-printf "\n"
+printblock
 
-### 2. GET ZTF
-curl -k $TEST_URL_BASE'/ztf'
-
-printf "\n"
-printf "\n"
-printf '++++++++++++++++++'
-printf "\n"
-printf "\n"
-
-### 3. POST test-post
-curl -k $TEST_URL_BASE'/post-test' -X POST -H "Content-Type:application/json" -d "{\"username\": \"UMD\",\"password\": \"TheDude\"}"
-
-printf "\n"
-printf "\n"
-printf '++++++++++++++++++'
-printf "\n"
-printf "\n"
-
-### 4. GET moving-object-search
-URL=${TEST_URL_BASE}'/moving-object-search?start=0&end=10&objid=909'
+## 1. GET ROOT
+URL=${TEST_URL_BASE}'/'
 echo $URL
 curl -k $URL
 
-printf "\n"
-printf "\n"
-printf "============================"
-printf "\n"
-printf "\n"
+printblock
+
+## 2. GET ZTF
+URL=${TEST_URL_BASE}'/ztf'
+echo $URL
+curl -k $URL
+
+printblock
+
+### 3. POST test-post
+URL=${TEST_URL_BASE}'/test'
+echo $URL
+curl -k $URL -H "Content-Type:application/json"
+
+printblock
+
+## 3. POST test-post
+URL=${TEST_URL_BASE}'/test'
+echo $URL
+curl -k $URL -X POST -H "Content-Type:application/json" -d "{\"username\": \"UMD\",\"password\": \"TheDude\"}"
+
+printblock
+
+## 4. GET moving-object-search
+URL=${TEST_URL_BASE}'/moving-object-search/?start=0&end=10&objid=909'
+echo $URL
+curl -k $URL
+
+printblock

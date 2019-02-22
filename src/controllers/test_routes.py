@@ -2,29 +2,62 @@
 Test Routes Module
 """
 
-from typing import Any, Tuple
+import logging
 from flask import request, jsonify
-from flask.wrappers import Response  # , Request
-from flask_restplus import Namespace, Resource, fields
-from services import DATA_PROVIDER
+import flask.wrappers as FLW
+import flask_restplus as FRP
 
-API = Namespace('test',
-                description='Used for testing the API is up and running')
+API = FRP.Namespace(
+    name='Test',
+    path="/test",
+    description='Root route; used for testing the API is up and running, etc.'
+)
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-@API.route("")
-class MovingObjectSearch(Resource):
+@API.route("/")
+class TestRoutes(FRP.Resource):
     """Controller class for test-routes"""
 
     @API.doc('--test--')
-    def get(self: Any) -> Response:
-        """Returns moving-object-search requests"""
+    def get(self: 'TestRoutes') -> FLW.Response:
+        """Returns trivial json object"""
 
-        # Package retrieved data as response json
-        res: Response = jsonify(
+        # Return a trivial json
+        res: FLW.Response = jsonify(
             {
-                "message": "It worked!!!"
+                "message":
+                """
+                    This is the test GET route which doesn't do much.
+                """
             }
         )
-        print("Working?")
+        res.status_code = 200
+        return res
+
+    @API.doc('--test--')
+    def post(self: 'TestRoutes') -> FLW.Response:
+        """Returns trivial json object"""
+
+        # Test logging
+        logger.debug("TEST POST DEBUG ")
+        logger.info("TEST POST INFO ")
+        logger.warning("TEST POST WARNING ")
+        logger.critical("TEST POST CRITICAL ")
+
+        # Extract data from POST body
+        data = request.json
+
+        # Return posted data as part of simple POST-cycle demo
+        res: FLW.Response = jsonify(
+            {
+                "message":
+                """
+                    Wow! This is the data you posted!
+                """,
+                "posted-data": data
+            }
+        )
+        res.status_code = 200
         return res

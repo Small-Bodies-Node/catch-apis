@@ -3,13 +3,11 @@ Moving-Object-Search (MOS) Module
 Creates RestPlus namespace for MOS controllers.
 """
 
-from typing import Any
+import logging
 from flask import request, jsonify
 from flask.wrappers import Response
 from flask_restplus import Namespace, Resource, fields
 from werkzeug.exceptions import BadRequest
-# from controllers import logger
-import logging
 from services import DATA_PROVIDER
 
 API = Namespace('moving-object-search',
@@ -23,16 +21,15 @@ MOS = API.model('MOS-RETURN', {
     'end': fields.Integer(required=False, description='End row for paginated return'),
 })
 
-logger = logging.getLogger(__name__)
-logger.info("<><><> IMPORTING MOS <><><>")
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-@API.route("")
+@API.route("/")
 class MovingObjectSearch(Resource):
     """Controller class for moving-object-search"""
 
     @API.doc('--mos--')
-    def get(self: Any) -> Response:
+    def get(self: 'MovingObjectSearch') -> Response:
         """Returns moving-object-search requests"""
 
         # Extract params from URL
@@ -41,8 +38,7 @@ class MovingObjectSearch(Resource):
         end: int = request.args.get('end', 50, int)
 
         if not isinstance(objid, str):
-            print("denied~!~")
-            raise BadRequest('My custom message')
+            raise BadRequest('An objid must be provided!!!')
 
         # logger.critical("Test Logging")
 
@@ -60,4 +56,5 @@ class MovingObjectSearch(Resource):
                 "total": len(mos_data)
             }
         )
+        res.status_code = 200
         return res

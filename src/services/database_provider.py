@@ -23,15 +23,18 @@ class DatabaseProvider:
         db_session = sqlalchemy.orm.sessionmaker(bind=db_engine)
         self.session: Session = db_session()
 
-    def get_ztf_data(self: Any, serialize: bool = False) -> Any:
-        '>>> Query DB for all ZTF data'
-        all_ztf_data: Sequence[Ztf] = self.session.query(
-            Ztf).order_by(Ztf.obsid).limit(50)
-
-        if serialize:
-            return [ztf_row.serialize() for (ztf_row) in all_ztf_data]
+    def query_all_ztf_data(self: 'DatabaseProvider', start_row: int = 0, end_row: int = -1) -> Any:
+        """Query DB for all ZTF data"""
+        all_ztf_data: Sequence[Ztf]
+        if end_row == -1:
+            all_ztf_data = self.session.query(
+                Ztf).order_by(Ztf.obsid).limit(500)
         else:
-            return all_ztf_data
+            all_ztf_data = self.session \
+                .query(Ztf).order_by(Ztf.obsid) \
+                .offset(start_row) \
+                .limit(end_row - start_row)
+        return [ztf_row.serialize() for (ztf_row) in all_ztf_data]
 
     def query_moving_object_search(
             self: 'DatabaseProvider',
@@ -39,7 +42,7 @@ class DatabaseProvider:
             start_row: int = 0,
             end_row: int = 10
     ) -> Any:
-
+        """ Join query for moving object search"""
         all_moving_object_search_data: List[(Any)] = self.session.query(
             Found.obsjd,
             Found.ra,
