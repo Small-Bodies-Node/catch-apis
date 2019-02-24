@@ -8,12 +8,12 @@ import logging
 import traceback
 from typing import Any, Tuple
 from flask_restplus import Api
-from flask import jsonify
+from flask import jsonify, Blueprint
 from flask.wrappers import Response
 from sqlalchemy.orm.exc import NoResultFound
 
 # Import all restplus namespaces
-from .test_routes import API as ns0
+from .demo_routes import API as ns0
 from .ztf_search import API as ns1
 from .moving_object_search import API as ns2
 
@@ -21,7 +21,11 @@ logger: logging.Logger = logging.getLogger(__name__)
 logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 
 # Initiate RestPlusApi object:
+blueprint: Blueprint = Blueprint(
+    'some_blueprint_name', __name__, url_prefix='/catch'
+)
 REST_PLUS_APIS = Api(
+    blueprint,
     title='CATCH APIS',
     version='1.0',
     description='APIs for CATCH Tool',

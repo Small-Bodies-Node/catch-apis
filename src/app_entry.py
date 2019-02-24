@@ -4,7 +4,7 @@ import flask
 import flask.wrappers as FLW
 
 from logging_setup import logger    # Must come BEFORE controllers import
-from controllers import REST_PLUS_APIS, default_error_handler
+from controllers import REST_PLUS_APIS, default_error_handler, blueprint as mybp
 
 # Init Flask App and associate it with RestPlus controllers
 flask_app: flask.Flask = flask.Flask(__name__)
@@ -28,7 +28,8 @@ def bare_root() -> FLW.Response:
 
 
 # Associate flask app with flask_restplus configurations
-REST_PLUS_APIS.init_app(flask_app)
+# REST_PLUS_APIS.init_app(flask_app)
+flask_app.register_blueprint(mybp)
 
 # Required for custom error handler; see: https://stackoverflow.com/a/36575875/9730910
 flask_app.config['TRAP_HTTP_EXCEPTIONS'] = True
