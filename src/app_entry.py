@@ -1,7 +1,9 @@
 """Entry file into the Flask-REST API server."""
 
+import typing
 import flask
 import flask.wrappers as FLW
+from werkzeug.contrib.fixers import ProxyFix
 
 from logging_setup import logger    # Must come BEFORE controllers import
 from controllers import REST_PLUS_APIS, default_error_handler, blueprint as mybp
@@ -34,6 +36,9 @@ flask_app.register_blueprint(mybp)
 # Required for custom error handler; see: https://stackoverflow.com/a/36575875/9730910
 flask_app.config['TRAP_HTTP_EXCEPTIONS'] = True
 flask_app.register_error_handler(Exception, default_error_handler)
+
+blah: typing.Any = flask_app
+blah.wsgi_app = ProxyFix(blah.wsgi_app)
 
 # Start app
 if __name__ == "__main__":
