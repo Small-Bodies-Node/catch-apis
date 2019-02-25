@@ -37,6 +37,7 @@ class TestRoutes(FRP.Resource):
         return res
 
     @API.doc('--test--')
+    @API.param('example', description='Place a string here as an example of a POST request', _in='body')
     def post(self: 'TestRoutes') -> FLW.Response:
         """Returns trivial json object"""
 
