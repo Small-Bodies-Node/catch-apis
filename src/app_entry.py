@@ -35,8 +35,11 @@ flask_app.register_blueprint(rest_plus_blueprint)
 flask_app.config['TRAP_HTTP_EXCEPTIONS'] = True
 flask_app.register_error_handler(Exception, default_error_handler)
 
-# This is required to serve swagger through https; see:
+# This is required to serve swagger through https; source: https://github.com/noirbizarre/flask-restplus/issues/54#issuecomment-143436291
 flask_app.wsgi_app = ProxyFix(flask_app.wsgi_app)  # type: ignore
+
+# Opens swagger routes by default:
+flask_app.config.SWAGGER_UI_DOC_EXPANSION = 'list'  # type: ignore
 
 # Start app
 if __name__ == "__main__":

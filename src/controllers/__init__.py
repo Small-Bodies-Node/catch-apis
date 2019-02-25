@@ -20,15 +20,19 @@ from .moving_object_search import API as ns2
 logger: logging.Logger = logging.getLogger(__name__)
 logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 
-# Initiate RestPlusApi object:
+# Define flask blueprint to set whole api to '/catch/'
 blueprint: Blueprint = Blueprint(
-    'some_blueprint_name', __name__, url_prefix='/catch'
+    'some_blueprint_name',
+    __name__,
+    url_prefix='/catch'
 )
+
+# Initiate RestPlusApi object and associate it with blueprint
 REST_PLUS_APIS = Api(
     blueprint,
     title='CATCH APIS',
     version='1.0',
-    description='APIs for CATCH Tool',
+    description='Flask APIs for CATCH Tool',
     doc='/docs'
 )
 
