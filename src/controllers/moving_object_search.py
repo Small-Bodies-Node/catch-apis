@@ -32,6 +32,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 class MovingObjectSearch(Resource):
     """Controller class for moving-object-search"""
 
+    @API.doc('--mos--')
     @API.param('end', description='Optional. Paginated ending index', _in='query')
     @API.param('start', description='Optional. Paginated starting index', _in='query')
     @API.param('objid', description='Required. Objid of the moving-search-object', _in='query')
