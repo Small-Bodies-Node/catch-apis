@@ -1,12 +1,11 @@
 """Entry file into the Flask-REST API server."""
 
-import typing
 import flask
 import flask.wrappers as FLW
 from werkzeug.contrib.fixers import ProxyFix
 
 from logging_setup import logger    # Must come BEFORE controllers import
-from controllers import REST_PLUS_APIS, default_error_handler, blueprint as mybp
+from controllers import default_error_handler, blueprint as rest_plus_blueprint
 
 # Init Flask App and associate it with RestPlus controllers
 flask_app: flask.Flask = flask.Flask(__name__)
@@ -29,16 +28,15 @@ def bare_root() -> FLW.Response:
     return res
 
 
-# Associate flask app with flask_restplus configurations
-# REST_PLUS_APIS.init_app(flask_app)
-flask_app.register_blueprint(mybp)
+# Associate flask app with flask_restplus configurations via blueprint
+flask_app.register_blueprint(rest_plus_blueprint)
 
 # Required for custom error handler; see: https://stackoverflow.com/a/36575875/9730910
 flask_app.config['TRAP_HTTP_EXCEPTIONS'] = True
 flask_app.register_error_handler(Exception, default_error_handler)
 
-blah: typing.Any = flask_app
-blah.wsgi_app = ProxyFix(blah.wsgi_app)
+# This is required to serve swagger through https; see:
+flask_app.wsgi_app = ProxyFix(flask_app.wsgi_app)  # type: ignore
 
 # Start app
 if __name__ == "__main__":
