@@ -72,4 +72,4 @@ These are misc notes where you can describe issues/decisions-taken in the course
 
 -- DWD: NOTE: this codebase has '/' file separators hard-coded, e.g. in logging.ini files; that, plus the bash scripts, makes this codebase inhospitable to windows machines.
 
---- 17
+--- 18
