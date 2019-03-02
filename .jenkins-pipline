@@ -14,8 +14,7 @@ pipeline {
                 echo 'Testing..'
                 sh '''
                     # Generate unit-test report
-                    pytest --junit-xml=pytest_unit.xml
-                    ls
+                    sh _run_tests.sh fail # add 'fail' to fail
                 '''
                 junit 'pytest_unit.xml'
             }
@@ -28,7 +27,7 @@ pipeline {
                     . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
-                    JENKINS_NODE_COOKIE=dontKillMe . ./_start_prod_api.sh
+                    JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
 
                     curl localhost:5001/catch/test
                 '''
