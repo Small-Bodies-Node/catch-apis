@@ -5,23 +5,23 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                echo 'Testing...'
                 sh '''
                     # Generate unit-test report
-                    sh _run_tests.sh fail # add 'fail' to fail
+                    sh _run_tests.sh                        # Add 'fail' to fail
                 '''
                 junit 'pytest_unit.xml'
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                echo 'Deploying...'
                 sh '''
                     cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
                     . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
