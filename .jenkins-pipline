@@ -1,7 +1,7 @@
-pipelineJob("merge-request-pipeline") {
- concurrentBuild()
- quietPeriod(0)
- authenticationToken("thetoken")
+pipeline {
+//  concurrentBuild()
+//  quietPeriod(0)
+//  authenticationToken("thetoken")
  triggers {
   genericTrigger {
    genericVariables {
