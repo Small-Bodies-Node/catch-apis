@@ -2,11 +2,35 @@
 pipeline {
     agent any
 
+    //
+    triggers {
+        GenericTrigger(
+        genericVariables: [
+        [key: 'ref', value: '$.ref']
+        ],
+
+        causeString: 'Triggered on $ref',
+
+        token: 'abc123',
+
+        printContributedVariables: true,
+        printPostContent: true,
+
+        silentResponse: false,
+
+        regexpFilterText: '$ref',
+        regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+        )
+    }
+    //
+
     stages {
         stage('Build') {
             steps {
                 echo 'Building...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                echo ">>>>>>>"
+                sh "echo $ref"
             }
         }
         stage('Test') {
