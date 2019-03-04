@@ -1,30 +1,33 @@
 pipeline {
-//  concurrentBuild()
-//  quietPeriod(0)
-//  authenticationToken("thetoken")
- agent any
- triggers {
-  GenericTrigger {
-   GenericVariables {
-    GenericVariable {
-     key("TEST_VAR")
-     value("\$")
-     expressionType("JSONPath")
-     regexpFilter("")
-    }
-   }
-   regexpFilterText("")
-   regexpFilterExpression("")
-  }
- }
 
-     stages {
+    agent any
+    triggers {
+    GenericTrigger(
+            genericVariables: [
+            [key: 'ref', value: '$.ref']
+            ],
+
+            causeString: 'Triggered on $ref',
+
+            token: 'abc123',
+
+            printContributedVariables: true,
+            printPostContent: true,
+
+            silentResponse: false,
+
+            regexpFilterText: '$ref',
+            regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+        )
+    }
+
+    stages {
         stage('Build') {
             steps {
                 echo 'Building...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
-                sh "echo $TEST_VAR"
+                sh "echo $ref"
             }
         }
         stage('Test') {
@@ -52,88 +55,3 @@ pipeline {
             }
         }
     }
-
-
-//  definition {
-//   cps {
-//    script(readFileFromWorkspace('merge_request_pipeline.pipeline'))
-//    sandbox()
-//   }
-//  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// pipeline {
-//     agent any
-//     triggers {
-//         genericTrigger {
-//             genericVariables {
-//                 genericVariable {
-//                     key("TEST_VAR")
-//                     value("\$.object_attributes.target.git_http_url")
-//                     expressionType("JSONPath")
-//                     regexpFilter("")
-//                 }
-//             }
-//             regexpFilterText("")
-//             regexpFilterExpression("")
-//         }
-//     }
-//     stages {
-//         stage('Build') {
-//             steps {
-//                 echo 'Building...'
-//                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
-//                 echo ">>>>>>>"
-//                 sh "echo $TEST_VAR"
-//             }
-//         }
-//         stage('Test') {
-//             steps {
-//                 echo 'Testing...'
-//                 sh '''
-//                     # Generate unit-test report
-//                     sh _run_tests.sh                        # Add 'fail' to fail
-//                 '''
-//                 junit 'pytest_unit.xml'
-//             }
-//         }
-//         stage('Deploy') {
-//             steps {
-//                 echo 'Deploying...'
-//                 sh '''
-//                     cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
-//                     . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
-
-//                     # Must set this env for daemon to survive pipeline's termination
-//                     JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
-
-//                     curl localhost:5001/catch/test
-//                 '''
-//             }
-//         }
-//     }
-// }
