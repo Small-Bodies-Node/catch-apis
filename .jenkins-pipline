@@ -2,10 +2,11 @@ pipeline {
 //  concurrentBuild()
 //  quietPeriod(0)
 //  authenticationToken("thetoken")
+ agent any
  triggers {
-  genericTrigger {
-   genericVariables {
-    genericVariable {
+  GenericTrigger {
+   GenericVariables {
+    GenericVariable {
      key("TEST_VAR")
      value("\$")
      expressionType("JSONPath")
