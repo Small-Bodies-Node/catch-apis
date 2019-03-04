@@ -4,7 +4,7 @@ pipeline {
     triggers {
     GenericTrigger(
             genericVariables: [
-            [key: 'blah', value: '$.number']
+            [key: 'blah', value: '$..*']
             ],
 
             causeString: 'Triggered on $blah',
@@ -27,6 +27,7 @@ pipeline {
                 echo 'Building...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
+                sh "echo $CATCH_APIS_PATH"
                 sh "echo $blah"
             }
         }
