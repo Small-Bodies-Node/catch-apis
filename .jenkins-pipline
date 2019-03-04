@@ -1,41 +1,20 @@
 
 pipeline {
     agent any
-
-    //
     triggers {
-        // GenericTrigger(
-        // genericVariables: [
-        // [key: 'number', value: '$.number']
-        // ],
-
-        // causeString: 'Triggered on $number',
-
-        // token: 'abc123',
-
-        // printContributedVariables: true,
-        // printPostContent: true,
-
-        // silentResponse: false,
-
-        // regexpFilterText: '$number',
-        // regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
-        // )
-
         genericTrigger {
             genericVariables {
                 genericVariable {
-                key("TEST_VAR")
-                value("\$.object_attributes.target.git_http_url")
-                expressionType("JSONPath")
-                regexpFilter("")
+                    key("TEST_VAR")
+                    value("\$.object_attributes.target.git_http_url")
+                    expressionType("JSONPath")
+                    regexpFilter("")
                 }
             }
-        // regexpFilterText("\$MR_OBJECT_KIND \$MR_ACTION \$MR_OLD_REV")
-        // regexpFilterExpression("^merge_request\\s(update\\s.{40}\$|open.*)")
+            regexpFilterText("")
+            regexpFilterExpression("")
         }
     }
-
     stages {
         stage('Build') {
             steps {
