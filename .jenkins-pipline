@@ -9,7 +9,7 @@ pipeline {
 
             causeString: 'Triggered on $blah',
 
-            // token: 'abc123',
+            // token: 'abc123' ,
 
             printContributedVariables: true,
             printPostContent: true,
