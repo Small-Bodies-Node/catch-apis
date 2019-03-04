@@ -35,7 +35,7 @@ class MovingObjectSearch(Resource):
     @API.doc('--mos--')
     @API.param('end', description='Optional. Paginated ending index', _in='query')
     @API.param('start', description='Optional. Paginated starting index', _in='query')
-    @API.param('objid', description='Required. Objid of the moving-search-object', _in='query')
+    @API.param('objid', description='Required. Objid of the moving-search-object. Try 909 for working example.', _in='query')
     @API.marshal_with(MOS_RETURN_MODEL, envelope='resource')
     def get(self: 'MovingObjectSearch') -> typing.Tuple[typing.Dict, int]:
         """Returns moving-object-search requests"""
