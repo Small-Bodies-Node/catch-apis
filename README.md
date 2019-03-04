@@ -74,4 +74,4 @@ These are misc notes where you can describe issues/decisions-taken in the course
 
 -- DWD: NOTE: the script `_initial_setup.sh` must be sourced (not sh-ed) because it exports env variables. To try to prevent sh-ing I added a 'trick' taken from [here](https://stackoverflow.com/a/47613477/8620332) to test if the script was sourced. That seemed to work but, beware, it causes Jenkins' builds to fail, so I added some optional logic to by-pass that test; just be sure to use 'source' in your Jenkins builds!
 
--- D4
+-- D5
