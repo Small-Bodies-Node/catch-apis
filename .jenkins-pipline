@@ -23,18 +23,18 @@ pipeline {
         // )
 
         genericTrigger {
-        genericVariables {
-            genericVariable {
-            key("TEST_VAR")
-            value("\$.object_attributes.target.git_http_url")
-            expressionType("JSONPath")
-            regexpFilter("")
+            genericVariables {
+                genericVariable {
+                key("TEST_VAR")
+                value("\$.object_attributes.target.git_http_url")
+                expressionType("JSONPath")
+                regexpFilter("")
+                }
             }
-        }
         // regexpFilterText("\$MR_OBJECT_KIND \$MR_ACTION \$MR_OLD_REV")
         // regexpFilterExpression("^merge_request\\s(update\\s.{40}\$|open.*)")
+        }
     }
-
 
     stages {
         stage('Build') {
