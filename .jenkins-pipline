@@ -4,25 +4,37 @@ pipeline {
 
     //
     triggers {
-        GenericTrigger(
-        genericVariables: [
-        [key: 'number', value: '$.number']
-        ],
+        // GenericTrigger(
+        // genericVariables: [
+        // [key: 'number', value: '$.number']
+        // ],
 
-        causeString: 'Triggered on $number',
+        // causeString: 'Triggered on $number',
 
-        token: 'abc123',
+        // token: 'abc123',
 
-        printContributedVariables: true,
-        printPostContent: true,
+        // printContributedVariables: true,
+        // printPostContent: true,
 
-        silentResponse: false,
+        // silentResponse: false,
 
-        regexpFilterText: '$number',
-        regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
-        )
+        // regexpFilterText: '$number',
+        // regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+        // )
+
+        genericTrigger {
+        genericVariables {
+            genericVariable {
+            key("TEST_VAR")
+            value("\$.object_attributes.target.git_http_url")
+            expressionType("JSONPath")
+            regexpFilter("")
+            }
+        }
+        // regexpFilterText("\$MR_OBJECT_KIND \$MR_ACTION \$MR_OLD_REV")
+        // regexpFilterExpression("^merge_request\\s(update\\s.{40}\$|open.*)")
     }
-    //
+
 
     stages {
         stage('Build') {
@@ -30,7 +42,7 @@ pipeline {
                 echo 'Building...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
-                sh "echo $number"
+                sh "echo $TEST_VAR"
             }
         }
         stage('Test') {
