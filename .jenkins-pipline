@@ -27,8 +27,10 @@ pipeline {
                 echo 'Building...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
-                sh "echo $CATCH_APIS_PATH"
-                sh "echo $blah"
+                sh '''
+                    echo $CATCH_APIS_PATH
+                    echo $blah
+                '''
             }
         }
         stage('Test') {
