@@ -33,6 +33,9 @@ pipeline {
                     ls
                     echo $CATCH_APIS_PATH
                     echo $blah
+                    echo "@@@@@@@"
+                    echo $env
+                    echo ${env}
                 '''
             }
         }
