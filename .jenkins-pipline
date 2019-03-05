@@ -29,6 +29,8 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
                 sh '''
+                    pwd
+                    ls
                     echo $CATCH_APIS_PATH
                     echo $blah
                 '''
@@ -47,15 +49,15 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                sh '''
-                    cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
-                    . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
+                // sh '''
+                //     cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                //     . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
 
-                    # Must set this env for daemon to survive pipeline's termination
-                    JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
+                //     # Must set this env for daemon to survive pipeline's termination
+                //     JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
 
-                    curl localhost:5001/catch/test
-                '''
+                //     curl localhost:5001/catch/test
+                // '''
             }
         }
     }
