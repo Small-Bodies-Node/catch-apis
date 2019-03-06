@@ -37,6 +37,7 @@ pipeline {
                     echo $clone_url
 
                     branch_name=$(expr "$ref" : "refs\\/heads\\/\\(.*\\)$suffix")
+                    echo $branch_name
 
                     git init
                     git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
