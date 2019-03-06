@@ -5,10 +5,12 @@ pipeline {
     triggers {
     GenericTrigger(
             genericVariables: [
-            [key: 'blah', value: '$..*']
+                // [key: 'blah', value: '$..*']
+                [key: 'number', value: '$.number'],
+                [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
             ],
 
-            causeString: 'Triggered on $blah',
+            // causeString: 'Triggered on $blah',
 
             token: 'abc123',
 
@@ -26,19 +28,28 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
+
+                // sh "git init"
+                // sh "git fetch --no-tags $MERGE_REQUEST_TO_URL +refs/heads/*:refs/remotes/origin/* --depth=200"
+
                 sh '''
-                    pwd
-                    ls
-                    echo $CATCH_APIS_PATH
-                    echo $blah
-                    echo "@@@@@@@"
-                    echo $env
-                    echo ${env}
-                    echo $GITHUB_PR_TARGET_BRANCH
-                    echo $GITHUB_PR_SOURCE_BRANCH
+                    echo $number
+                    echo $clone_url
                 '''
+
+                // sh '''
+                //     pwd
+                //     ls
+                //     echo $CATCH_APIS_PATH
+                //     echo $blah
+                //     echo "@@@@@@@"
+                //     echo $env
+                //     echo ${env}
+                //     echo $GITHUB_PR_TARGET_BRANCH
+                //     echo $GITHUB_PR_SOURCE_BRANCH
+                // '''
             }
         }
         stage('Test') {
