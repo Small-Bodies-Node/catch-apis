@@ -32,11 +32,11 @@ pipeline {
                 // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
 
-                bash '''
+                sh '''
                     echo $ref
                     echo $clone_url
 
-                    branch_name=$(expr "$ref" : "refs\/heads\/\(.*\)$suffix")
+                    branch_name=$(expr "$ref" : "refs/heads/(.*)")
 
                     git init
                     git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
