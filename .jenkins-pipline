@@ -6,8 +6,9 @@ pipeline {
     GenericTrigger(
             genericVariables: [
                 // [key: 'blah', value: '$..*']
-                [key: 'number', value: '$.number'],
-                [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
+                // [key: 'number', value: '$.number'],
+                [key: 'ref', value: '$.ref'],
+                [key: 'clone_url', value: '$.repository.clone_url']
             ],
 
             // causeString: 'Triggered on $blah',
@@ -35,7 +36,7 @@ pipeline {
                 // sh "git fetch --no-tags $MERGE_REQUEST_TO_URL +refs/heads/*:refs/remotes/origin/* --depth=200"
 
                 sh '''
-                    echo $number
+                    echo $ref
                     echo $clone_url
                 '''
 
