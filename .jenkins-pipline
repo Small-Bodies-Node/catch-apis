@@ -32,13 +32,25 @@ pipeline {
                 // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
 
-                // sh "git init"
-                // sh "git fetch --no-tags $MERGE_REQUEST_TO_URL +refs/heads/*:refs/remotes/origin/* --depth=200"
-
                 sh '''
                     echo $ref
                     echo $clone_url
+
+                    branch_name=$(expr "$ref" : "refs\/heads\/\(.*\)$suffix")
+
+                    git init
+                    git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
+                    git checkout origin/master
+                    git config user.email 'ddarg@umd.edu'
+                    git config user.name 'dwd-umd'
+                    git merge origin/$branch_name
+                    ls
+                    cat .jenkins-test
+
                 '''
+
+
+
 
                 // sh '''
                 //     pwd
