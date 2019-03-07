@@ -1,4 +1,3 @@
-#!/usr/bin/env groovy
 
 pipeline {
 
@@ -6,10 +5,13 @@ pipeline {
     triggers {
     GenericTrigger(
             genericVariables: [
-            [key: 'blah', value: '$..*']
+                // [key: 'blah', value: '$..*']
+                // [key: 'number', value: '$.number'],
+                [key: 'ref', value: '$.ref'],
+                [key: 'clone_url', value: '$.repository.clone_url']
             ],
 
-            causeString: 'Triggered on $blah',
+            // causeString: 'Triggered on $blah',
 
             token: 'abc123',
 
@@ -27,12 +29,41 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
+
                 sh '''
-                    echo $CATCH_APIS_PATH
-                    echo $blah
+                    echo $ref
+                    echo $clone_url
+
+                    branch_name=$(expr "$ref" : "refs\\/heads\\/\\(.*\\)$suffix")
+                    echo $branch_name
+
+                    git init
+                    git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
+                    git checkout origin/master
+                    git config user.email 'ddarg@umd.edu'
+                    git config user.name 'dwd-umd'
+                    git merge origin/$branch_name
+                    #ls
+                    cat .jenkins-test
+
                 '''
+
+
+
+
+                // sh '''
+                //     pwd
+                //     ls
+                //     echo $CATCH_APIS_PATH
+                //     echo $blah
+                //     echo "  @@@@@@@"
+                //     echo $env
+                //     echo ${env}
+                //     echo $GITHUB_PR_TARGET_BRANCH
+                //     echo $GITHUB_PR_SOURCE_BRANCH
+                // '''
             }
         }
         stage('Test') {
@@ -48,15 +79,15 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                sh '''
-                    cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
-                    . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
+                // sh '''
+                //     cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                //     . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
 
-                    # Must set this env for daemon to survive pipeline's termination
-                    JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
+                //     # Must set this env for daemon to survive pipeline's termination
+                //     JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
 
-                    curl localhost:5001/catch/test
-                '''
+                //     curl localhost:5001/catch/test
+                // '''
             }
         }
     }
