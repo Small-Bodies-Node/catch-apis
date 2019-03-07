@@ -47,7 +47,6 @@ pipeline {
                     git merge origin/$branch_name
                     #ls
                     cat .jenkins-test
-
                 '''
 
 
