@@ -35,39 +35,12 @@ pipeline {
                     echo "@@@@@@@"
                     echo $blah
                     echo "*******"
-                //     echo $ref
-                //     echo $clone_url
-
-                //     branch_name=$(expr "$ref" : "refs\\/heads\\/\\(.*\\)$suffix")
-                //     echo $branch_name
-
-                //     git init
-                //     git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
-                //     git checkout origin/master
-                //     git config user.email 'ddarg@umd.edu'
-                //     git config user.name 'dwd-umd'
-                //     git merge origin/$branch_name
-                //     #ls
-                //     cat .jenkins-test
                 '''
 
 
                 sh '''
                     cat .jenkins-temp
                 '''
-
-
-                // sh '''
-                //     pwd
-                //     ls
-                //     echo $CATCH_APIS_PATH
-                //     echo $blah
-                //     echo "  @@@@@@@"
-                //     echo $env
-                //     echo ${env}
-                //     echo $GITHUB_PR_TARGET_BRANCH
-                //     echo $GITHUB_PR_SOURCE_BRANCH
-                // '''
             }
         }
         stage('Test') {
