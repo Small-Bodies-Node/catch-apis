@@ -5,8 +5,7 @@ pipeline {
     triggers {
     GenericTrigger(
             genericVariables: [
-                // [key: 'blah', value: '$..*']
-                // [key: 'number', value: '$.number'],
+                //[key: 'blah', value: '$..*'],
                 [key: 'ref', value: '$.ref'],
                 [key: 'clone_url', value: '$.repository.clone_url']
             ],
@@ -32,24 +31,30 @@ pipeline {
                 // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
 
+                // sh '''
+                //     echo "@@@@@@@"
+                //     echo $blah
+                //     echo "*******"
+                //     echo $ref
+                //     echo $clone_url
+
+                //     branch_name=$(expr "$ref" : "refs\\/heads\\/\\(.*\\)$suffix")
+                //     echo $branch_name
+
+                //     git init
+                //     git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
+                //     git checkout origin/master
+                //     git config user.email 'ddarg@umd.edu'
+                //     git config user.name 'dwd-umd'
+                //     git merge origin/$branch_name
+                //     #ls
+                //     cat .jenkins-test
+                // '''
+
+
                 sh '''
-                    echo $ref
-                    echo $clone_url
-
-                    branch_name=$(expr "$ref" : "refs\\/heads\\/\\(.*\\)$suffix")
-                    echo $branch_name
-
-                    git init
-                    git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
-                    git checkout origin/master
-                    git config user.email 'ddarg@umd.edu'
-                    git config user.name 'dwd-umd'
-                    git merge origin/$branch_name
-                    #ls
-                    cat .jenkins-test
+                    cat .jenkins-temp
                 '''
-
-
 
 
                 // sh '''

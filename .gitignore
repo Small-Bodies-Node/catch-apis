@@ -9,4 +9,5 @@
 generated-models/**
 temp
 pytest_unit.xml
+.redundant/**
 **/*.log
