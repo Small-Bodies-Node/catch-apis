@@ -32,7 +32,7 @@ pipeline {
                 echo ">>>>>>>"
 
                 sh '''
-                    echo "@@@@@@@ "
+                    echo "@@@@@@@  "
                     echo $blah
                     echo "*******"
                 '''
