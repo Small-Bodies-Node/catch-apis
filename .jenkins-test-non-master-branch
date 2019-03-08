@@ -35,7 +35,7 @@ pipeline {
                     echo "@@@@@@@  "
                     echo $blah
                     echo $ref
-                    echo "*******"
+                    echo "******* "
                 '''
 
 
