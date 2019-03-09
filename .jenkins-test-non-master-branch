@@ -70,8 +70,6 @@ pipeline {
 
                 startMerge(ref)
 
-                println("Status: "+response.status)
-                println("Content: "+response.content)
 
                 sh '''
                     echo "+++++++++++"
@@ -95,18 +93,25 @@ def startMerge(ref) {
     echo("xxxxx")
     echo(postBody)
 
-    httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges", url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+    // httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges", url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+
+    response = httpRequest (
+        consoleLogResponseBody: true,
+        contentType: 'APPLICATION_JSON',
+        authentication: 'github-up-id',
+        httpMode: 'POST',
+        requestBody: command,
+        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+        validResponseCodes: '200'
+    )
+
+    echo("#######")
+
+    println("Status: "+response.status)
+    println("Content: "+response.content)
 
     echo("&&&&&&&&&")
 
-    // response = httpRequest (
-    //     consoleLogResponseBody: true,
-    //     contentType: 'APPLICATION_JSON',
-    //     authentication: 'github-up-id',
-    //     httpMode: 'POST',
-    //     requestBody: command,
-    //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
-    //     validResponseCodes: '200'
-    // )
     return response
 }
