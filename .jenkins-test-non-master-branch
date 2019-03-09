@@ -82,7 +82,7 @@ pipeline {
 
 def startMerge(ref) {
 
-    echo("xxxxx")
+    echo("xxxxx ")
 
     def postBody = """{
             \"head\" : \"${ref}\",
