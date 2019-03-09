@@ -101,7 +101,7 @@ def startMerge(ref) {
         contentType: 'APPLICATION_JSON',
         authentication: 'github-up-id',
         httpMode: 'POST',
-        requestBody: command,
+        requestBody: postBody,
         url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
         validResponseCodes: '200'
     )
