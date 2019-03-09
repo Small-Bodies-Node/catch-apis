@@ -82,7 +82,7 @@ pipeline {
 
 def startMerge(ref) {
 
-    echo("xxxxx")
+    echo("xxxxx ")
 
     def postBody = """{
             \"head\" : \"${ref}\",
@@ -102,8 +102,8 @@ def startMerge(ref) {
         authentication: 'github-up-id',
         httpMode: 'POST',
         requestBody: postBody,
-        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
-        validResponseCodes: '200'
+        validResponseCodes: '200:210',
+        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
     )
 
     echo("#######")
