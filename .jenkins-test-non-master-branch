@@ -58,7 +58,7 @@ pipeline {
             steps {
                 echo 'Merging...'
 
-                def patchOrg = """
+                patchOrg = """
                         {
                             "base": "master",
                             "head": $ref,
@@ -68,7 +68,7 @@ pipeline {
 
                 // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
 
-                def response = httpRequest (consoleLogResponseBody: true,
+                response = httpRequest (consoleLogResponseBody: true,
                     contentType: 'APPLICATION_JSON',
                     httpMode: 'POST',
                     requestBody: patchOrg,
