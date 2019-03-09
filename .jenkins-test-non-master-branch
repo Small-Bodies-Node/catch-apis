@@ -58,22 +58,17 @@ pipeline {
             steps {
                 echo 'Merging...'
 
-                patchOrg = """
-                        {
-                            "base": "master",
-                            "head": $ref,
-                            "commit_message": "Shipped cool_feature!"
-                        }
-                    """
 
                 // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
 
-                response = httpRequest (consoleLogResponseBody: true,
-                    contentType: 'APPLICATION_JSON',
-                    httpMode: 'POST',
-                    requestBody: patchOrg,
-                    url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
-                    validResponseCodes: '200')
+                // response = httpRequest (consoleLogResponseBody: true,
+                //     contentType: 'APPLICATION_JSON',
+                //     httpMode: 'POST',
+                //     requestBody: patchOrg,
+                //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+                //     validResponseCodes: '200')
+
+                startMerge(ref)
 
                 println("Status: "+response.status)
                 println("Content: "+response.content)
@@ -84,4 +79,26 @@ pipeline {
             }
         }
     }
+}
+
+
+def startMerge(ref) {
+    def postBody = """{
+            \"head\" : \"${ref}\",
+            \"base\" : \"master\",
+            \"commit_message\": \"Shipped cool_feature!\"
+    }"""
+
+    echo("xxxxx")
+    echo(postBody)
+    response = httpRequest (
+        consoleLogResponseBody: true,
+        contentType: 'APPLICATION_JSON',
+        authentication: 'github-up-id'
+        httpMode: 'POST',
+        requestBody: command,
+        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+        validResponseCodes: '200'
+    )
+    return response
 }
