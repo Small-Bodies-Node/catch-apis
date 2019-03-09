@@ -66,7 +66,14 @@ pipeline {
                         }
                     """
 
-                def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+                // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+                def response = httpRequest (consoleLogResponseBody: true,
+                    contentType: 'APPLICATION_JSON',
+                    httpMode: 'POST',
+                    requestBody: patchOrg,
+                    url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+                    validResponseCodes: '200')
 
                 println("Status: "+response.status)
                 println("Content: "+response.content)
