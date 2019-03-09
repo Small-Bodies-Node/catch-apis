@@ -5,8 +5,8 @@ pipeline {
     triggers {
     GenericTrigger(
             genericVariables: [
-                [key: 'blah', value: '$'],
-                [key: 'ref', value: '$.ref'],
+                // [key: 'blah', value: '$'],
+                [key: 'ref', value: '$.pull_request.head.ref'],
                 [key: 'clone_url', value: '$.repository.clone_url']
             ],
 
@@ -32,9 +32,9 @@ pipeline {
                 echo ">>>>>>>"
 
                 sh '''
-                    echo "@@@@@@@"
-                    echo $blah
-                    echo "*******"
+                    echo "@@@@@@@  "
+                    echo $ref
+                    echo "******* "
                 '''
 
 
@@ -53,21 +53,65 @@ pipeline {
                 junit 'pytest_unit.xml'
             }
         }
-        stage('Deploy') {
+
+        stage('Merge') {
             steps {
-                echo 'Deploying...'
+                echo 'Merging...'
+
+
+                // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+                // response = httpRequest (consoleLogResponseBody: true,
+                //     contentType: 'APPLICATION_JSON',
+                //     httpMode: 'POST',
+                //     requestBody: patchOrg,
+                //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+                //     validResponseCodes: '200')
+
+                startMerge(ref)
+
+
                 sh '''
-                    cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
-                    . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
-
-                    # Must set this env for daemon to survive pipeline's termination
-                    #JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
-
-                    touch "hello-`date +%Y-%m-%d`.txt"
-
-                    #curl localhost:5001/catch/test
+                    echo "+++++++++++"
                 '''
             }
         }
     }
+}
+
+
+def startMerge(ref) {
+
+    echo("xxxxx ")
+
+    def postBody = """{
+            \"head\" : \"${ref}\",
+            \"base\" : \"master\",
+            \"commit_message\": \"Shipped cool_feature!\"
+    }"""
+
+    echo("xxxxx")
+    echo(postBody)
+
+    // httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges", url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+
+    response = httpRequest (
+        consoleLogResponseBody: true,
+        contentType: 'APPLICATION_JSON',
+        authentication: 'github-up-id',
+        httpMode: 'POST',
+        requestBody: postBody,
+        validResponseCodes: '200:210',
+        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+    )
+
+    echo("#######")
+
+    println("Status: "+response.status)
+    println("Content: "+response.content)
+
+    echo("&&&&&&&&&")
+
+    return response
 }
