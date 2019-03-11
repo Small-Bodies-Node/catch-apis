@@ -39,17 +39,19 @@ pipelineJob('Generic Job Example') {
     definition {
         cps {
             // Or just refer to a Jenkinsfile containing the pipeline
-            script('''
-                node {
-                    stage('Some Stage') {
-                        println "VARIABLE_FROM_POST: " + VARIABLE_FROM_POST
+            script(
+                '''
+                    node {
+                        stage('Some Stage') {
+                            println "VARIABLE_FROM_POST: " + VARIABLE_FROM_POST
+                        }
                     }
-                }
-                ''')
-                sandbox()
-            }
+                '''
+            )
+            sandbox()
         }
     }
+
 
         // pipeline {
 
