@@ -53,7 +53,7 @@ pipeline {
                     echo "2 !!!!!!!"
 
                     #git init
-                    git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
+                    git fetch --no-tags $GIT_URL +refs/heads/*:refs/remotes/origin/* --depth=200
                     git checkout origin/master
                     git config user.email 'ddarg@umd.edu'
                     git config user.name 'dwd-umd'
