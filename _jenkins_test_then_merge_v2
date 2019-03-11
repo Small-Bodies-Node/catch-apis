@@ -1,4 +1,18 @@
-pipelineJob('Generic Job Example') {
+multibranchPipelineJob('Multi-Branch-Job Example') {
+
+    branchSources {
+        git {
+            remote('https://github.com/dwd-umd/catch-apis.git')
+            credentialsId('dwd-umd')
+            // includes('JENKINS-*')
+        }
+    }
+    orphanedItemStrategy {
+        discardOldItems {
+            numToKeep(20)
+        }
+    }
+
     parameters {
         stringParam('VARIABLE_FROM_POST', '')
     }
