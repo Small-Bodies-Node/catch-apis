@@ -59,7 +59,7 @@ pipeline {
                     git config user.name 'dwd-umd'
                     git merge origin/$GIT_BRANCH
                     #ls
-                    cat .jenkins-test
+                    cat .jenkins-temp
 
                 '''
 
