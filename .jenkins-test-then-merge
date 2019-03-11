@@ -8,7 +8,7 @@ pipeline {
                 [key: 'blah', value: '$'],
                 [key: 'action', value: '$.action'],
                 [key: 'ref', value: '$.pull_request.head.ref'],
-                [key: 'clone_url', value: '$.repository.clone_url']
+                [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
             ],
 
             // causeString: 'Triggered on $blah',
@@ -29,7 +29,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
 
                 sh '''
@@ -38,12 +38,11 @@ pipeline {
                     echo $blah
                     echo $ref
                     echo "******* "
-                '''
-
-
-                sh '''
                     cat .jenkins-temp
                 '''
+
+
+
             }
         }
         stage('Test') {
