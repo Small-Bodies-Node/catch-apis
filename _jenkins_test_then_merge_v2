@@ -34,7 +34,6 @@ pipelineJob('Generic Job Example') {
             regexpFilterExpression("aRegExp")
         }
     }
-}
 
     definition {
         cps {
@@ -51,6 +50,9 @@ pipelineJob('Generic Job Example') {
             // sandbox()
         }
     }
+
+}
+
 
 
         // pipeline {
