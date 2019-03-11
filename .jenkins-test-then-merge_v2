@@ -1,0 +1,171 @@
+pipelineJob('Generic Job Example') {
+    parameters {
+        stringParam('VARIABLE_FROM_POST', '')
+    }
+
+    triggers {
+        genericTrigger {
+            genericVariables {
+                genericVariable {
+                    key("VARIABLE_FROM_POST")
+                    value("\$.action")
+                    expressionType("JSONPath") //Optional, defaults to JSONPath
+                    regexpFilter("") //Optional, defaults to empty string
+                    defaultValue("") //Optional, defaults to empty string
+                }
+            }
+            genericRequestVariables {
+                genericRequestVariable {
+                    key("requestParameterName")
+                    regexpFilter("")
+                }
+            }
+            genericHeaderVariables {
+                genericHeaderVariable {
+                    key("requestHeaderName")
+                    regexpFilter("")
+                }
+            }
+            token('abc123')
+            printContributedVariables(true)
+            printPostContent(true)
+            silentResponse(false)
+            regexpFilterText("\$VARIABLE_FROM_POST")
+            regexpFilterExpression("aRegExp")
+        }
+    }
+}
+
+    definition {
+        cps {
+            // Or just refer to a Jenkinsfile containing the pipeline
+            script('''
+                node {
+                    stage('Some Stage') {
+                        println "VARIABLE_FROM_POST: " + VARIABLE_FROM_POST
+                    }
+                }
+                ''')
+                sandbox()
+            }
+        }
+    }
+
+        // pipeline {
+
+        //     agent any
+        //     triggers {
+        //     GenericTrigger(
+        //             genericVariables: [
+        //                 [key: 'blah', value: '$'],
+        //                 [key: 'action', value: '$.action'],
+        //                 [key: 'ref', value: '$.pull_request.head.ref'],
+        //                 [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
+        //             ],
+
+        //             // causeString: 'Triggered on $blah',
+
+        //             token: 'abc123',
+
+        //             printContributedVariables: true,
+        //             printPostContent: true,
+
+        //             silentResponse: false,
+
+        //             // regexpFilterText: '$ref',
+        //             // regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+        //         )
+        //     }
+
+        //     stages {
+        //         stage('Build') {
+        //             steps {
+        //                 echo 'Building...'
+        //                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+        //                 echo ">>>>>>>"
+
+        //                 sh '''
+        //                     echo "@@@@@@@  "
+        //                     echo $action
+        //                     echo $blah
+        //                     echo $ref
+        //                     echo "******* "
+        //                     cat .jenkins-temp
+        //                 '''
+
+
+
+        //             }
+        //         }
+        //         stage('Test') {
+        //             steps {
+        //                 echo 'Testing...'
+        //                 sh '''
+        //                     # Generate unit-test report
+        //                     sh _run_tests.sh                        # Add 'fail' to fail
+        //                 '''
+        //                 junit 'pytest_unit.xml'
+        //             }
+        //         }
+
+        //         stage('Merge') {
+        //             steps {
+        //                 echo 'Merging...'
+
+
+        //                 // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+        //                 // response = httpRequest (consoleLogResponseBody: true,
+        //                 //     contentType: 'APPLICATION_JSON',
+        //                 //     httpMode: 'POST',
+        //                 //     requestBody: patchOrg,
+        //                 //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+        //                 //     validResponseCodes: '200')
+
+        //                 startMerge(ref)
+
+
+        //                 sh '''
+        //                     echo "+++++++++++"
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
+
+
+        // def startMerge(ref) {
+
+        //     echo("xxxxx ")
+
+        //     def postBody = """{
+        //             \"head\" : \"${ref}\",
+        //             \"base\" : \"master\",
+        //             \"commit_message\": \"Shipped cool_feature!\"
+        //     }"""
+
+        //     echo("xxxxx")
+        //     echo(postBody)
+
+        //     // httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges", url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+
+        //     response = httpRequest (
+        //         consoleLogResponseBody: true,
+        //         contentType: 'APPLICATION_JSON',
+        //         authentication: 'github-up-id',
+        //         httpMode: 'POST',
+        //         requestBody: postBody,
+        //         validResponseCodes: '200:210',
+        //         url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+        //     )
+
+        //     echo("#######")
+
+        //     println("Status: "+response.status)
+        //     println("Content: "+response.content)
+
+        //     echo("&&&&&&&&&")
+
+        //     return response
+        // }
