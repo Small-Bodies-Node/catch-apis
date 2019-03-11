@@ -1,0 +1,143 @@
+
+pipeline {
+
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+
+                sh '''
+                    echo "1 @@@@@@@  "
+                    echo $ref
+                    echo "&&&&&&&&&&"
+                    echo $GIT_BRANCH
+                    echo $GIT_COMMIT
+                    echo $GIT_COMMITTER_NAME
+                    echo $GIT_AUTHOR_NAME
+                    echo $GIT_COMMITTER_EMAIL
+                    echo $GIT_AUTHOR_EMAIL
+                    echo $GIT_URL
+                    echo $GIT_URL_N
+                    echo $GIT_BRANCH
+                    echo $GIT_LOCAL_BRANCH
+                    echo $GIT_PREVIOUS_COMMIT
+                    echo $GIT_PREVIOUS_SUCCESSFUL_COMMIT
+                    echo currentBuild
+                    echo $currentBuild
+                    echo "1 !!!!!!!"
+                '''
+
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                echo ">>>>>>>"
+
+                sh '''
+                    echo "2 @@@@@@@  "
+                    echo $ref
+                    echo "&&&&&&&&&&"
+                    echo $GIT_BRANCH
+                    echo $GIT_COMMIT
+                    echo $GIT_COMMITTER_NAME
+                    echo $GIT_AUTHOR_NAME
+                    echo $GIT_COMMITTER_EMAIL
+                    echo $GIT_AUTHOR_EMAIL
+                    echo $GIT_URL
+                    echo $GIT_URL_N
+                    echo $GIT_BRANCH
+                    echo $GIT_LOCAL_BRANCH
+                    echo $GIT_PREVIOUS_COMMIT
+                    echo $GIT_PREVIOUS_SUCCESSFUL_COMMIT
+                    echo currentBuild
+                    echo $currentBuild
+                    echo "2 !!!!!!!"
+
+                    #git init
+                    git fetch --no-tags $clone_url +refs/heads/*:refs/remotes/origin/* --depth=200
+                    git checkout origin/master
+                    git config user.email 'ddarg@umd.edu'
+                    git config user.name 'dwd-umd'
+                    git merge origin/$branch_name
+                    #ls
+                    cat .jenkins-test
+
+                '''
+
+
+                sh '''
+                    cat .jenkins-temp
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                sh '''
+                    # Generate unit-test report
+                    sh _run_tests.sh                        # Add 'fail' to fail
+                '''
+                junit 'pytest_unit.xml'
+            }
+        }
+
+        stage('Merge') {
+            steps {
+                echo 'Merging...'
+
+
+                // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+                // response = httpRequest (consoleLogResponseBody: true,
+                //     contentType: 'APPLICATION_JSON',
+                //     httpMode: 'POST',
+                //     requestBody: patchOrg,
+                //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
+                //     validResponseCodes: '200')
+
+                // startMerge(ref)
+
+
+                sh '''
+                    echo "+++++++++++"
+                '''
+            }
+        }
+    }
+}
+
+
+def startMerge(ref) {
+
+    echo("xxxxx ")
+
+    def postBody = """{
+            \"head\" : \"${ref}\",
+            \"base\" : \"master\",
+            \"commit_message\": \"Shipped cool_feature!\"
+    }"""
+
+    echo("xxxxx")
+    echo(postBody)
+
+    // httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges", url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+
+
+    response = httpRequest (
+        consoleLogResponseBody: true,
+        contentType: 'APPLICATION_JSON',
+        authentication: 'github-up-id',
+        httpMode: 'POST',
+        requestBody: postBody,
+        validResponseCodes: '200:210',
+        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+    )
+
+    echo("#######")
+
+    println("Status: "+response.status)
+    println("Content: "+response.content)
+
+    echo("&&&&&&&&&")
+
+    return response
+}
