@@ -48,7 +48,7 @@ pipelineJob('Generic Job Example') {
                     }
                 '''
             )
-            sandbox()
+            // sandbox()
         }
     }
 
