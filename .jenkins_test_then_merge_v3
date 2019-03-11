@@ -57,7 +57,7 @@ pipeline {
                     git checkout origin/master
                     git config user.email 'ddarg@umd.edu'
                     git config user.name 'dwd-umd'
-                    git merge origin/$branch_name
+                    git merge origin/$GIT_BRANCH
                     #ls
                     cat .jenkins-test
 
