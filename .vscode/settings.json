@@ -8,5 +8,6 @@
     "workbench.settings.openDefaultSettings": true,
     "workbench.settings.editor": "json",
     "python.jediEnabled": false,
-    "files.trimTrailingWhitespace":true
+    "files.trimTrailingWhitespace": true,
+    "editor.detectIndentation": false
 }
