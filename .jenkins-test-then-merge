@@ -6,6 +6,7 @@ pipeline {
     GenericTrigger(
             genericVariables: [
                 [key: 'blah', value: '$'],
+                [key: 'action', value: '$.action'],
                 [key: 'ref', value: '$.pull_request.head.ref'],
                 [key: 'clone_url', value: '$.repository.clone_url']
             ],
@@ -33,6 +34,7 @@ pipeline {
 
                 sh '''
                     echo "@@@@@@@  "
+                    echo $action
                     echo $blah
                     echo $ref
                     echo "******* "
