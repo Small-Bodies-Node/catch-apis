@@ -94,7 +94,7 @@ pipeline {
                 //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
                 //     validResponseCodes: '200')
 
-                // startMerge(ref)
+                startMerge($GIT_BRANCH)
 
 
                 sh '''
