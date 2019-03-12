@@ -12,3 +12,4 @@ pytest_unit.xml
 .redundant/**
 **/*.log
 _test_generic_webhook.sh
+.DS_Store
