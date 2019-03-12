@@ -1,107 +1,105 @@
+/*
+ *  This script will be triggered by the SCM Webhook
+ *  when a github pull-request (PR) is created; this will merge the PR branch
+ *  with master, run tests, and return a status to github enabling the merge
+ *  remotely
+ */
+
 
 pipeline {
 
     agent any
-    triggers {
-    GenericTrigger(
-            genericVariables: [
-                [key: 'blah', value: '$'],
-                [key: 'action', value: '$.action'],
-                [key: 'ref', value: '$.pull_request.head.ref'],
-                [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
-            ],
-
-            // causeString: 'Triggered on $blah',
-
-            token: 'abc123',
-
-            printContributedVariables: true,
-            printPostContent: true,
-
-            silentResponse: false,
-
-            // regexpFilterText: '$ref',
-            // regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
-        )
-    }
 
     stages {
         stage('Build') {
             steps {
                 echo 'Building...'
+
+                // Printout the env vars made available by the github plugin
+                sh '''
+                    echo "@@@@@@@@@"
+                    echo 'Git Branch: '$GIT_BRANCH
+                    echo 'Git Commit: '$GIT_COMMIT
+                    echo 'Git Commiter Name: '$GIT_COMMITTER_NAME
+                    echo 'Git Author Name: '$GIT_AUTHOR_NAME
+                    echo 'Git Commiter Email: '$GIT_COMMITTER_EMAIL
+                    echo 'Git Author Email: '$GIT_AUTHOR_EMAIL
+                    echo 'Git URL: '$GIT_URL
+                    echo 'Git URL N: '$GIT_URL_N
+                    echo 'Git Branch: '$GIT_BRANCH
+                    echo 'Git Local Branch: '$GIT_LOCAL_BRANCH
+                    echo 'Git Previous Commit: '$GIT_PREVIOUS_COMMIT
+                    echo 'Git Previous Succesful COmmit: '$GIT_PREVIOUS_SUCCESSFUL_COMMIT
+                '''
+
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 echo ">>>>>>>"
 
                 sh '''
-                    echo "@@@@@@@  "
-                    echo $action
-                    echo $blah
-                    echo $ref
-                    echo "******* "
-                    cat .jenkins-temp
+                    echo "@@@@@@@@@"
+                    echo 'Git Branch: '$GIT_BRANCH
+                    echo 'Git Commit: '$GIT_COMMIT
+                    echo 'Git Commiter Name: '$GIT_COMMITTER_NAME
+                    echo 'Git Author Name: '$GIT_AUTHOR_NAME
+                    echo 'Git Commiter Email: '$GIT_COMMITTER_EMAIL
+                    echo 'Git Author Email: '$GIT_AUTHOR_EMAIL
+                    echo 'Git URL: '$GIT_URL
+                    echo 'Git URL N: '$GIT_URL_N
+                    echo 'Git Branch: '$GIT_BRANCH
+                    echo 'Git Local Branch: '$GIT_LOCAL_BRANCH
+                    echo 'Git Previous Commit: '$GIT_PREVIOUS_COMMIT
+                    echo 'Git Previous Succesful COmmit: '$GIT_PREVIOUS_SUCCESSFUL_COMMIT
+
+                    # Merge feature branch into master
+                    git fetch --no-tags $GIT_URL +refs/heads/*:refs/remotes/origin/* --depth=200
+                    git checkout origin/master
+                    git config user.email 'ddarg@umd.edu'
+                    git config user.name 'dwd-umd'
+                    git merge origin/$GIT_BRANCH
+                    cat .jenkins-AAA
                 '''
-
-
-
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing...'
+                echo 'START TESTING ...'
                 sh '''
-                    # Generate unit-test report
-                    sh _run_tests.sh                        # Add 'fail' to fail
+                    sh _run_tests.sh                # Add argument 'fail' in order test failing
                 '''
                 junit 'pytest_unit.xml'
+                echo "... END TESTING"
             }
         }
 
+        // Trigger remote merge using the github API
+        // Not advisable unless all collaborators can merge unsupervised
         stage('Merge') {
             steps {
-                echo 'Merging...'
-
-
-                // def response = httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
-
-                // response = httpRequest (consoleLogResponseBody: true,
-                //     contentType: 'APPLICATION_JSON',
-                //     httpMode: 'POST',
-                //     requestBody: patchOrg,
-                //     url: "https://api.github.com/repos/dwd-umd/catch-apis/merges",
-                //     validResponseCodes: '200')
-
-                startMerge(ref)
-
-
-                sh '''
-                    echo "+++++++++++"
-                '''
+                echo 'START REMOTE MERGE ...'
+                startMerge(env.GIT_BRANCH)
+                echo '... END REMOTE MERGE'
             }
         }
     }
 }
 
-
-def startMerge(ref) {
-
-    echo("xxxxx ")
+// Use Github API to merge branches remotely; see: https://developer.github.com/v3/repos/merging/
+def startMerge(feature_branch) {
 
     def postBody = """{
-            \"head\" : \"${ref}\",
+            \"head\" : \"${feature_branch}\",
             \"base\" : \"master\",
-            \"commit_message\": \"Shipped cool_feature!\"
+            \"commit_message\": \"Shipped the cool features at on the ${feature_branch} branch!!!\"
     }"""
 
-    echo("xxxxx")
+    echo("POST BODY: ")
     echo(postBody)
 
-    // httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: httpRequest authentication: 'github-up-id', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'PATCH', requestBody: patchOrg, url: "https://api.github.com/repos/dwd-umd/catch-apis/merges", url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
-
-
+    // http plugin call:
     response = httpRequest (
         consoleLogResponseBody: true,
         contentType: 'APPLICATION_JSON',
-        authentication: 'github-up-id',
+        authentication: 'github-up-id', // Defined in Jenkins > Credentials
         httpMode: 'POST',
         requestBody: postBody,
         validResponseCodes: '200:210',
@@ -109,11 +107,9 @@ def startMerge(ref) {
     )
 
     echo("#######")
-
     println("Status: "+response.status)
     println("Content: "+response.content)
-
-    echo("&&&&&&&&&")
+    echo("#######")
 
     return response
 }

@@ -1,63 +1,68 @@
+/*
+ *  This script will be triggered by the Generic Webhook Trigger Plugin
+ *  when a github pull-request is closed and we want to automatically
+ *  update and restart the production API on Oort
+ */
 
 pipeline {
 
     agent any
 
     triggers {
-    GenericTrigger(
+        GenericTrigger(
             genericVariables: [
-                [key: 'blah', value: '$'],
-                [key: 'action', value: '$.action', regexpFilter: 'closed'],
-                [key: 'ref', value: '$.pull_request.head.ref'],
-                [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
+                [key: 'action', value: '$.action', regexpFilter: 'closed'], //Only run this build when the action field has value 'closed'
+                [key: 'everything', value: '$']
+                // [key: 'ref', value: '$.pull_request.head.ref'],
+                // [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
             ],
 
-            // causeString: 'Triggered on $blah',
+            // The token is required both in this script AND in the Jenkins pipeline GUI
+            token: $GENERIC_WEBHOOK_TOKEN,  //Defined as global var
 
-            token: 'abc123',
-
+            causeString: 'Triggered on $action equalling "closed"',
             printContributedVariables: true,
-            printPostContent: true,
-
+            printPostContent: !true,
             silentResponse: false,
-
-            regexpFilterText: '$action',
-            regexpFilterExpression: 'closed'
+            regexpFilterText: '',
+            regexpFilterExpression: ''
         )
     }
 
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
+                echo 'START BUILD ...'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
-                echo ">>>>>>>"
+                echo "... END BUILD"
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing...'
+                echo 'START TESTING ...'
                 sh '''
-                    # Generate unit-test report
-                    sh _run_tests.sh                        # Add 'fail' to fail
+                    sh _run_tests.sh                # Add argument 'fail' in order test failing
                 '''
                 junit 'pytest_unit.xml'
+                echo "... END TESTING"
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
+                echo "START DEPLOYING ..."
                 sh '''
-                    cd $CATCH_APIS_PATH                     # Set path as e.g. global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
-                    git pull                                #
-                    . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
+                    cd $CATCH_APIS_PATH     # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                    git pull
+                    . $CATCH_APIS_PATH/_initial_setup.sh jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
                     JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
 
-                    touch "hello-`date +%Y-%m-%d`.txt"
+                    #touch "hello-`date +%Y-%m-%d`.txt"
+                    touch "hello-`date`.txt"
 
                     curl localhost:5001/catch/test
+                    echo "... END DEPLOYING"
                 '''
             }
         }
