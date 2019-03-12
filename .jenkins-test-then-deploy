@@ -3,6 +3,29 @@ pipeline {
 
     agent any
 
+    triggers {
+    GenericTrigger(
+            genericVariables: [
+                [key: 'blah', value: '$'],
+                [key: 'action', value: '$.action'],
+                [key: 'ref', value: '$.pull_request.head.ref'],
+                [key: 'clone_url', value: '$.pull_request.head.repo.clone_url']
+            ],
+
+            // causeString: 'Triggered on $blah',
+
+            token: 'abc123',
+
+            printContributedVariables: true,
+            printPostContent: true,
+
+            silentResponse: false,
+
+            regexpFilterText: '$action',
+            regexpFilterExpression: 'closed'
+        )
+    }
+
     stages {
         stage('Build') {
             steps {
