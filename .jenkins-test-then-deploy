@@ -53,7 +53,7 @@ pipeline {
                     . ./_initial_setup.sh jenkins           # Note: './' is required in jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
-                    #JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
+                    JENKINS_NODE_COOKIE=dontKillMe sh ./_start_prod_api.sh
 
                     touch "hello-`date +%Y-%m-%d`.txt"
 
