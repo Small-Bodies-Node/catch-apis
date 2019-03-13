@@ -18,7 +18,7 @@ pipeline {
             ],
 
             // The token is required both in this script AND in the Jenkins pipeline GUI
-            token: $GENERIC_WEBHOOK_TOKEN,  //Defined as global var
+            token: env.GENERIC_WEBHOOK_TOKEN,  //Defined as global var
 
             causeString: 'Triggered on $action equalling "closed"',
             printContributedVariables: true,

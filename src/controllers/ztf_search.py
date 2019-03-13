@@ -14,7 +14,7 @@ from services import DATA_PROVIDER
 API = FRP.Namespace(
     name='ZTF Fetching',
     path="/ztf",
-    description='!!! Demo route for treating rows within ZTF table as query-able entities'
+    description='!!!! Demo route for treating rows within ZTF table as query-able entities'
 )
 
 logger: logging.Logger = logging.getLogger(__name__)
