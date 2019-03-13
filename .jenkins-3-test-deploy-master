@@ -12,10 +12,11 @@ pipeline {
     triggers {
         GenericTrigger(
             genericVariables: [
-                [key: 'ref', value: '$.ref', regexpFilter: 'refs/heads/master'],
+                // [key: 'ref', value: '$.ref', regexpFilter: 'refs/heads/master']
+                [key: 'ref', value: '$.ref', regexpFilter: 'XXX']
             ],
 
-            // The token is required both in this script AND in the Jenkins pipeline GUI
+            // The token is required both in this script AND in the Jenkins pipeline  GUI
             token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_MASTER,  //Defined as global var
 
             causeString: 'Triggered on $ref equalling "refs/heads/master"',
