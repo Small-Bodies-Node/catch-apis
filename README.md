@@ -6,24 +6,34 @@
 
 To develop this flask API locally on a linux-like machine:
 
-1. Copy `.env-template` to `.env` and supply labels/credentials. It's recommended that you choose a local installation of python3 (viz. `which -a python3`) that is not supplied by anaconda, as that might lead to virtual-env mix ups.
+1. Copy `.env-template` to `.env` and supply labels/credentials. You'll need to specify a `python version` and a `virtualenv`. (If you're using anaconda then you'll probably have to use the version of virtualenv that you can install using the conda package manager).
 
 2. Run `source _initial_setup.sh` in order to:
 
-    1. Create a virtual environment 'venv' if it doesn't already exist
-    2. Activate venv
+    1. Create a virtual environment '.venv' if it doesn't already exist
+    2. Activate .venv
     3. Update pip
     4. Install project dependencies
 
-3. Run `sh _start_dev_api.sh` to start the flask api locally in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes. (You'll need to install node and nodemon; if you prefer then you can just call `python src/app_entry.py` directly and restart it whenever you make changes in development.)
+3. Run `sh _start_dev_api.sh` to start the flask api directly in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes as you develop. (You'll thus need to have node and nodemon installed; if you prefer then you can just call `python3 -m src/app_entry.py` directly and restart it whenever you make changes in development.)
 
-4. To test the routes, there is a crude `_test_routes.sh` script that prints out the reult of making local http requests to the defined routes. This will be augmented/replaced with proper end-to-end tests soon.
+4. If in the course of your development you add new package dependencies, don't forget to 'freeze' your changes by running `sh _freeze_requirements.sh` while in the `.venv`, and commit those changes.
 
-5. If in the course of your development you add new package dependencies, don't forget to 'freeze' your changes by running `sh _freeze_requirements.sh` while in the venv, and commit those changes.
+5. To test the routes, there is a crude `_test_routes.sh` script that prints out the result of making local http requests to the defined routes. This will be augmented/replaced with proper end-to-end tests soon.
 
-### DEPLOY TO PRODUCTION
+6. Go to `localhost:5001/catch/docs` to see the swagger documentation for the API
 
-At the moment we're just cloning and pulling to our remote linux machine; soon we'll set up CI. To test locally script for starting up the full remote API, use `sh _start_prod_api.sh`.
+### RUNNING IN PRODUCTION
+
+The production version of the API uses gunicorn to start the workers that serve content according to the python-flask configurations. This is controlled by the script `_catch_production_apis.sh`, which one of the following arguments: `start, stop, restart, status`.
+
+### GIT WORKFLOW
+
+-   Commit often with super clear messages
+-   Make sure that your master branch is synced with your local master branch
+-   Use `git fetch` to update your local tracking copy of the remote master branch (locally called `origin/master`) and merge it into your local master using `git merge origin/master`
+-   Always create feature branches from your freshly updated master branch; commit your changes frequently, and push them to make sure work isn't lost. I usually just use `git push origin HEAD` when working on a feature branch
+-   When you're ready to merge your branch, go to github and create a pull request for your new branch; this will trigger tests on Jenkins; if these pass then you'll be able to merge those changes; when a merge is activated on github it will trigger an update to the codebase on the production server and will automatically restart gunicorn without downtime
 
 ## CODEBASE CONVENTIONS
 
@@ -32,29 +42,24 @@ The following tools/conventions are used to promote codebase quality amidst mult
 ### File Naming
 
 -   Scripts for working with this code base always begin '\_'.
--   All application source code is placed in the `SRC` dir
+-   All application source code is placed in the `src` dir
 -   Configuration files are to be saved in the root dir
--   Ad hoc instruction files are to be labelled README.md, and can be placed in any dir
+-   Ad-hoc instruction files are to be labelled README.md, and can be placed in any dir
 
 ### Tooling
 
 -   mypy (with vscode integration)
     -   Please add python typings to ALL aspects of the code base (all classes, functions, etc.)
--   [Black](https://www.mattlayman.com/blog/2018/python-code-black/) pre-commit hooks auto-formatting (TBD)
 
 ## GENERATING SQLALCHEMY-ORM MODELS
 
 This only needs to be done when the DB schema gets changed. Run `_generate_models.sh` to generate an output of the latest DB schema translated into sqlalchemy-ORM syntax in `generated-models/gen-models.txt`, then we essentially copy-paste those contents into `src/models.py`
 
-## GIT COMMITS
-
-...
-
 ## TODOs
 
-[] Add testing
-[] Set up CI
-[] Swagger docs
+[] Add BLACK auto-formatting with git hooks
+[] Set up monitoring with e.g. `https://prometheus.io`
+[] Set up development deployment
 
 ## DEVELOPMENT NOTES
 
@@ -73,5 +78,3 @@ These are misc notes where you can describe issues/decisions-taken in the course
 -- DWD: NOTE: this codebase has '/' file separators hard-coded, e.g. in logging.ini files; that, plus the bash scripts, makes this codebase inhospitable to windows machines.
 
 -- DWD: NOTE: the script `_initial_setup.sh` must be sourced (not sh-ed) because it exports env variables. To try to prevent sh-ing I added a 'trick' taken from [here](https://stackoverflow.com/a/47613477/8620332) to test if the script was sourced. That seemed to work but, beware, it causes Jenkins' builds to fail, so I added some optional logic to by-pass that test; just be sure to use 'source' in your Jenkins builds!
-
--- E5
