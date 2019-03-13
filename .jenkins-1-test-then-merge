@@ -1,8 +1,9 @@
 /*
- *  This script will be triggered by the SCM Webhook
- *  when a github pull-request (PR) is created; this will merge the PR branch
- *  with master, run tests, and return a status to github enabling the merge
- *  remotely
+ *  This script will be triggered by the SCM Webhook when a github pull-request (PR)
+ *  is created; this will merge the PR branch with master, run tests, and return a
+ *  status to github enabling the merge to take place remotely.
+ *  Job Triggered: 'jenkins-1-test-then-merge'
+ *
  */
 
 
@@ -73,13 +74,13 @@ pipeline {
 
         // Trigger remote merge using the github API
         // Not advisable unless all collaborators can merge unsupervised
-        stage('Merge') {
-            steps {
-                echo 'START REMOTE MERGE ...'
-                startMerge(env.GIT_BRANCH)
-                echo '... END REMOTE MERGE'
-            }
-        }
+        // stage('Merge') {
+        //     steps {
+        //         echo 'START REMOTE MERGE ...'
+        //         startMerge(env.GIT_BRANCH)
+        //         echo '... END REMOTE MERGE'
+        //     }
+        // }
     }
 }
 
