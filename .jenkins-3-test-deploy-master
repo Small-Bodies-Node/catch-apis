@@ -1,0 +1,68 @@
+/*
+ *  This script will be triggered by the Generic Webhook Trigger Plugin
+ *  when a github push event is detected direct to the master branch and we want
+ *  the production API on Oort to automatically update to reflect those changes
+ */
+
+pipeline {
+
+    agent any
+
+
+    triggers {
+        GenericTrigger(
+            genericVariables: [
+                [key: 'ref', value: '$.ref', regexpFilter: 'refs/heads/master'],
+            ],
+
+            // The token is required both in this script AND in the Jenkins pipeline GUI
+            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_MASTER,  //Defined as global var
+
+            causeString: 'Triggered on $ref equalling "refs/heads/master"',
+            printContributedVariables: true,
+            printPostContent: !true,
+            silentResponse: false,
+            regexpFilterText: '',
+            regexpFilterExpression: ''
+        )
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'START BUILD ...'
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                echo "... END BUILD"
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'START TESTING ...'
+                sh '''
+                    sh _run_tests.sh                # Add argument 'fail' in order test failing
+                '''
+                junit 'pytest_unit.xml'
+                echo "... END TESTING"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo "START DEPLOYING ..."
+                sh '''
+                    cd $CATCH_APIS_PATH     # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                    git pull
+                    . $CATCH_APIS_PATH/_initial_setup.sh jenkins
+
+                    # Must set this env for daemon to survive pipeline's termination
+                    JENKINS_NODE_COOKIE=dontKillMe sh ./_catch_production_apis.sh restart
+
+                    #touch "hello-`date +%Y-%m-%d`.txt"
+                    #touch "hello-`date`.txt"
+
+                    curl localhost:5001/catch/test
+                    echo "... END DEPLOYING"
+                '''
+            }
+        }
+    }
+}
