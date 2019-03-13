@@ -14,7 +14,7 @@ from services import DATA_PROVIDER
 API = FRP.Namespace(
     name="ZTF Fetching",
     path="/ztf",
-    description="Demo route for treating rows within ZTF table as query-able entities <<"
+    description="Demo route for treating rows within ZTF table as query-able entities."
 )
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -25,8 +25,8 @@ class ZTF(FRP.Resource):
     """Controller class for ZTF rows"""
 
     @API.doc('--ztf--')
-    @API.param('end', description='Optional. Paginated ending index', _in='query')
-    @API.param('start', description='Optional. Paginated starting index', _in='query')
+    @API.param('end', description='Optional. Paginated ending index.', _in='query')
+    @API.param('start', description='Optional. Paginated starting index.', _in='query')
     def get(self: 'ZTF') -> Response:
         """Returns ZTF row requests"""
 
