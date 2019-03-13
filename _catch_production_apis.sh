@@ -1,6 +1,9 @@
 #!/bin/sh
 
-### This script is used to start/stop/restart the CATCH APIs in production mode
+# ============================================================================
+# This script is used to start/stop/restart the CATCH APIs in production mode
+# ============================================================================
+
 
 # Load vars defined in .env
 eval $(cat .env | sed 's/^/export /')
