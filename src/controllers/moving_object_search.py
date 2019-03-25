@@ -5,6 +5,7 @@ Creates RestPlus namespace for MOS controllers.
 
 import typing
 import logging
+# import simplejson as json
 from flask import request
 from flask_restplus import Namespace, Resource, fields
 from werkzeug.exceptions import BadRequest
@@ -59,7 +60,7 @@ class MovingObjectSearch(Resource):
                 "objid": objid,
                 "start": start,
                 "end": end,
-                "data": mos_data,
+                "data":  mos_data,
                 "total": len(mos_data)
             }
         )

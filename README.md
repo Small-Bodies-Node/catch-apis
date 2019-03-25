@@ -84,3 +84,5 @@ These are misc notes where you can describe issues/decisions-taken in the course
 -- DWD: NOTE: there seems to be a weird edge case when using flask_restplus namescpaces whereby the description string will truncate repeated '!' symbols to a maximum of 3. This is really odd; I can't imagine why `flask_restplus` would want to do any string formatting on the description, let alone something as niche as ensuring that !!!... is limited to three chars max.
 
 -- DWD: CORS proved tricky with `flask_restplus`; haven't been able to find a way to make all routes CORS-able; basic means of CORS-ing routes have been added to `demo_routes.py`. For routes that use [flask_restplus response marshalling](https://flask-restplus.readthedocs.io/en/stable/marshalling.html), the only way I've found is to set the header in the controller's return statement (viz. see `moving_object_search.py`).
+
+-- DWD: TODO. Having difficulty getting decimals returned from the DB to be jsonified into numbers; only string casting seems to work :(

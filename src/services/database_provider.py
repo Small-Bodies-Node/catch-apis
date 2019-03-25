@@ -1,6 +1,7 @@
 from typing import Sequence, Any, Union, List, Type
 
 import sqlalchemy
+from decimal import Decimal
 from sqlalchemy.orm.session import Session
 from sqlalchemy.engine.result import ResultProxy
 
@@ -119,10 +120,14 @@ class DatabaseProvider:
                 "moonillf": row.moonillf,
                 "maglimit": row.maglimit
             }
+            # Convert items in binary row to tpython data structures
             for a in serialized_row:
-                # print(a)
-                # print(str(serialized_row[a]))
-                serialized_row[a] = str(serialized_row[a])
+                if isinstance(serialized_row[a], Decimal):
+                    serialized_row[a] = float(serialized_row[a])
+                elif isinstance(serialized_row[a], int):
+                    serialized_row[a] = int(serialized_row[a])
+                else:
+                    serialized_row[a] = str(serialized_row[a])
             all_serialized_rows.append(serialized_row)
 
         return all_serialized_rows
