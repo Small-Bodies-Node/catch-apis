@@ -27,6 +27,7 @@ class ZTF(FRP.Resource):
     @API.doc('--ztf--')
     @API.param('end', description='Optional. Paginated ending index.', _in='query')
     @API.param('start', description='Optional. Paginated starting index.', _in='query')
+    @FRP.cors.crossdomain(origin='*')
     def get(self: 'ZTF') -> Response:
         """Returns ZTF row requests"""
 

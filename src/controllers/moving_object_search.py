@@ -5,8 +5,9 @@ Creates RestPlus namespace for MOS controllers.
 
 import typing
 import logging
-from flask import request
-from flask_restplus import Namespace, Resource, fields
+from flask import request, jsonify
+from flask.wrappers import Response
+from flask_restplus import Namespace, Resource, fields, cors
 from werkzeug.exceptions import BadRequest
 from services import DATA_PROVIDER
 
@@ -29,6 +30,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 @API.route("/")
+@API.header('Access-Control-Allow-Origin', '*')
 class MovingObjectSearch(Resource):
     """Controller class for moving-object-search"""
 
@@ -36,8 +38,10 @@ class MovingObjectSearch(Resource):
     @API.param('end', description='Optional. Paginated ending index', _in='query')
     @API.param('start', description='Optional. Paginated starting index', _in='query')
     @API.param('objid', description='Required. Objid of the moving-search-object. Try 909 for working example.', _in='query')
+    @API.header('Access-Control-Allow-Origin', '*')
     @API.marshal_with(MOS_RETURN_MODEL, envelope='resource')
-    def get(self: 'MovingObjectSearch') -> typing.Tuple[typing.Dict, int]:
+    # @cors.crossdomain(origin='*')
+    def get(self: 'MovingObjectSearch') -> typing.Any:
         """Returns moving-object-search requests"""
 
         # Extract params from URL and ensure there's an objid
@@ -52,12 +56,15 @@ class MovingObjectSearch(Resource):
             objid, start, end)
 
         # Package retrieved data as a dictionary
-        res: MOS_RETURN_MODEL = {
-            "objid": objid,
-            "start": start,
-            "end": end,
-            "data": mos_data,
-            "total": len(mos_data)
-        }
+        # res: MOS_RETURN_MODEL = jsonify(
+        res: MOS_RETURN_MODEL = (
+            {
+                "objid": objid,
+                "start": start,
+                "end": end,
+                "data": mos_data,
+                "total": len(mos_data)
+            }
+        )
 
-        return res, 200
+        return res, 200, {'Access-Control-Allow-Origin': '*'}

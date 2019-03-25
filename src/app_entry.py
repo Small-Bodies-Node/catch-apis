@@ -1,5 +1,6 @@
 """Entry file into the Flask-REST API server."""
 
+import typing
 import flask
 import flask.wrappers as FLW
 from werkzeug.contrib.fixers import ProxyFix
@@ -41,7 +42,20 @@ flask_app.wsgi_app = ProxyFix(flask_app.wsgi_app)  # type: ignore
 # Opens swagger routes by default:
 flask_app.config.SWAGGER_UI_DOC_EXPANSION = 'list'  # type: ignore
 
+
+# @flask_app.after_request
+# def after_request(response: FLW.Response) -> typing.Any:
+#     '''XXX'''
+#     print(response)
+#     return response.headers.add('Access-Control-Allow-Origin', '*')
+
+
 # Start app
 if __name__ == "__main__":
     flask_app.run(port=5001)
     logger.info("<><><> STARTING APP <><><>")
+
+
+# @app.after_request
+# def after_request(response):
+#     response.headers.add('Access-Control-Allow-Origin', '*')

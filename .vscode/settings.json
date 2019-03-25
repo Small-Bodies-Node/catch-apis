@@ -9,5 +9,6 @@
     "workbench.settings.editor": "json",
     "python.jediEnabled": false,
     "files.trimTrailingWhitespace": true,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "editor.snippetSuggestions": "none"
 }
