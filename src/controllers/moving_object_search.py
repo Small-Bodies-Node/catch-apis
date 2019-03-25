@@ -5,9 +5,8 @@ Creates RestPlus namespace for MOS controllers.
 
 import typing
 import logging
-from flask import request, jsonify
-from flask.wrappers import Response
-from flask_restplus import Namespace, Resource, fields, cors
+from flask import request
+from flask_restplus import Namespace, Resource, fields
 from werkzeug.exceptions import BadRequest
 from services import DATA_PROVIDER
 
@@ -40,9 +39,8 @@ class MovingObjectSearch(Resource):
     @API.param('objid', description='Required. Objid of the moving-search-object. Try 909 for working example.', _in='query')
     @API.header('Access-Control-Allow-Origin', '*')
     @API.marshal_with(MOS_RETURN_MODEL, envelope='resource')
-    # @cors.crossdomain(origin='*')
-    def get(self: 'MovingObjectSearch') -> typing.Any:
-        """Returns moving-object-search requests"""
+    def get(self: 'MovingObjectSearch') -> typing.Tuple[typing.Dict, int, typing.Dict]:
+        '''Returns moving-object-search requests '''
 
         # Extract params from URL and ensure there's an objid
         objid: str = request.args.get('objid', 'Objid of MOS', str)
@@ -55,8 +53,7 @@ class MovingObjectSearch(Resource):
         mos_data = DATA_PROVIDER.query_moving_object_search(
             objid, start, end)
 
-        # Package retrieved data as a dictionary
-        # res: MOS_RETURN_MODEL = jsonify(
+        # Package retrieved data as a dictionary; marshal_with will turn this into response
         res: MOS_RETURN_MODEL = (
             {
                 "objid": objid,
@@ -66,5 +63,4 @@ class MovingObjectSearch(Resource):
                 "total": len(mos_data)
             }
         )
-
         return res, 200, {'Access-Control-Allow-Origin': '*'}

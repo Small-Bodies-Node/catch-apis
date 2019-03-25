@@ -21,6 +21,7 @@ class TestRoutes(FRP.Resource):
     """Controller class for test-routes"""
 
     @API.doc('--test--')
+    @FRP.cors.crossdomain(origin='*')
     def get(self: 'TestRoutes') -> FLW.Response:
         """Returns trivial json object"""
 
@@ -38,6 +39,7 @@ class TestRoutes(FRP.Resource):
 
     @API.doc('--test--')
     @API.param('example', description='Place a string here as an example of a POST request', _in='body')
+    @FRP.cors.crossdomain(origin='*')
     def post(self: 'TestRoutes') -> FLW.Response:
         """Returns trivial json object"""
 
