@@ -85,4 +85,4 @@ These are misc notes where you can describe issues/decisions-taken in the course
 
 -- DWD: CORS proved tricky with `flask_restplus`; haven't been able to find a way to make all routes CORS-able; basic means of CORS-ing routes have been added to `demo_routes.py`. For routes that use [flask_restplus response marshalling](https://flask-restplus.readthedocs.io/en/stable/marshalling.html), the only way I've found is to set the header in the controller's return statement (viz. see `moving_object_search.py`).
 
--- DWD: TODO. Having difficulty getting decimals returned from the DB to be jsonified into numbers; only string casting seems to work :(
+-- DWD: Started getting error from API: "An unhandled exception occurred. Error Message: (sqlalchemy.exc.InvalidRequestError) Can't reconnect until invalid transaction is rolled back". According to this [article](https://mofanim.wordpress.com/2013/01/02/sqlalchemy-mysql-has-gone-away/), it probably has to do with session timeouts perhaps associated with the app's low traffic while in development.
