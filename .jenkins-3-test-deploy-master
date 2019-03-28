@@ -13,7 +13,9 @@ pipeline {
         GenericTrigger(
             genericVariables: [
                 // [key: 'ref', value: '$.ref', regexpFilter: 'refs/heads/master']
-                [key: 'ref', value: '$.ref', regexpFilter: 'XXX']
+                // [key: 'ref', value: '$.ref', regexpFilter: 'XXX']
+                [key: 'ref', value: '$.ref']
+
             ],
 
             // The token is required both in this script AND in the Jenkins pipeline  GUI
@@ -23,8 +25,8 @@ pipeline {
             printContributedVariables: true,
             printPostContent: !true,
             silentResponse: false,
-            regexpFilterText: '',
-            regexpFilterExpression: ''
+            regexpFilterText: '$ref',
+            regexpFilterExpression: 'refs/heads/master'
         )
     }
 

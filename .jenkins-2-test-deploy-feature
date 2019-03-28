@@ -11,8 +11,9 @@ pipeline {
     triggers {
         GenericTrigger(
             genericVariables: [
-                [key: 'action', value: '$.action', regexpFilter: 'closed'], //Only run this build when the action field has value 'closed'
-                [key: 'everything', value: '$']
+                // [key: 'action', value: '$.action', regexpFilter: 'closed'], //Only run this build when the action field has value 'closed'
+                // [key: 'everything', value: '$']
+                [key: 'action', value: '$.action'],
             ],
 
             // The token is required both in this script AND in the Jenkins pipeline GUI
@@ -22,8 +23,8 @@ pipeline {
             printContributedVariables: true,
             printPostContent: !true,
             silentResponse: false,
-            regexpFilterText: '',
-            regexpFilterExpression: ''
+            regexpFilterText: '$action',
+            regexpFilterExpression: 'closed'
         )
     }
 
