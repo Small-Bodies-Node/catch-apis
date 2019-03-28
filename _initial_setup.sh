@@ -4,22 +4,20 @@
 ### We only want the main function to be called if this script is sourced (not sh-ed)
 ### This script uses a 'trick' to tell if it's being sourced or sh-ed
 
-main()
-{
-    printf "\n"
-    printf "\n"
-    printf "======================================================"
-    printf "\n"
-    printf "\n"
-    printf "Initializing Environment"
-    printf "\n"
-    printf "\n"
-    printf "(Make sure you're SOURCE-ING not SH-ing this script!)"
-    printf "\n"
-    printf "\n"
-    printf "======================================================"
-    printf "\n"
-    printf "\n"
+main() {
+    clear
+
+    echo "
+    =======================================================
+
+    Initializing Python Virtual Environment
+
+    (Make sure you're SOURCE-ING not SH-ing this script!)
+
+    =======================================================
+    "
+
+    sleep 1
 
     ### 0. Get rid of cached versions
     rm -rf .mypy_cache
@@ -50,9 +48,6 @@ main()
     export MYPYPATH=$PWD/stubs
 }
 
-
-
-
 if [ $1 = 'jenkins' ]; then
     ## Jenkins will error if you use the trick in the else clause
     echo "Running from jenkins"
@@ -62,6 +57,3 @@ else
     unset BASH_SOURCE 2>/dev/null
     test ".$0" == ".$BASH_SOURCE" && echo "You must <SOURCE> (not SH) this script!!!" || main "$@"
 fi
-
-
-
