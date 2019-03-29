@@ -15,7 +15,7 @@ flask_app.url_map.strict_slashes = False
 @flask_app.route('/')
 def bare_root() -> FLW.Response:
     """Message for bare-api route"""
-    res: FLW.Response = flask.jsonify    (
+    res: FLW.Response = flask.jsonify(
         {
             "message":
             """
