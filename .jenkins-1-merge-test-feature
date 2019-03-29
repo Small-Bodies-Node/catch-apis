@@ -1,0 +1,75 @@
+/*
+ *  This script will be triggered by the SCM Webhook when a github pull-request (PR)
+ *  is created; this will merge the PR branch with master, run tests, and return a
+ *  status to github enabling the merge to take place remotely.
+ *  Job Triggered: 'jenkins-1-test-then-merge'
+ *
+ */
+
+
+pipeline {
+
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                sh '''
+                    cat .jenkins-AAA
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'START TESTING ...'
+                sh '''
+                    sh _run_tests.sh                # Add argument 'fail' in order test failing
+                '''
+                junit 'pytest_unit.xml'
+                echo "... END TESTING"
+            }
+        }
+
+        // Trigger remote merge using the github API
+        // Not advisable unless all collaborators can merge unsupervised
+        // stage('Merge') {
+        //     steps {
+        //         echo 'START REMOTE MERGE ...'
+        //         startMerge(env.GIT_BRANCH)
+        //         echo '... END REMOTE MERGE'
+        //     }
+        // }
+    }
+}
+
+// Use Github API to merge branches remotely; see: https://developer.github.com/v3/repos/merging/
+def startMerge(feature_branch) {
+
+    def postBody = """{
+            \"head\" : \"${feature_branch}\",
+            \"base\" : \"master\",
+            \"commit_message\": \"Shipped the cool features at on the ${feature_branch} branch!!!\"
+    }"""
+
+    echo("POST BODY: ")
+    echo(postBody)
+
+    // http plugin call:
+    response = httpRequest (
+        consoleLogResponseBody: true,
+        contentType: 'APPLICATION_JSON',
+        authentication: 'github-up-id', // Defined in Jenkins > Credentials
+        httpMode: 'POST',
+        requestBody: postBody,
+        validResponseCodes: '200:210',
+        url: "https://api.github.com/repos/dwd-umd/catch-apis/merges"
+    )
+
+    echo("#######")
+    println("Status: "+response.status)
+    println("Content: "+response.content)
+    echo("#######")
+
+    return response
+}

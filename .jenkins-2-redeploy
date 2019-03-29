@@ -1,30 +1,33 @@
 /*
  *  This script will be triggered by the Generic Webhook Trigger Plugin
- *  when a github pull-request is closed and we want to automatically
- *  update and restart the production API on Oort
+ *  when a github push event is detected direct to the master branch and we want
+ *  the production API on Oort to automatically update to reflect those changes
  */
 
 pipeline {
 
     agent any
 
+
     triggers {
         GenericTrigger(
             genericVariables: [
-                // [key: 'action', value: '$.action', regexpFilter: 'closed'], //Only run this build when the action field has value 'closed'
-                // [key: 'everything', value: '$']
-                [key: 'action', value: '$.action'],
+                // [key: 'ref', value: '$.ref', regexpFilter: 'refs/heads/master']
+                // [key: 'ref', value: '$.ref', regexpFilter: 'XXX']
+                [key: 'ref', value: '$.ref'],
+                [key: 'everything', value: '$']
+
             ],
 
-            // The token is required both in this script AND in the Jenkins pipeline GUI
-            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_FEATURE,  //Defined as global var
+            // The token is required both in this script AND in the Jenkins pipeline  GUI
+            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_MASTER,  //Defined as global var
 
-            causeString: 'Triggered on $action equalling "closed"',
+            causeString: 'Triggered on $ref equalling "refs/heads/master"',
             printContributedVariables: true,
             printPostContent: !true,
             silentResponse: false,
-            regexpFilterText: '$action',
-            regexpFilterExpression: 'closed'
+            regexpFilterText: '$ref',
+            regexpFilterExpression: 'refs/heads/master'
         )
     }
 
@@ -32,7 +35,10 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'START BUILD ...'
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                sh '''
+                    cat .jenkins-AAA
+                '''
                 echo "... END BUILD"
             }
         }
