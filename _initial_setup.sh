@@ -45,7 +45,8 @@ main() {
     ### 6.1. VSCode: Need to include in PYTHONPATH any dirs where you want VSCode to look for modules
     export PYTHONPATH=$PWD/src
 
-    export MYPYPATH=$PWD/stubs
+    ### 7. Link git pre-commit-hook script
+    ln -fs $PWD/_precommit_hook.sh $PWD/.git/hooks/pre-commit
 }
 
 if [ $1 = 'jenkins' ]; then
