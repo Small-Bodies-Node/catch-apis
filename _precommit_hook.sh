@@ -8,10 +8,6 @@ echo '''
 
 '''
 
-echo $#
-echo $1
-echo $2
-echo $3
-echo $4
-
+# Auto-format all python scripts
 .venv/bin/autopep8 -ir src/**
+.venv/bin/autopep8 -ir tests/**
