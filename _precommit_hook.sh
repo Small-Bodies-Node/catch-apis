@@ -8,4 +8,4 @@ echo '''
 
 '''
 
-.venv/bin/autopep8 -dr src/**
+.venv/bin/autopep8 -ir src/**
