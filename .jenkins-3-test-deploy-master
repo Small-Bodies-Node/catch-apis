@@ -14,7 +14,8 @@ pipeline {
             genericVariables: [
                 // [key: 'ref', value: '$.ref', regexpFilter: 'refs/heads/master']
                 // [key: 'ref', value: '$.ref', regexpFilter: 'XXX']
-                [key: 'ref', value: '$.ref']
+                [key: 'ref', value: '$.ref'],
+                [key: 'everything', value: '$']
 
             ],
 
