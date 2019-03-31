@@ -24,7 +24,7 @@ DB_DATABASE: Optional[str] = os.getenv("DB_DATABASE")
 
 # Build URI and instantiate data-provider service
 db_engine_URI: str = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
-DATA_PROVIDER = DatabaseProvider(db_engine_URI)
+DATA_PROVIDER: DatabaseProvider = DatabaseProvider(db_engine_URI)
 
 print("IMPORTING FROM SERVICES __INIT__")
 

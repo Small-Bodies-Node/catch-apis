@@ -11,6 +11,8 @@ from flask_restplus import Namespace, Resource, fields
 from werkzeug.exceptions import BadRequest
 from services import DATA_PROVIDER
 
+from services.query_moving_object_search import query_moving_object_search
+
 API = Namespace(
     name='Moving Object Search (MOS)',
     path="/moving-object-search",
@@ -51,8 +53,8 @@ class MovingObjectSearch(Resource):
             raise BadRequest('An objid must be provided!!!')
 
         # Pass params to data-provider-service
-        mos_data = DATA_PROVIDER.query_moving_object_search(
-            objid, start, end)
+        # mos_data = DATA_PROVIDER.query_moving_object_search(objid, start, end)
+        mos_data = query_moving_object_search(objid, start, end)
 
         # Package retrieved data as a dictionary; marshal_with will turn this into response
         res: MOS_RETURN_MODEL = (
