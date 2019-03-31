@@ -9,7 +9,8 @@ import logging
 import flask_restplus as FRP
 from flask import request, jsonify
 from flask.wrappers import Response
-from services import DATA_PROVIDER
+from services.query_all_ztf_data import query_all_ztf_data
+
 
 API = FRP.Namespace(
     name="ZTF Fetching",
@@ -36,7 +37,7 @@ class ZTF(FRP.Resource):
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
-        all_ztf_data = DATA_PROVIDER.query_all_ztf_data(start, end)
+        all_ztf_data = query_all_ztf_data(start, end)
 
         # Package retrieved data as response json
         res: Response = jsonify(

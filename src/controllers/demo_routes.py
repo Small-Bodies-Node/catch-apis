@@ -37,16 +37,11 @@ class DemoRoutes(FRP.Resource):
         # Return a trivial json
         res: FLW.Response = jsonify(
             {
-                "message":
-                """
-                        This is the demo GET route which doesn't do much.
-                    """
+                "message": "This is the demo GET route which doesn't do much."
             }
         )
         res.status_code = 200
-        return render_template('temp.html', title='Home')
-        # return render_template
-        # return res
+        return res
 
     @API.doc('--demo--')
     @API.param('example', description='Place a string here as an example of a POST request', _in='body')
