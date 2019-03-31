@@ -2,23 +2,15 @@
 
 ### This is a script to simply call some routes and print out result:
 
-printblock()
-{
-    printf "\n"
-    printf "\n"
-    printf "============================"
-    printf "\n"
-    printf "\n"
+printblock() {
+    echo """
+
+        ============================
+
+    """
 }
 
-eval $(cat .env | sed 's/^/export /')       ### Load vars defined in .env
-
-printblock
-
-## 1. GET ROOT
-URL=${TEST_URL_BASE}'/'
-echo $URL
-curl -k $URL
+eval $(cat .env | sed 's/^/export /') ### Load vars defined in .env
 
 printblock
 
@@ -30,14 +22,14 @@ curl -k $URL
 printblock
 
 ### 3. POST test-post
-URL=${TEST_URL_BASE}'/test'
+URL=${TEST_URL_BASE}'/demo'
 echo $URL
 curl -k $URL -H "Content-Type:application/json"
 
 printblock
 
 ## 3. POST test-post
-URL=${TEST_URL_BASE}'/test'
+URL=${TEST_URL_BASE}'/demo'
 echo $URL
 curl -k $URL -X POST -H "Content-Type:application/json" -d "{\"username\": \"UMD\",\"password\": \"TheDude\"}"
 

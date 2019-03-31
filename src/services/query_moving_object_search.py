@@ -1,8 +1,12 @@
+'''
+Function to query SQL DB for moving-object-search
+'''
+
 
 from typing import List, Any
 from decimal import Decimal
 from models.models import Ztf, Found
-from . import DATA_PROVIDER
+from .database_provider import DATA_PROVIDER_SESSION
 
 
 def query_moving_object_search(
@@ -10,8 +14,8 @@ def query_moving_object_search(
     start_row: int = 0,
     end_row: int = 10
 ) -> Any:
-    """ Join query for moving object search"""
-    all_moving_object_search_data: List[(Any)] = DATA_PROVIDER.session.query(
+    ''' Join query for moving object search'''
+    all_moving_object_search_data: List[(Any)] = DATA_PROVIDER_SESSION.query(
         Found.obsjd,
         Found.ra,
         Found.dec,
