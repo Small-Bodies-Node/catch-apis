@@ -7,7 +7,7 @@ import logging
 import typing
 import json
 
-from flask import jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request
 import flask.wrappers as FLW
 import flask_restplus as FRP
 
