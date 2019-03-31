@@ -1,53 +1,58 @@
 """
-Test Routes Module
+Demo Routes Module
+Just a bunch of simple routes that you can reference/copy to start developing new routes
 """
 
 import logging
-from flask import request, jsonify
+import typing
+
+from flask import jsonify, render_template, request
 import flask.wrappers as FLW
 import flask_restplus as FRP
 
 API = FRP.Namespace(
-    name='Test',
-    path="/test",
-    description='Root route; used for testing the API is up and running, etc.'
+    name='Demo',
+    path="/demo",
+    description='Root route; used for demo-ing the API is up and running, etc.'
 )
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
 @API.route("/")
-class TestRoutes(FRP.Resource):
-    """Controller class for test-routes"""
+class DemoRoutes(FRP.Resource):
+    """Controller class for demo-routes"""
 
-    @API.doc('--test--')
+    @API.doc('--demo--')
     @FRP.cors.crossdomain(origin='*')
-    def get(self: 'TestRoutes') -> FLW.Response:
-        """Returns trivial json object"""
+    def get(self: 'DemoRoutes') -> typing.Any:
+        '''Returns trivial json object'''
 
         # Return a trivial json
         res: FLW.Response = jsonify(
             {
                 "message":
                 """
-                    This is the test GET route which doesn't do much.
-                """
+                        This is the demo GET route which doesn't do much.
+                    """
             }
         )
         res.status_code = 200
-        return res
+        return render_template('temp.html', title='Home')
+        # return render_template
+        # return res
 
-    @API.doc('--test--')
+    @API.doc('--demo--')
     @API.param('example', description='Place a string here as an example of a POST request', _in='body')
     @FRP.cors.crossdomain(origin='*')
-    def post(self: 'TestRoutes') -> FLW.Response:
+    def post(self: 'DemoRoutes') -> FLW.Response:
         """Returns trivial json object"""
 
-        # Test logging
-        logger.debug('"TEST POST DEBUG"')
-        logger.info('"TEST POST INFO"')
-        logger.warning('"TEST POST WARNING"')
-        logger.critical('"TEST POST CRITICAL"')
+        # Demo logging
+        logger.debug('"DEMO POST DEBUG"')
+        logger.info('"DEMO POST INFO"')
+        logger.warning('"DEMO POST WARNING"')
+        logger.critical('"DEMO POST CRITICAL"')
 
         # Extract data from POST body
         data = request.json
@@ -64,3 +69,16 @@ class TestRoutes(FRP.Resource):
         )
         res.status_code = 200
         return res
+
+
+@API.route("/template")
+class DemoTemplates(FRP.Resource):
+    '''Controller class for demo-routes with templates'''
+
+    @API.doc('--template--')
+    @FRP.cors.crossdomain(origin='*')
+    def get(self: 'DemoTemplates') -> typing.Any:
+        '''Returns simple template'''
+
+        # Return a trivial template
+        return render_template('demo-template.html', title='Demo Template'), 200

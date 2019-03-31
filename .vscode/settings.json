@@ -10,5 +10,6 @@
     "python.jediEnabled": false,
     "files.trimTrailingWhitespace": true,
     "editor.detectIndentation": false,
-    "editor.snippetSuggestions": "none"
+    "editor.snippetSuggestions": "none",
+    "python.analysis.downloadChannel": "beta"
 }
