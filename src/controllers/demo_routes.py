@@ -5,10 +5,16 @@ Just a bunch of simple routes that you can reference/copy to start developing ne
 
 import logging
 import typing
+import json
 
 from flask import jsonify, render_template, request
 import flask.wrappers as FLW
 import flask_restplus as FRP
+
+import plotly
+import plotly.graph_objs as go
+import numpy as np
+
 
 API = FRP.Namespace(
     name='Demo',
@@ -82,3 +88,27 @@ class DemoTemplates(FRP.Resource):
 
         # Return a trivial template
         return render_template('demo-template.html', title='Demo Template'), 200
+
+
+@API.route("/plotly")
+class DemoPlotly(FRP.Resource):
+    '''Controller class for demo-scatter plot using plotly'''
+
+    @API.doc('--scatter--')
+    @FRP.cors.crossdomain(origin='*')
+    def get(self: 'DemoTemplates') -> typing.Any:
+        '''Returns simple scatter plot'''
+        count = 500
+        xScale = np.linspace(0, 100, count)
+        yScale = np.random.randn(count)
+
+        # Create a trace
+        trace = go.Scatter(
+            x=xScale,
+            y=yScale
+        )
+
+        data = [trace]
+        graphJSON: str = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+        return render_template('plotly-scatter-example.html', graphJSON=graphJSON), 200
