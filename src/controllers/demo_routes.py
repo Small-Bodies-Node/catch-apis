@@ -11,8 +11,8 @@ from flask import Flask, jsonify, render_template, request
 import flask.wrappers as FLW
 import flask_restplus as FRP
 
-import plotly
-import plotly.graph_objs as go
+# import plotly
+# import plotly.graph_objs as go
 # import numpy as np
 
 
@@ -77,17 +77,17 @@ class DemoRoutes(FRP.Resource):
         return res
 
 
-@API.route("/template")
-class DemoTemplates(FRP.Resource):
-    '''Controller class for demo-routes with templates'''
+# @API.route("/template")
+# class DemoTemplates(FRP.Resource):
+#     '''Controller class for demo-routes with templates'''
 
-    @API.doc('--template--')
-    @FRP.cors.crossdomain(origin='*')
-    def get(self: 'DemoTemplates') -> typing.Any:
-        '''Returns simple template'''
+#     @API.doc('--template--')
+#     @FRP.cors.crossdomain(origin='*')
+#     def get(self: 'DemoTemplates') -> typing.Any:
+#         '''Returns simple template'''
 
-        # Return a trivial template
-        return render_template('demo-template.html', title='Demo Template'), 200
+#         # Return a trivial template
+#         return render_template('demo-template.html', title='Demo Template'), 200
 
 
 # @API.route("/plotly")
