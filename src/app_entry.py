@@ -38,7 +38,7 @@ flask_app.register_error_handler(Exception, default_error_handler)
 # This is required to serve swagger through https; source: https://github.com/noirbizarre/flask-restplus/issues/54#issuecomment-143436291
 flask_app.wsgi_app = ProxyFix(flask_app.wsgi_app)  # type: ignore
 
-#
+# Required to trim whitespaces in templates
 flask_app.jinja_env.trim_blocks = True
 flask_app.jinja_env.lstrip_blocks = True
 
