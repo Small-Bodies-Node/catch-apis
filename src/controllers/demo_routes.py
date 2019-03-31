@@ -13,7 +13,7 @@ import flask_restplus as FRP
 
 import plotly
 import plotly.graph_objs as go
-import numpy as np
+# import numpy as np
 
 
 API = FRP.Namespace(
@@ -90,25 +90,25 @@ class DemoTemplates(FRP.Resource):
         return render_template('demo-template.html', title='Demo Template'), 200
 
 
-@API.route("/plotly")
-class DemoPlotly(FRP.Resource):
-    '''Controller class for demo-scatter plot using plotly'''
+# @API.route("/plotly")
+# class DemoPlotly(FRP.Resource):
+#     '''Controller class for demo-scatter plot using plotly'''
 
-    @API.doc('--scatter--')
-    @FRP.cors.crossdomain(origin='*')
-    def get(self: 'DemoTemplates') -> typing.Any:
-        '''Returns simple scatter plot'''
-        count = 500
-        xScale = np.linspace(0, 100, count)
-        yScale = np.random.randn(count)
+#     @API.doc('--scatter--')
+#     @FRP.cors.crossdomain(origin='*')
+#     def get(self: 'DemoTemplates') -> typing.Any:
+#         '''Returns simple scatter plot'''
+#         count = 500
+#         xScale = np.linspace(0, 100, count)
+#         yScale = np.random.randn(count)
 
-        # Create a trace
-        trace = go.Scatter(
-            x=xScale,
-            y=yScale
-        )
+#         # Create a trace
+#         trace = go.Scatter(
+#             x=xScale,
+#             y=yScale
+#         )
 
-        data = [trace]
-        graphJSON: str = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+#         data = [trace]
+#         graphJSON: str = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
-        return render_template('plotly-scatter-example.html', graphJSON=graphJSON), 200
+#         return render_template('plotly-scatter-example.html', graphJSON=graphJSON), 200
