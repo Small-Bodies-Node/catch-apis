@@ -1,11 +1,17 @@
 """Entry file into the Flask-REST API server."""
 
+import os
 import flask
 import flask.wrappers as FLW
 from werkzeug.contrib.fixers import ProxyFix
 
+import flask_monitoringdashboard as dashboard
+from dotenv import load_dotenv
 from logging_setup import logger    # Must come BEFORE controllers import
 from controllers import default_error_handler, blueprint as rest_plus_blueprint
+
+# Load .env variables
+load_dotenv(verbose=True)
 
 # Init Flask App and associate it with RestPlus controllers
 flask_app: flask.Flask = flask.Flask(__name__)
@@ -30,6 +36,12 @@ def bare_root() -> FLW.Response:
 
 # Associate flask app with flask_restplus configurations via blueprint
 flask_app.register_blueprint(rest_plus_blueprint)
+
+DASHBOARD_CONFIG = os.getenv("DASHBOARD_CONFIG")
+print("-------->>>>>>>>>>>>>"+str(DASHBOARD_CONFIG))
+dashboard.config.init_from(envvar='DASHBOARD_CONFIG')
+dashboard.bind(flask_app)
+
 
 # Required for custom error handler; see: https://stackoverflow.com/a/36575875/9730910
 flask_app.config['TRAP_HTTP_EXCEPTIONS'] = True

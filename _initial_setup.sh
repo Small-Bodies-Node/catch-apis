@@ -12,8 +12,6 @@ main() {
 
     Initializing Python Virtual Environment
 
-    (Make sure you're SOURCE-ING not SH-ing this script!)
-
     =======================================================
     "
 
@@ -24,30 +22,54 @@ main() {
     rm -rf src/__pycache__
 
     ### 1. Load vars defined in .env
-    eval $(cat .env | sed 's/^/export /')
+    if [ -f .env ]; then
+        eval $(cat .env | sed 's/^/export /')
+    else
+        echo "
+            No .env file found! Failing set up.
+            Copy and edit from '.env-template'
+        "
+        return 1
+    fi
 
-    ### 2. Check for existence of `.venv` dir
+    ### 2. Make sure there's a .config.cfg file for flask_dashboardmonitor
+    if [[ ! -f .config.cfg ]]; then
+        echo "
+            No '.config.cfg' file found! Exiting set up.
+            A template can be found here: https://flask-monitoringdashboard.readthedocs.io/en/master/configuration.html
+        "
+        return 1
+    fi
+
+    ### 3. Make sure there's a DB file for flask_dashboardmonitor
+    if [[ ! -f .dashboard.db ]]; then
+        echo "No file '.dashboard.db' found; creating now"
+        touch .dashboard.db
+    fi
+
+    ### 4. Check for existence of `.venv` dir
     if [ ! -d ./.venv ]; then
         echo "Virtual Environment Not Found -- Creating './.venv'"
-        # $VIRTUALENV --python=$PYTHON_3_5_OR_HIGHER ./.venv
         $PYTHON_3_5_OR_HIGHER -m venv .venv
     fi
 
-    ### 3. Activate VENV
+    ### 5. Activate VENV
     source ./.venv/bin/activate
 
-    ### 4. Upgrade pip
+    ### 6. Upgrade pip
     pip install --upgrade pip
 
-    ### 5. Install Requirements to VENV
+    ### 7. Install Requirements to VENV
     pip install -r requirements.txt
 
-    ### 6. Export Misc Env Vars
-    ### 6.1. VSCode: Need to include in PYTHONPATH any dirs where you want VSCode to look for modules
+    ### 8. Export Misc Env Vars
+    ### 8.1. VSCode: Need to include in PYTHONPATH any dirs where you want VSCode to look for modules
     export PYTHONPATH=$PWD/src
 
-    ### 7. Link git pre-commit-hook script
+    ### 9. Link git pre-commit-hook script
     ln -fs $PWD/_precommit_hook.sh $PWD/.git/hooks/pre-commit
+
+    echo "Done!!!"
 }
 
 if [ $1 = 'jenkins' ]; then

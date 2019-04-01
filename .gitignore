@@ -1,16 +1,19 @@
-
-
-
 .env
 .venv
 .pid.txt
 .pid-old.txt
 .mypy_cache
-**__pycache__**
 generated-models/**
-temp
 pytest_unit.xml
 .redundant/**
 **/*.log
 _test_generic_webhook.sh
+
+# Flask_MonitorDasboard
+.dashboard.db
+.config.cfg
+
+# Misc
 .DS_Store
+temp
+**__pycache__**
