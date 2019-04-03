@@ -11,11 +11,6 @@ from flask import Flask, jsonify, render_template, request
 import flask.wrappers as FLW
 import flask_restplus as FRP
 
-# import plotly
-# import plotly.graph_objs as go
-# import numpy as np
-
-
 API = FRP.Namespace(
     name='NEAT',
     path="/neat",

@@ -87,4 +87,4 @@ These are misc notes where you can describe issues/decisions-taken in the course
 
 -- DWD: Started getting error from API: "An unhandled exception occurred. Error Message: (sqlalchemy.exc.InvalidRequestError) Can't reconnect until invalid transaction is rolled back". According to this [article](https://mofanim.wordpress.com/2013/01/02/sqlalchemy-mysql-has-gone-away/), it probably has to do with session timeouts perhaps associated with the app's low traffic while in development.
 
--- DWD: implemented some simple plotly templates, but this was causing VSCode to overheat, so I've commented it out for now
+-- DWD: implemented some simple plotly templates, but this was causing VSCode to overheat and I've decided to focus on doing all plotting visualizations in the frontend, so I've now now removed all vestiges
