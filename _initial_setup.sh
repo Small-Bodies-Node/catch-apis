@@ -22,7 +22,7 @@ main() {
     rm -rf src/__pycache__
 
     ### 1. Load vars defined in .env
-    if [ -f .env ]; then
+    if [[ -f .env ]]; then
         eval $(cat .env | sed 's/^/export /')
     else
         echo "
@@ -48,7 +48,7 @@ main() {
     fi
 
     ### 4. Check for existence of `.venv` dir
-    if [ ! -d ./.venv ]; then
+    if [[ ! -d ./.venv ]]; then
         echo "Virtual Environment Not Found -- Creating './.venv'"
         $PYTHON_3_5_OR_HIGHER -m venv .venv
     fi
@@ -62,17 +62,15 @@ main() {
     ### 7. Install Requirements to VENV
     pip install -r requirements.txt
 
-    ### 8. Export Misc Env Vars
-    ### 8.1. VSCode: Need to include in PYTHONPATH any dirs where you want VSCode to look for modules
-    export PYTHONPATH=$PWD/src
-
-    ### 9. Link git pre-commit-hook script
+    ### 8. Link git pre-commit-hook script
     ln -fs $PWD/_precommit_hook.sh $PWD/.git/hooks/pre-commit
 
-    echo "Done!!!"
+    echo """
+        Set up complete. Enjoy Flask API-ing!
+    """
 }
 
-if [ $1 = 'jenkins' ]; then
+if [[ $1 == 'jenkins' ]]; then
     ## Jenkins will error if you use the trick in the else clause
     echo "Running from jenkins"
     main
