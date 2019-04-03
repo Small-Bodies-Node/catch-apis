@@ -16,6 +16,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from .demo_routes import API as ns0
 from .ztf_search import API as ns1
 from .moving_object_search import API as ns2
+from .neat import API as ns3
 
 logger: logging.Logger = logging.getLogger(__name__)
 logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
@@ -40,6 +41,7 @@ REST_PLUS_APIS = Api(
 REST_PLUS_APIS.add_namespace(ns0)
 REST_PLUS_APIS.add_namespace(ns1)
 REST_PLUS_APIS.add_namespace(ns2)
+REST_PLUS_APIS.add_namespace(ns3)
 
 # Add error handlers:
 @REST_PLUS_APIS.errorhandler
