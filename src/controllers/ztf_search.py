@@ -9,7 +9,7 @@ import logging
 import flask_restplus as FRP
 from flask import request, jsonify
 from flask.wrappers import Response
-from services.query_all_ztf_data import query_all_ztf_data
+from services.query_ztf_data import query_ztf_found_data
 
 
 API = FRP.Namespace(
@@ -21,31 +21,33 @@ API = FRP.Namespace(
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-@API.route("/")
+@API.route("/found")
 class ZTF(FRP.Resource):
-    """Controller class for ZTF rows"""
+    """Controller class for ZTF found database rows"""
 
-    @API.doc('--ztf--')
+    @API.doc('--ztf/found--')
+    @API.param('objid', description='Optional. Search for this object id.', _in='query')
     @API.param('end', description='Optional. Paginated ending index.', _in='query')
     @API.param('start', description='Optional. Paginated starting index.', _in='query')
     @FRP.cors.crossdomain(origin='*')
     def get(self: 'ZTF') -> Response:
-        """Returns ZTF row requests"""
+        """Returns ZTF found database row requests"""
 
         # Extract params from URL
+        objid: int = request.args.get('objid', 50, int)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
-        all_ztf_data = query_all_ztf_data(start, end)
+        found_ztf_data = query_ztf_found_data(start, end, objid=objid)
 
         # Package retrieved data as response json
         res: Response = jsonify(
             {
                 "start": start,
                 "end": end,
-                "data": all_ztf_data,
-                "total": len(all_ztf_data)
+                "data": found_ztf_data,
+                "total": len(found_ztf_data)
             }
         )
         res.status_code = 200
