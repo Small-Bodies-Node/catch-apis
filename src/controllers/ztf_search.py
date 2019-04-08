@@ -34,7 +34,7 @@ class ZTF(FRP.Resource):
         """Returns ZTF found database row requests"""
 
         # Extract params from URL
-        objid: int = request.args.get('objid', 50, int)
+        objid: int = request.args.get('objid', 0, int)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
 
@@ -46,6 +46,7 @@ class ZTF(FRP.Resource):
             {
                 "start": start,
                 "end": end,
+                "objid": objid,
                 "data": found_ztf_data,
                 "total": len(found_ztf_data)
             }
