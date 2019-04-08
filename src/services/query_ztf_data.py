@@ -8,7 +8,7 @@ from .database_provider import DATA_PROVIDER_SESSION
 
 def query_ztf_found_data(start_row: int = 0, end_row: int = -1, objid: int = -1) -> Any:
     '''Query DB for ZTF found data'''
-    found_ztf_data: List[Any]
+    found_ztf_data: Any
 
     found_ztf_data = (
         DATA_PROVIDER_SESSION
@@ -60,7 +60,7 @@ def query_ztf_found_data(start_row: int = 0, end_row: int = -1, objid: int = -1)
         .limit(500 if end_row == -1 else end_row - start_row)
     )
 
-    serialized_row: Dict[Any] = {}
+    serialized_row: Dict[str, Any] = {}
     all_serialized_rows: List[dict] = []
     for row in found_ztf_data:
         serialized_row = {
