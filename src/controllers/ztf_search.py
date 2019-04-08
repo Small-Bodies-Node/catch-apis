@@ -15,7 +15,7 @@ from services.query_ztf_data import query_ztf_found_data
 API = FRP.Namespace(
     name="ZTF Fetching",
     path="/ztf",
-    description="Demo route for treating rows within ZTF table as query-able entities."
+    description="Route for the ZTF survey and ZChecker results."
 )
 
 logger: logging.Logger = logging.getLogger(__name__)

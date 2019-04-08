@@ -15,6 +15,7 @@ To develop this flask API locally on a linux-like machine:
     5. `DASHBOARD_CONFIG` needs to point to a file called `.config.cfg` in your root directory; create one by copying from `.config-template.cfg` and setting variables therein accordingly.
     6. Create an empty file `.dashboard.db` in your root directory; this will be used by the flask_monitoringdashboard library to track API usage
     7. `TEST_URL_BASE` is used in the script `_demo_routes.sh`; you're unlikely to need to change this.
+	8. `ZTF_CUTOUT_BASE_URL` is a prefix used to generate URLs that serve ZTF image cutouts.
 
 2. Run `source _initial_setup.sh` in order to:
 
