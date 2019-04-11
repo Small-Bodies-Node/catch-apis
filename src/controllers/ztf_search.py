@@ -39,7 +39,8 @@ class ZTFFound(FRP.Resource):
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
-        found_ztf_data: list = qztf.query_ztf_found_data(start, end, objid=objid)
+        found_ztf_data: list = qztf.query_ztf_found_data(
+            start, end, objid=objid)
 
         # Package retrieved data as response json
         res: Response = jsonify(
