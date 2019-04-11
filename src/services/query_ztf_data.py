@@ -3,7 +3,7 @@
 import os
 from typing import Any, List, Dict
 from decimal import Decimal
-from models.models import Ztf, Found, ZtfCutout
+from models.models import Ztf, Found, ZtfCutout, ZtfNight
 from .database_provider import DATA_PROVIDER_SESSION
 
 ZTF_CUTOUT_BASE_URL: str = os.getenv('ZTF_CUTOUT_BASE_URL', default='')
@@ -95,13 +95,57 @@ def query_ztf_found_data(start_row: int = 0, end_row: int = -1, objid: int = -1)
                 "irsa_diff_url": irsa_url_template + 'scimrefdiffimg.fits.fz'
             }
             # Convert items in binary row to tpython data structures
-            for a in serialized_row:
-                if isinstance(serialized_row[a], Decimal):
-                    serialized_row[a] = float(serialized_row[a])
-                elif isinstance(serialized_row[a], int):
-                    serialized_row[a] = int(serialized_row[a])
+            for key, val in serialized_row.items():
+                if isinstance(val, Decimal):
+                    serialized_row[key] = float(val)
+                elif isinstance(val, int):
+                    serialized_row[key] = int(val)
                 else:
-                    serialized_row[a] = str(serialized_row[a])
+                    serialized_row[key] = str(val)
+            all_serialized_rows.append(serialized_row)
+
+    return all_serialized_rows
+
+
+def query_ztf_nights_data(start_row: int = 0, end_row: int = -1, nightid: int = -1,
+                          date: str = '') -> Any:
+    '''Query DB for ZTF nights'''
+    ztf_nights_data: Any
+
+    with DATA_PROVIDER_SESSION() as session:
+        ztf_nights_data = session.query(ZtfNight)
+
+        if nightid > 0:
+            ztf_nights_data = ztf_nights_data.filter(
+                ZtfNight.nightid == nightid)
+        elif date != '':
+            ztf_nights_data = ztf_nights_data.filter(ZtfNight.date == date)
+
+        ztf_nights_data = (
+            ztf_nights_data
+            .order_by(ZtfNight.nightid)
+            .offset(start_row)
+            .limit(500 if end_row == -1 else end_row - start_row)
+        )
+
+        serialized_row: Dict[str, Any] = {}
+        all_serialized_rows: List[dict] = []
+        for row in ztf_nights_data:
+            serialized_row = {
+                "nightid": row.nightid,
+                "date": row.date,
+                "exposures": row.exposures,
+                "quads": row.quads
+            }
+
+            # Convert items in binary row to tpython data structures
+            for key, val in serialized_row.items():
+                if isinstance(val, Decimal):
+                    serialized_row[key] = float(val)
+                elif isinstance(val, int):
+                    serialized_row[key] = int(val)
+                else:
+                    serialized_row[key] = str(val)
             all_serialized_rows.append(serialized_row)
 
     return all_serialized_rows
