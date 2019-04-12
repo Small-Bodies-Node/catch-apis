@@ -3,7 +3,8 @@
 import os
 from typing import Any, List, Dict
 from decimal import Decimal
-from models.models import Ztf, Found, ZtfCutout, ZtfNight
+from sqlalchemy import func as sqlfunc
+from models.models import Ztf, Found, Obj, ZtfCutout, ZtfNight
 from .database_provider import DATA_PROVIDER_SESSION
 
 ZTF_CUTOUT_BASE_URL: str = os.getenv('ZTF_CUTOUT_BASE_URL', default='')
@@ -62,9 +63,51 @@ def query_ztf_found_metadata() -> Any:
     return description
 
 
-def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
-                         objid: int = -1, nightid: int = -1,
-                         maglimit: float = 0, seeing: float = 0) -> Any:
+def query_ztf_found_objects() -> Any:
+    """Return ZTF found object list."""
+
+    objects: Any
+
+    with DATA_PROVIDER_SESSION() as session:
+        objects = (
+            session
+            .query(
+                Found.objid,
+                Obj.desg,
+                sqlfunc.min(Found.obsjd),
+                sqlfunc.max(Found.obsjd)
+            )
+            .join(Obj, Obj.objid == Found.objid)
+            .group_by(Found.objid)
+            .order_by(Obj.desg + 0, Obj.desg)
+        )
+
+        serialized_row: Dict[str, Any] = {}
+        all_serialized_rows: List[dict] = []
+        for row in objects:
+            print(row)
+            serialized_row = {
+                "objid": row.objid,
+                "desg": row.desg,
+                "obsjd_min": row[2],
+                "obsjd_max": row[3]
+            }
+
+            for key, val in serialized_row.items():
+                if isinstance(val, Decimal):
+                    serialized_row[key] = float(val)
+                elif isinstance(val, int):
+                    serialized_row[key] = int(val)
+                else:
+                    serialized_row[key] = str(val)
+            all_serialized_rows.append(serialized_row)
+
+    return all_serialized_rows
+
+
+def query_ztf_found_data(start_row: int=0, end_row: int=-1,
+                         objid: int=-1, nightid: int=-1,
+                         maglimit: float=0, seeing: float=0) -> Any:
     '''Query DB for ZTF found data.'''
     found_ztf_data: Any
 
@@ -183,8 +226,8 @@ def query_ztf_nights_metadata() -> Any:
     return description
 
 
-def query_ztf_nights_data(start_row: int = 0, end_row: int = -1, nightid: int = -1,
-                          date: str = '') -> Any:
+def query_ztf_nights_data(start_row: int=0, end_row: int=-1, nightid: int=-1,
+                          date: str='') -> Any:
     '''Query DB for ZTF nights'''
     ztf_nights_data: Any
 
@@ -199,7 +242,7 @@ def query_ztf_nights_data(start_row: int = 0, end_row: int = -1, nightid: int = 
 
         ztf_nights_data = (
             ztf_nights_data
-            .order_by(ZtfNight.nightid)
+            .order_by(ZtfNight.nightid.desc())
             .offset(start_row)
             .limit(500 if end_row == -1 else end_row - start_row)
         )
