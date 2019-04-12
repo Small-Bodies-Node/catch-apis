@@ -27,7 +27,9 @@ class ZTFFound(FRP.Resource):
 
     @API.doc('--ztf/found--')
     @API.param('objid', description='Optional. Search for this object id.', _in='query')
-    @API.param('nightid', description='Optional. Limit results to this night.', _in='query')
+    @API.param('nightid', description='Optional. Limit to this night.', _in='query')
+    @API.param('maglimit', description='Optional. Require point source'
+               ' sensitivity > this value.', _in='query')
     @API.param('end', description='Optional. Paginated ending index.', _in='query')
     @API.param('start', description='Optional. Paginated starting index.', _in='query')
     @FRP.cors.crossdomain(origin='*')
@@ -35,14 +37,15 @@ class ZTFFound(FRP.Resource):
         """Query ZTF found objects."""
 
         # Extract params from URL
-        objid: int = request.args.get('objid', 0, int)
-        nightid: int = request.args.get('nightid', 0, int)
+        objid: int = request.args.get('objid', -1, int)
+        nightid: int = request.args.get('nightid', -1, int)
+        maglimit: int = request.args.get('maglimit', 0, float)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
         found_ztf_data: list = qztf.query_ztf_found_data(
-            start, end, objid=objid, nightid=nightid)
+            start, end, objid=objid, nightid=nightid, maglimit=maglimit)
 
         # Package retrieved data as response json
         res: Response = jsonify(
@@ -51,6 +54,7 @@ class ZTFFound(FRP.Resource):
                 "end": end,
                 "objid": objid,
                 "nightid": nightid,
+                "maglimit": maglimit,
                 "data": found_ztf_data,
                 "total": len(found_ztf_data)
             }
