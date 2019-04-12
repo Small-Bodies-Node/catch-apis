@@ -9,8 +9,62 @@ from .database_provider import DATA_PROVIDER_SESSION
 ZTF_CUTOUT_BASE_URL: str = os.getenv('ZTF_CUTOUT_BASE_URL', default='')
 
 
-def query_ztf_found_data(start_row: int = 0, end_row: int = -1, objid: int = -1) -> Any:
-    '''Query DB for ZTF found data'''
+def query_ztf_found_metadata() -> Any:
+    """Return ZTF Found table metadata."""
+
+    description: Dict[str, str] = {
+        "foundid": 'unique identifier for found object observation',
+        "objid": 'unique identifier for object',
+        "obsjd": 'mid-point of the observation and epoch for ephemeris'
+                 ' (Julian date)',
+        "ra": 'ephemeris Right Ascension (deg)',
+        "dec": 'ephemeris Declination (deg)',
+        "dra": 'RA * cos(Dec) rate of change (arcsec/hr)',
+        "ddec": 'Declination rate of change (arcsec/hr)',
+        "ra3sig": 'Right Ascension 3σ uncertainty (arcsec)',
+        "dec3sig": 'Declination 3σ uncertainty (arcsec)',
+        "vmag": 'brightness estimate (magnitude)',
+        "rh": 'heliocentric distance (au)',
+        "rdot": 'heliocentric distance rate of change (km/s)',
+        "delta": 'observer-target distance (au)',
+        "phase": 'phase angle (degrees)',
+        "selong": 'solar elongation (degrees)',
+        "sangle": 'projected comet-sun vector position angle'
+                  ' (degrees E of N)',
+        "vangle": 'projected comet velocity vector position angle'
+                  ' (degrees E of N)',
+        "trueanomaly": 'true anomaly based on osculating elements'
+                       ' (degrees)',
+        "tmtp": 'T-Tp, time from perihelion, based on osculating elements'
+                ' (days)',
+        "pid": 'ZTF unique science product ID',
+        "obsdate": 'observation mid-time (UT)',
+        "infobits": 'info bit flags, see Section 10.4 of the ZTF Science'
+                    ' Data System',
+        "field": 'ZTF field number',
+        "ccdid": 'detector chip ID (1, ...16), see Fig. 1 of ZTF Science'
+                 ' Data System',
+        "qid": 'CCD quadrant ID (1, 2, 3, 4), see Fig. 1 of ZTF Science'
+               ' Data System',
+        "rcid": 'readout channel ID (0, ...63)',
+        "fid": 'filter ID',
+        "filtercode": 'abbreviated filter name: zr, zg, zi',
+        "expid": 'exposure ID',
+        "filefracday": 'fractional time of day of exposure (UT)',
+        "seeing": 'seeing FWHM (arcsec)',
+        "airmass": 'telescope airmass',
+        "moonillf": 'Moon illuminated fraction',
+        "maglimit": 'magnitude limit',
+        "archive_url": 'FITS cutout from local archive',
+        "irsa_sci_url": 'IRSA full frame science image URL',
+        "irsa_diff_url": 'IRSA full frame difference image URL'
+    }
+    return description
+
+
+def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
+                         objid: int = -1) -> Any:
+    '''Query DB for ZTF found data.'''
     found_ztf_data: Any
 
     with DATA_PROVIDER_SESSION() as session:
@@ -105,6 +159,18 @@ def query_ztf_found_data(start_row: int = 0, end_row: int = -1, objid: int = -1)
             all_serialized_rows.append(serialized_row)
 
     return all_serialized_rows
+
+
+def query_ztf_nights_metadata() -> Any:
+    """Return ZTF nights table metadata."""
+
+    description: Dict[str, str] = {
+        'nightid': 'unique night identifier',
+        'date': 'date (UT)',
+        'exposures': 'number of exposures',
+        'quads': 'number of quads'
+    }
+    return description
 
 
 def query_ztf_nights_data(start_row: int = 0, end_row: int = -1, nightid: int = -1,
