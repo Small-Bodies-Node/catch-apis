@@ -64,7 +64,7 @@ def query_ztf_found_metadata() -> Any:
 
 def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
                          objid: int = -1, nightid: int = -1,
-                         maglimit: float = 0) -> Any:
+                         maglimit: float = 0, seeing: float = 0) -> Any:
     '''Query DB for ZTF found data.'''
     found_ztf_data: Any
 
@@ -77,18 +77,21 @@ def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
             .outerjoin(ZtfCutout, Found.foundid == ZtfCutout.foundid)
         )
 
+        if maglimit > 0:
+            found_ztf_data = found_ztf_data.filter(Ztf.maglimit > maglimit)
+
+        if nightid > 0:
+            found_ztf_data = found_ztf_data.filter(Ztf.nightid == nightid)
+
+        if seeing > 0:
+            found_ztf_data = found_ztf_data.filter(Ztf.seeing < seeing)
+
         if objid > 0:
             found_ztf_data = (
                 found_ztf_data
                 .filter(Found.objid == objid)
                 .order_by(Found.obsjd)
             )
-
-        if nightid > 0:
-            found_ztf_data = found_ztf_data.filter(Ztf.nightid == nightid)
-
-        if maglimit > 0:
-            found_ztf_data = found_ztf_data.filter(Ztf.maglimit > maglimit)
 
         found_ztf_data = (
             found_ztf_data
