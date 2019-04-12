@@ -63,7 +63,7 @@ def query_ztf_found_metadata() -> Any:
 
 
 def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
-                         objid: int = -1) -> Any:
+                         objid: int = -1, nightid: int = -1) -> Any:
     '''Query DB for ZTF found data.'''
     found_ztf_data: Any
 
@@ -82,6 +82,9 @@ def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
                 .filter(Found.objid == objid)
                 .order_by(Found.obsjd)
             )
+
+        if nightid > 0:
+            found_ztf_data = found_ztf_data.filter(Ztf.nightid)
 
         found_ztf_data = (
             found_ztf_data
