@@ -105,9 +105,9 @@ def query_ztf_found_objects() -> Any:
     return all_serialized_rows
 
 
-def query_ztf_found_data(start_row: int=0, end_row: int=-1,
-                         objid: int=-1, nightid: int=-1,
-                         maglimit: float=0, seeing: float=0) -> Any:
+def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
+                         objid: int = -1, nightid: int = -1,
+                         maglimit: float = 0, seeing: float = 0) -> Any:
     '''Query DB for ZTF found data.'''
     found_ztf_data: Any
 
@@ -226,8 +226,8 @@ def query_ztf_nights_metadata() -> Any:
     return description
 
 
-def query_ztf_nights_data(start_row: int=0, end_row: int=-1, nightid: int=-1,
-                          date: str='') -> Any:
+def query_ztf_nights_data(start_row: int = 0, end_row: int = -1, nightid: int = -1,
+                          date: str = '') -> Any:
     '''Query DB for ZTF nights'''
     ztf_nights_data: Any
 
