@@ -3,6 +3,7 @@ These models were generated using script _generate_models.sh
 """
 
 from typing import Dict, Any
+from flask_restplus import fields
 from sqlalchemy import Column, Float, ForeignKey, LargeBinary, String, Table
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER
 from sqlalchemy.orm import relationship
@@ -10,6 +11,127 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 metadata = Base.metadata
+
+
+ztf_found_result = {
+    "foundid": fields.Integer(
+        description='unique identifier for found object observation'
+    ),
+    "objid": fields.Integer(
+        description='unique identifier for object'
+    ),
+    "obsjd": fields.Float(
+        description='mid-point of the observation and epoch for ephemeris'
+        ' (Julian date)'
+    ),
+    "ra": fields.Float(
+        description='ephemeris Right Ascension (deg)'
+    ),
+    "dec": fields.Float(
+        description='ephemeris Declination (deg)'
+    ),
+    "dra": fields.Float(
+        description='RA * cos(Dec) rate of change (arcsec/hr)'
+    ),
+    "ddec": fields.Float(
+        description='Declination rate of change (arcsec/hr)'
+    ),
+    "ra3sig": fields.Float(
+        description='Right Ascension 3σ uncertainty (arcsec)'
+    ),
+    "dec3sig": fields.Float(
+        description='Declination 3σ uncertainty (arcsec)'
+    ),
+    "vmag": fields.Float(
+        description='brightness estimate (magnitude)'
+    ),
+    "rh": fields.Float(
+        description='heliocentric distance (au)'
+    ),
+    "rdot": fields.Float(
+        description='heliocentric distance rate of change (km/s)'
+    ),
+    "delta": fields.Float(
+        description='observer-target distance (au)'
+    ),
+    "phase": fields.Float(
+        description='phase angle (degrees)'
+    ),
+    "selong": fields.Float(
+        description='solar elongation (degrees)'
+    ),
+    "sangle": fields.Float(
+        description='projected comet-sun vector position angle (degrees E of N)'
+    ),
+    "vangle": fields.Float(
+        description='projected comet velocity vector position angle'
+        ' (degrees E of N)'
+    ),
+    "trueanomaly": fields.Float(
+        description='true anomaly based on osculating elements (degrees)'
+    ),
+    "tmtp": fields.Float(
+        description='T-Tp, time from perihelion, based on osculating elements'
+        ' (days)'
+    ),
+    "pid": fields.Integer(
+        description='ZTF unique science product ID'
+    ),
+    "obsdate": fields.String(
+        description='observation mid-time (UT)'
+    ),
+    "infobits": fields.Integer(
+        description='info bit flags, see Section 10.4 of the ZTF Science Data'
+        ' System'
+    ),
+    "field": fields.Integer(
+        description='ZTF field number'
+    ),
+    "ccdid": fields.Integer(
+        description='detector chip ID (1, ...16), see Fig. 1 of ZTF Science'
+        ' Data System'
+    ),
+    "qid": fields.Integer(
+        description='CCD quadrant ID (1, 2, 3, 4), see Fig. 1 of ZTF Science'
+        ' Data System'
+    ),
+    "rcid": fields.Integer(
+        description='readout channel ID (0, ...63)'
+    ),
+    "fid": fields.Integer(
+        description='filter ID'
+    ),
+    "filtercode": fields.String(
+        description='abbreviated filter name: zr, zg, zi'
+    ),
+    "expid": fields.Integer(
+        description='exposure ID'
+    ),
+    "filefracday": fields.Integer(
+        description='fractional time of day of exposure (UT)'
+    ),
+    "seeing": fields.Float(
+        description='seeing FWHM (arcsec)'
+    ),
+    "airmass": fields.Float(
+        description='telescope airmass'
+    ),
+    "moonillf": fields.Float(
+        description='Moon illuminated fraction'
+    ),
+    "maglimit": fields.Float(
+        description='magnitude limit'
+    ),
+    "archive_url": fields.String(
+        description='FITS cutout from local archive'
+    ),
+    "irsa_sci_url": fields.String(
+        description='IRSA full frame science image URL'
+    ),
+    "irsa_diff_url": fields.String(
+        description='IRSA full frame difference image URL'
+    )
+}
 
 
 class Ztf(Base):
