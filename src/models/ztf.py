@@ -370,16 +370,49 @@ class App:
     })
 
     found_objects: Model = api.model('FoundObjectsModel', {
-        "objid": fields.Integer(
-            description='unique object identifier'
+        "data": fields.List(fields.Nested(api.model('ZtfNightsData', {
+            "objid": fields.Integer(
+                description='unique object identifier'
+            ),
+            "desg": fields.String(
+                description='object designation'
+            ),
+            "obsjd_min": fields.Float(
+                description='first identified observation (Julian date)'
+            ),
+            "obsjd_max": fields.Float(
+                description='last identified observation (Julian date)'
+            )
+        }))),
+        "total": fields.Integer(description='number of returned rows')
+    })
+
+    nights: Model = api.model('ZtfNightsModel', {
+        "start": fields.Integer(
+            description='result start row'
         ),
-        "desg": fields.String(
-            description='object designation'
+        "end": fields.Integer(
+            description='result end row'
         ),
-        "obsjd_min": fields.Float(
-            description='first identified observation (Julian date)'
+        "nightid": fields.Integer(
+            description='requested night ID (-1 for any)'
         ),
-        "obsjd_max": fields.Float(
-            description='last identified observation (Julian date)'
-        )
+        "date": fields.String(
+            description='requested date (empty for any)'
+        ),
+        "data": fields.List(fields.Nested(api.model('ZtfNightsData', {
+            "nightid": fields.Integer(
+                description='unique night identifier'
+            ),
+            "date": fields.String(
+                description='date (UT)'
+            ),
+            "exposures": fields.Integer(
+                description='number of exposures'
+            ),
+            "quads": fields.Integer(
+                description='number of CCD quads'
+            ),
+        }))),
+        "total": fields.Integer(description='number of returned rows')
     })

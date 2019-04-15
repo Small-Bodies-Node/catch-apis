@@ -85,6 +85,7 @@ class ZTFFoundObjects(FRP.Resource):
     @API.doc('--ztf/found/objects--')
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
+    @API.marshal_with(App.found_objects)
     def get(self: 'ZTFFoundObjects') -> Dict[str, Any]:
         """ZTF found object list."""
         data: List[dict] = query_ztf_data.found_objects()
@@ -109,6 +110,7 @@ class ZTFNights(FRP.Resource):
                _in='query')
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
+    @API.marshal_with(App.nights)
     def get(self: 'ZTFNights') -> Dict[str, Any]:
         """Query ZTF nights table."""
 

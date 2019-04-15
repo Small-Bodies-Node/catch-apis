@@ -112,24 +112,9 @@ def nights(start_row: int = 0, end_row: int = -1, nightid: int = -1,
             .limit(500 if end_row == -1 else end_row - start_row)
         )
 
-        serialized_row: Dict[str, Any] = {}
-        all_serialized_rows: List[dict] = []
-        for row in query:
-            serialized_row = {
-                "nightid": row.nightid,
-                "date": row.date,
-                "exposures": row.exposures,
-                "quads": row.quads
-            }
+    # unpack into list of dictionaries for marshalling
+    rows: List[dict] = []
+    for row in query:
+        rows.append(row.__dict__)
 
-            # Convert items in binary row to tpython data structures
-            for key, val in serialized_row.items():
-                if isinstance(val, Decimal):
-                    serialized_row[key] = float(val)
-                elif isinstance(val, int):
-                    serialized_row[key] = int(val)
-                else:
-                    serialized_row[key] = str(val)
-            all_serialized_rows.append(serialized_row)
-
-    return all_serialized_rows
+    return rows
