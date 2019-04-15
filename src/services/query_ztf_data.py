@@ -12,38 +12,29 @@ def found_objects() -> List[dict]:
     query: sa.orm.Query
 
     with DATA_PROVIDER_SESSION() as session:
+        # cast to float or else:
+        # TypeError: Object of type 'Decimal' is not JSON serializable
         query = (
             session.query(
                 ztf.Found.objid,
                 ztf.Obj.desg,
-                sa.func.min(ztf.Found.obsjd),
-                sa.func.max(ztf.Found.obsjd)
+                sa.cast(sa.func.min(ztf.Found.obsjd), sa.Float)
+                .label('obsjd_min'),
+                sa.cast(sa.func.max(ztf.Found.obsjd), sa.Float)
+                .label('obsjd_max')
             )
             .join(ztf.Obj, ztf.Obj.objid == ztf.Found.objid)
             .group_by(ztf.Found.objid)
             .order_by(ztf.Obj.desg + 0, ztf.Obj.desg)
         )
 
-        serialized_row: Dict[str, Any] = {}
-        all_serialized_rows: List[dict] = []
-        for row in query:
-            serialized_row = {
-                "objid": row.objid,
-                "desg": row.desg,
-                "obsjd_min": row[2],
-                "obsjd_max": row[3]
-            }
+    # unpack into list of dictionaries for marshalling
+    rows: List[dict] = []
+    print(query[0]._asdict())
+    for row in query:
+        rows.append(row._asdict())
 
-            for key, val in serialized_row.items():
-                if isinstance(val, Decimal):
-                    serialized_row[key] = float(val)
-                elif isinstance(val, int):
-                    serialized_row[key] = int(val)
-                else:
-                    serialized_row[key] = str(val)
-            all_serialized_rows.append(serialized_row)
-
-    return all_serialized_rows
+    return rows
 
 
 def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
@@ -95,7 +86,7 @@ def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
         )
 
     # unpack into list of dictionaries for marshalling
-    rows = []
+    rows: List[dict] = []
     for row in query:
         rows.append(row._asdict())
 

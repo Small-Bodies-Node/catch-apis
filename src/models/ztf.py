@@ -368,3 +368,18 @@ class App:
         }))),
         "total": fields.Integer(description='number of returned rows')
     })
+
+    found_objects: Model = api.model('FoundObjectsModel', {
+        "objid": fields.Integer(
+            description='unique object identifier'
+        ),
+        "desg": fields.String(
+            description='object designation'
+        ),
+        "obsjd_min": fields.Float(
+            description='first identified observation (Julian date)'
+        ),
+        "obsjd_max": fields.Float(
+            description='last identified observation (Julian date)'
+        )
+    })
