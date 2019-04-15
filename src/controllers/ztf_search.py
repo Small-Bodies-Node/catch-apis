@@ -9,28 +9,13 @@ import logging
 from typing import Dict, Any
 import flask_restplus as FRP
 from flask import request
-from models.models import ztf_found_result
+from models.ztf import ZTF
 from services import query_ztf_data as qztf
 from util import jsonify_output
 
-API = FRP.Namespace(
-    name="ZTF Fetching",
-    path="/ztf",
-    description="Zwicky Transient Facility survey metadata and ZChecker results."
-)
+API = ZTF.api
 
 logger: logging.Logger = logging.getLogger(__name__)
-
-ztf_found_model: FRP.model.Model = API.model('ZTFFoundModel', {
-    "start": FRP.fields.Integer,
-    "end": FRP.fields.Integer,
-    "maglimit": FRP.fields.Float,
-    "objid": FRP.fields.Integer,
-    "nightid": FRP.fields.Integer,
-    "seeing": FRP.fields.Float,
-    "data": FRP.fields.Nested(API.model('ZTFFoundResult', ztf_found_result)),
-    "total": FRP.fields.Integer
-})
 
 
 @API.route("/found")
@@ -52,32 +37,32 @@ class ZTFFound(FRP.Resource):
                _in='query')
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
-    @API.marshal_with(ztf_found_model)
-    def get(self: 'ZTFFound') -> Dict[str, Any]:
+    @API.marshal_with(ZTF.found)
+    def get(self: 'ZTFFound') -> list:
         """Query ZTF found objects."""
 
         # Extract params from URL
-        maglimit: int = request.args.get('maglimit', 0, float)
+        maglimit: float = request.args.get('maglimit', 0, float)
         nightid: int = request.args.get('nightid', -1, int)
         objid: int = request.args.get('objid', -1, int)
-        seeing: int = request.args.get('seeing', 0, float)
+        seeing: float = request.args.get('seeing', 0, float)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
-        found_ztf_data: list = qztf.query_ztf_found_data(
+        data: list = qztf.query_ztf_found_data(
             start, end, maglimit=maglimit, nightid=nightid, objid=objid,
             seeing=seeing)
 
         return {
-            "start": start,
-            "end": end,
-            "maglimit": maglimit,
-            "objid": objid,
-            "nightid": nightid,
-            "seeing": seeing,
-            "data": found_ztf_data,
-            "total": len(found_ztf_data)
+            'data': data,
+            'maglimit': maglimit,
+            'nightid': nightid,
+            'objid': objid,
+            'seeing': seeing,
+            'start': start,
+            'end': end,
+            'total': len(data)
         }
 
 
