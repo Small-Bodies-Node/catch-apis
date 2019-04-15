@@ -39,7 +39,7 @@ def found_objects() -> List[dict]:
 
 def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
           nightid: int = -1, maglimit: float = 0,
-          seeing: float = 0) -> List[dict]:
+          seeing: float = 0, foundid: int = -1) -> List[dict]:
     '''Query DB for ZTF found data.'''
     query: sa.orm.Query
 
@@ -80,10 +80,13 @@ def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
                 .order_by(ztf.Found.obsjd)
             )
 
-        query = (
-            query.offset(start_row)
-            .limit(500 if end_row == -1 else end_row - start_row)
-        )
+        if foundid > 0:
+            query = query.filter(ztf.Found.foundid == foundid)
+        else:
+            query = (
+                query.offset(start_row)
+                .limit(500 if end_row == -1 else end_row - start_row)
+            )
 
     # unpack into list of dictionaries for marshalling
     rows: List[dict] = []

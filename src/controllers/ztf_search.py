@@ -78,6 +78,22 @@ class ZTFFound(FRP.Resource):
         }
 
 
+@API.route("/found/<int:foundid>")
+class ZTFFoundID(FRP.Resource):
+    """Controller class for ZTF found table search by foundid."""
+
+    @API.doc('--ztf/found/foundid--')
+    @FRP.cors.crossdomain(origin='*')
+    @jsonify_output
+    @API.marshal_with(App.found_data)
+    def get(self: 'ZTFFound', foundid: int) -> list:
+        """Query ZTF found objects."""
+
+        data: list = query_ztf_data.found(foundid=foundid)
+
+        return data[0]
+
+
 @API.route("/found/objects")
 class ZTFFoundObjects(FRP.Resource):
     """Controller class for ZTF found objects list."""
