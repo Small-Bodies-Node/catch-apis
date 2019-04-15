@@ -5,7 +5,7 @@ Function to query SQL DB for moving-object-search
 
 from typing import List, Any
 from decimal import Decimal
-from models.models import Ztf, Found
+from models.ztf import Ztf, Found
 from .database_provider import DATA_PROVIDER_SESSION
 
 

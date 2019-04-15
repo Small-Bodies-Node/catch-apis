@@ -1,36 +1,32 @@
 '''Query DB for ZTF data'''
 
-import os
 from typing import Any, List, Dict
 from decimal import Decimal
 import sqlalchemy as sa
-from models.models import Ztf, Found, Obj, ZtfCutout, ZtfNight
+from models import ztf
 from .database_provider import DATA_PROVIDER_SESSION
 
 
-def query_ztf_found_objects() -> Any:
+def found_objects() -> List[dict]:
     """Return ZTF found object list."""
-
-    objects: Any
+    query: sa.orm.Query
 
     with DATA_PROVIDER_SESSION() as session:
-        objects = (
-            session
-            .query(
-                Found.objid,
-                Obj.desg,
-                sa.func.min(Found.obsjd),
-                sa.func.max(Found.obsjd)
+        query = (
+            session.query(
+                ztf.Found.objid,
+                ztf.Obj.desg,
+                sa.func.min(ztf.Found.obsjd),
+                sa.func.max(ztf.Found.obsjd)
             )
-            .join(Obj, Obj.objid == Found.objid)
-            .group_by(Found.objid)
-            .order_by(Obj.desg + 0, Obj.desg)
+            .join(ztf.Obj, ztf.Obj.objid == ztf.Found.objid)
+            .group_by(ztf.Found.objid)
+            .order_by(ztf.Obj.desg + 0, ztf.Obj.desg)
         )
 
         serialized_row: Dict[str, Any] = {}
         all_serialized_rows: List[dict] = []
-        for row in objects:
-            print(row)
+        for row in query:
             serialized_row = {
                 "objid": row.objid,
                 "desg": row.desg,
@@ -50,98 +46,84 @@ def query_ztf_found_objects() -> Any:
     return all_serialized_rows
 
 
-def query_ztf_found_data(start_row: int = 0, end_row: int = -1,
-                         objid: int = -1, nightid: int = -1,
-                         maglimit: float = 0, seeing: float = 0) -> Any:
+def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
+          nightid: int = -1, maglimit: float = 0,
+          seeing: float = 0) -> List[dict]:
     '''Query DB for ZTF found data.'''
-    found_ztf_data: Any
+    query: sa.orm.Query
 
     with DATA_PROVIDER_SESSION() as session:
-        found_ztf_data = (
+        query = (
             session
             .query(
-                Found,
-                Ztf,
-                ZtfCutout,
-                sa.func.substr(sa.cast(Ztf.filefracday, sa.String), 1, 4)
+                ztf.Found,
+                ztf.Ztf,
+                ztf.ZtfCutout,
+                sa.func.substr(sa.cast(ztf.Ztf.filefracday, sa.String), 1, 4)
                 .label('year'),
-                sa.func.substr(sa.cast(Ztf.filefracday, sa.String), 5, 4)
+                sa.func.substr(sa.cast(ztf.Ztf.filefracday, sa.String), 5, 4)
                 .label('monthday'),
-                sa.func.substr(sa.cast(Ztf.filefracday, sa.String), 9)
+                sa.func.substr(sa.cast(ztf.Ztf.filefracday, sa.String), 9)
                 .label('fracday')
             )
-            .join(Ztf, Found.obsid == Ztf.obsid)
+            .join(ztf.Ztf, ztf.Found.obsid == ztf.Ztf.obsid)
             # the cutout may not exist, use left outer join:
-            .outerjoin(ZtfCutout, Found.foundid == ZtfCutout.foundid)
+            .outerjoin(
+                ztf.ZtfCutout,
+                ztf.Found.foundid == ztf.ZtfCutout.foundid
+            )
         )
 
         if maglimit > 0:
-            found_ztf_data = found_ztf_data.filter(Ztf.maglimit > maglimit)
+            query = query.filter(ztf.Ztf.maglimit > maglimit)
 
         if nightid > 0:
-            found_ztf_data = found_ztf_data.filter(Ztf.nightid == nightid)
+            query = query.filter(ztf.Ztf.nightid == nightid)
 
         if seeing > 0:
-            found_ztf_data = found_ztf_data.filter(Ztf.seeing < seeing)
+            query = query.filter(ztf.Ztf.seeing < seeing)
 
         if objid > 0:
-            found_ztf_data = (
-                found_ztf_data
-                .filter(Found.objid == objid)
-                .order_by(Found.obsjd)
+            query = (
+                query.filter(ztf.Found.objid == objid)
+                .order_by(ztf.Found.obsjd)
             )
 
-        found_ztf_data = (
-            found_ztf_data
-            .offset(start_row)
+        query = (
+            query.offset(start_row)
             .limit(500 if end_row == -1 else end_row - start_row)
         )
 
     # unpack into list of dictionaries for marshalling
-    data = []
-    print(found_ztf_data[0]._asdict())
-    for row in found_ztf_data:
-        data.append(row._asdict())
+    rows = []
+    for row in query:
+        rows.append(row._asdict())
 
-    return data
-
-
-def query_ztf_nights_metadata() -> Any:
-    """Return ZTF nights table metadata."""
-
-    description: Dict[str, str] = {
-        'nightid': 'unique night identifier',
-        'date': 'date (UT)',
-        'exposures': 'number of exposures',
-        'quads': 'number of quads'
-    }
-    return description
+    return rows
 
 
-def query_ztf_nights_data(start_row: int=0, end_row: int=-1, nightid: int=-1,
-                          date: str='') -> Any:
+def nights(start_row: int = 0, end_row: int = -1, nightid: int = -1,
+           date: str = '') -> List[dict]:
     '''Query DB for ZTF nights'''
-    ztf_nights_data: Any
+    query: sa.orm.Query
 
     with DATA_PROVIDER_SESSION() as session:
-        ztf_nights_data = session.query(ZtfNight)
+        query = session.query(ztf.ZtfNights)
 
         if nightid > 0:
-            ztf_nights_data = ztf_nights_data.filter(
-                ZtfNight.nightid == nightid)
+            query = query.filter(ztf.ZtfNights.nightid == nightid)
         elif date != '':
-            ztf_nights_data = ztf_nights_data.filter(ZtfNight.date == date)
+            query = query.filter(ztf.ZtfNights.date == date)
 
-        ztf_nights_data = (
-            ztf_nights_data
-            .order_by(ZtfNight.nightid.desc())
+        query = (
+            query.order_by(ztf.ZtfNights.nightid.desc())
             .offset(start_row)
             .limit(500 if end_row == -1 else end_row - start_row)
         )
 
         serialized_row: Dict[str, Any] = {}
         all_serialized_rows: List[dict] = []
-        for row in ztf_nights_data:
+        for row in query:
             serialized_row = {
                 "nightid": row.nightid,
                 "date": row.date,
