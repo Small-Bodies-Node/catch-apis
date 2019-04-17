@@ -13,14 +13,14 @@ from util import FormattedStringOrNone
 
 ZTF_CUTOUT_BASE_URL: str = os.getenv('ZTF_CUTOUT_BASE_URL', default='')
 
-Base = declarative_base()
+Base: Any = declarative_base()
 metadata = Base.metadata
 
 
 class Ztf(Base):
     """TODO DOCSTRING"""
     __tablename__ = 'ztf'
-    obsid = Column(ForeignKey('obs.obsid'), index=True)
+    obsid: Column = Column(ForeignKey('obs.obsid'), index=True)
     pid = Column(BIGINT(20), primary_key=True)
     nightid = Column(ForeignKey('ztf_nights.nightid'), index=True)
     obsdate = Column(String(64))
@@ -144,12 +144,6 @@ class Found(Base):
     tmtp = Column(Float(asdecimal=True))
 
     obj = relationship('Obj')
-
-    def serialize(self: Any) -> Dict[str, str]:
-        return {
-            "obsid": self.obsid,
-            "phase": self.phase
-        }
 
 
 class ZtfCutout(Base):

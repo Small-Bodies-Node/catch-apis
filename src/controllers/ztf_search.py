@@ -13,7 +13,7 @@ from models.ztf import App
 from services import query_ztf_data
 from util import jsonify_output
 
-API = App.api
+API: FRP.Namespace = App.api
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class ZTFFound(FRP.Resource):
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
-        data: list = query_ztf_data.found(
+        data: List[dict] = query_ztf_data.found(
             start, end, maglimit=maglimit, nightid=nightid, objid=objid,
             seeing=seeing)
 
@@ -86,10 +86,10 @@ class ZTFFoundID(FRP.Resource):
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
     @API.marshal_with(App.found_data)
-    def get(self: 'ZTFFound', foundid: int) -> list:
-        """Query ZTF found objects."""
+    def get(self: 'ZTFFound', foundid: int) -> dict:
+        """Query ZTF found objects by found ID."""
 
-        data: list = query_ztf_data.found(foundid=foundid)
+        data: List[dict] = query_ztf_data.found(foundid=foundid)
 
         return data[0]
 

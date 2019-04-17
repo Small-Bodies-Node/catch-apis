@@ -30,7 +30,6 @@ def found_objects() -> List[dict]:
 
     # unpack into list of dictionaries for marshalling
     rows: List[dict] = []
-    print(query[0]._asdict())
     for row in query:
         rows.append(row._asdict())
 
