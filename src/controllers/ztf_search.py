@@ -2,21 +2,18 @@
 ZTF Module
 Creates RestPlus namespace for ZTF controller. Useful as a reference for
 creating simple routes where a table row represents an entity.
-This example does not use restplus models for response marshalling
+
 """
 
 import logging
+from typing import Dict, List, Any
 import flask_restplus as FRP
-from flask import request, jsonify
-from flask.wrappers import Response
-from services import query_ztf_data as qztf
+from flask import request
+from models.ztf import App
+from services import query_ztf_data
+from util import jsonify_output
 
-
-API = FRP.Namespace(
-    name="ZTF Fetching",
-    path="/ztf",
-    description="Zwicky Transient Facility survey metadata and ZChecker results."
-)
+API: FRP.Namespace = App.api
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -26,71 +23,75 @@ class ZTFFound(FRP.Resource):
     """Controller class for ZTF found database rows."""
 
     @API.doc('--ztf/found--')
-    @API.param('maglimit', description='Optional. Require point source'
-               ' sensitivity > this value.', _in='query')
-    @API.param('nightid', description='Optional. Limit to this night.',
-               _in='query')
-    @API.param('objid', description='Optional. Search for this object id.',
-               _in='query')
-    @API.param('seeing', description='Optional. Require seeing (FWHM) <'
-               ' this value (arcsec).', _in='query')
-    @API.param('end', description='Optional. Paginated ending index.',
-               _in='query')
-    @API.param('start', description='Optional. Paginated starting index.',
-               _in='query')
+    @API.param(
+        'maglimit', _in='query',
+        description='Optional. Require point source sensitivity > this value.'
+    )
+    @API.param(
+        'nightid', _in='query',
+        description='Optional. Limit to this night.'
+    )
+    @API.param(
+        'objid', _in='query',
+        description='Optional. Search for this object id.'
+    )
+    @API.param(
+        'seeing', _in='query',
+        description='Optional. Require seeing (FWHM) < this value (arcsec).'
+    )
+    @API.param(
+        'end', _in='query',
+        description='Optional. Paginated ending index.'
+    )
+    @API.param(
+        'start', _in='query',
+        description='Optional. Paginated starting index.'
+    )
     @FRP.cors.crossdomain(origin='*')
-    def get(self: 'ZTFFound') -> Response:
+    @jsonify_output
+    @API.marshal_with(App.found)
+    def get(self: 'ZTFFound') -> list:
         """Query ZTF found objects."""
 
         # Extract params from URL
-        maglimit: int = request.args.get('maglimit', 0, float)
+        maglimit: float = request.args.get('maglimit', 0, float)
         nightid: int = request.args.get('nightid', -1, int)
         objid: int = request.args.get('objid', -1, int)
-        seeing: int = request.args.get('seeing', 0, float)
+        seeing: float = request.args.get('seeing', 0, float)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 50, int)
 
         # Pass params to data-provider-service
-        found_ztf_data: list = qztf.query_ztf_found_data(
+        data: List[dict] = query_ztf_data.found(
             start, end, maglimit=maglimit, nightid=nightid, objid=objid,
             seeing=seeing)
 
-        # Package retrieved data as response json
-        res: Response = jsonify(
-            {
-                "start": start,
-                "end": end,
-                "maglimit": maglimit,
-                "objid": objid,
-                "nightid": nightid,
-                "seeing": seeing,
-                "data": found_ztf_data,
-                "total": len(found_ztf_data)
-            }
-        )
-        res.status_code = 200
-        return res
+        return {
+            'data': data,
+            'maglimit': maglimit,
+            'nightid': nightid,
+            'objid': objid,
+            'seeing': seeing,
+            'start': start,
+            'end': end,
+            'total': len(data)
+        }
 
 
-@API.route("/found/metadata")
-class ZTFFoundMetadata(FRP.Resource):
-    """Controller class for ZTF found metadata."""
+@API.route("/found/<int:foundid>")
+class ZTFFoundID(FRP.Resource):
+    """Controller class for ZTF found table search by foundid."""
 
-    @API.doc('--ztf/found/metadata--')
+    @API.doc('--ztf/found/foundid--')
     @FRP.cors.crossdomain(origin='*')
-    def get(self: 'ZTFFoundMetadata') -> Response:
-        """ZTF found object metadata."""
-        ztf_found_metadata: list = qztf.query_ztf_found_metadata()
+    @jsonify_output
+    @API.marshal_with(App.found_data)
+    def get(self: 'ZTFFound', foundid: int) -> dict:
+        """Query ZTF found objects by found ID."""
 
-        # Package retrieved data as response json
-        res: Response = jsonify(
-            {
-                "data": ztf_found_metadata,
-                "total": len(ztf_found_metadata)
-            }
-        )
-        res.status_code = 200
-        return res
+        data: List[dict] = query_ztf_data.found(foundid=foundid)
+
+        return data[0]
 
 
 @API.route("/found/objects")
@@ -99,19 +100,15 @@ class ZTFFoundObjects(FRP.Resource):
 
     @API.doc('--ztf/found/objects--')
     @FRP.cors.crossdomain(origin='*')
-    def get(self: 'ZTFFoundObjects') -> Response:
+    @jsonify_output
+    @API.marshal_with(App.found_objects)
+    def get(self: 'ZTFFoundObjects') -> Dict[str, Any]:
         """ZTF found object list."""
-        objects: list = qztf.query_ztf_found_objects()
-
-        # Package retrieved data as response json
-        res: Response = jsonify(
-            {
-                "data": objects,
-                "total": len(objects)
-            }
-        )
-        res.status_code = 200
-        return res
+        data: List[dict] = query_ztf_data.found_objects()
+        return {
+            "data": data,
+            "total": len(data)
+        }
 
 
 @API.route("/nights")
@@ -128,50 +125,27 @@ class ZTFNights(FRP.Resource):
     @API.param('start', description='Optional. Paginated starting index.',
                _in='query')
     @FRP.cors.crossdomain(origin='*')
-    def get(self: 'ZTFNights') -> Response:
+    @jsonify_output
+    @API.marshal_with(App.nights)
+    def get(self: 'ZTFNights') -> Dict[str, Any]:
         """Query ZTF nights table."""
 
         # Extract params from URL
         nightid: int = request.args.get('nightid', 0, int)
-        date: int = request.args.get('date', '', str)
+        date: str = request.args.get('date', '', str)
         start: int = request.args.get('start', 0, int)
         end: int = request.args.get('end', 1000, int)
 
         # Pass params to data-provider-service
-        ztf_nights_data: list = qztf.query_ztf_nights_data(
+        data: List[dict] = query_ztf_data.nights(
             start, end, nightid=nightid, date=date)
 
         # Package retrieved data as response json
-        res: Response = jsonify(
-            {
-                "start": start,
-                "end": end,
-                "nightid": nightid,
-                "date": date,
-                "data": ztf_nights_data,
-                "total": len(ztf_nights_data)
-            }
-        )
-        res.status_code = 200
-        return res
-
-
-@API.route("/nights/metadata")
-class ZTFNightsMetadata(FRP.Resource):
-    """Controller class for ZTF nights metadata."""
-
-    @API.doc('--ztf/nights/metdata--')
-    @FRP.cors.crossdomain(origin='*')
-    def get(self: 'ZTFNightsMetadata') -> Response:
-        """ZTF nights metadata."""
-        metadata: list = qztf.query_ztf_nights_metadata()
-
-        # Package retrieved data as response json
-        res: Response = jsonify(
-            {
-                "data": metadata,
-                "total": len(metadata)
-            }
-        )
-        res.status_code = 200
-        return res
+        return {
+            "start": start,
+            "end": end,
+            "nightid": nightid,
+            "date": date,
+            "data": data,
+            "total": len(data)
+        }
