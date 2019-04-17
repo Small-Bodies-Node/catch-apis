@@ -1,7 +1,6 @@
 '''Query DB for ZTF data'''
 
-from typing import Any, List, Dict
-from decimal import Decimal
+from typing import List
 import sqlalchemy as sa
 from models import ztf
 from .database_provider import DATA_PROVIDER_SESSION

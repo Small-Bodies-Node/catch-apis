@@ -3,7 +3,7 @@ ZTF route namespace and database tables.
 """
 
 import os
-from typing import Dict, Any
+from typing import Any
 from flask_restplus import Namespace, Model, fields
 from sqlalchemy import Column, Float, ForeignKey, LargeBinary, String
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER
@@ -170,6 +170,7 @@ class ZtfCutout(Base):
 
 
 class App:
+    """ZTF route namespace and return data models."""
     api: Namespace = Namespace(
         'Catching moving targets with ZTF',
         path="/ztf",
