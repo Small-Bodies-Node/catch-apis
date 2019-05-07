@@ -9,7 +9,7 @@
             "cwd": "${workspaceRoot}",
             "env": {},
             "envFile": "${workspaceRoot}/.venv",
-            "console": "none"
+            "console": "internalConsole"
         }
     ]
 }

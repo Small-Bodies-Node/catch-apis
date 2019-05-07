@@ -50,7 +50,7 @@ class ZTFFound(FRP.Resource):
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
     @API.marshal_with(App.found)
-    def get(self: 'ZTFFound') -> list:
+    def get(self: 'ZTFFound') -> Dict[str, object]:
         """Query ZTF found objects."""
 
         # Extract params from URL
