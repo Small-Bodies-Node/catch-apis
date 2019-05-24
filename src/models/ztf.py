@@ -324,7 +324,7 @@ class App:
             description='magnitude limit'
         ),
         "archive_url": FormattedStringOrNone(
-            ZTF_CUTOUT_BASE_URL + '{archivefile}',
+            '/'.join((ZTF_CUTOUT_BASE_URL, '{ZtfCutout.archivefile}')),
             description='FITS cutout from local archive'
         ),
         "irsa_sci_url": fields.FormattedString(
