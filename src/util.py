@@ -18,5 +18,5 @@ class FormattedStringOrNone(fields.FormattedString):
     def output(self, key, obj, **kwargs):
         try:
             return super().output(key, obj, **kwargs)
-        except KeyError:
+        except (KeyError, AttributeError):
             return None
