@@ -4,7 +4,7 @@
 eval $(cat .env | sed 's/^/export /')       
 
 ### Build URI
-URI='mysql+pymysql://'$DB_USERNAME':'$DB_PASSWORD'@'$DB_HOST'/'$DB_DATABASE
+URI=$DB_DIALECT'://'$DB_USERNAME':'$DB_PASSWORD'@'$DB_HOST'/'$DB_DATABASE
 echo $URI
 
 ### Output generated models
