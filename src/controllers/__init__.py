@@ -41,7 +41,7 @@ REST_PLUS_APIS = Api(
 REST_PLUS_APIS.add_namespace(ns0)
 REST_PLUS_APIS.add_namespace(ns1)
 REST_PLUS_APIS.add_namespace(ns2)
-REST_PLUS_APIS.add_namespace(ns3        )
+REST_PLUS_APIS.add_namespace(ns3)
 
 # Add error handlers:
 @REST_PLUS_APIS.errorhandler
