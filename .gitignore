@@ -17,3 +17,6 @@ _test_generic_webhook.sh
 .DS_Store
 temp
 **__pycache__**
+zbrowser.db
+zchecker.db
+.env-old

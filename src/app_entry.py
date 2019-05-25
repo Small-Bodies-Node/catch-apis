@@ -38,7 +38,6 @@ def bare_root() -> FLW.Response:
 flask_app.register_blueprint(rest_plus_blueprint)
 
 DASHBOARD_CONFIG = os.getenv("DASHBOARD_CONFIG")
-print("-------->>>>>>>>>>>>>"+str(DASHBOARD_CONFIG))
 dashboard.config.init_from(envvar='DASHBOARD_CONFIG')
 dashboard.bind(flask_app)
 
