@@ -41,6 +41,8 @@ def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
     '''Query DB for ZTF found data.'''
     query: sa.orm.Query
 
+    print("\n\n>>>>>>>>>>>>>>>\n\n")
+
     with DATA_PROVIDER_SESSION() as session:
         query = (
             session
@@ -62,6 +64,8 @@ def found(start_row: int = 0, end_row: int = -1, objid: int = -1,
                 ztf.Found.foundid == ztf.ZtfCutout.foundid
             )
         )
+
+        print("\n\n>>>>>>> 2 >>>>>>>>\n\n")
 
         if maglimit > 0:
             query = query.filter(ztf.Ztf.maglimit > maglimit)
