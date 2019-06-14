@@ -3,7 +3,7 @@ import requests
 
 
 def test_ztf_labels():
-    url = 'http://{}/ztf'.format(os.environ['TEST_URL_BASE'])
+    url = 'http://{}/ztf'.format(os.getenv('TEST_URL_BASE'))
     q = requests.get(url + '/found?objid=909').json()
     labels = requests.get(url + '/found/labels').json()
 
