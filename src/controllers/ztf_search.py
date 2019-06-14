@@ -111,6 +111,20 @@ class ZTFFoundObjects(FRP.Resource):
         }
 
 
+@API.route("/found/labels")
+class ZTFFoundLabels(FRP.Resource):
+    """Controller for ZTF found object column labels."""
+
+    @API.doc('--ztf/found/labels--')
+    @FRP.cors.crossdomain(origin='*')
+    @jsonify_output
+    def get(self: 'ZTFFoundLabels') -> Dict[str, Dict[str, str]]:
+        """ZTF found object table labels."""
+        data: Dict[str, Dict[str, str]] = (
+            query_ztf_data.column_labels('/found'))
+        return data
+
+
 @API.route("/nights")
 class ZTFNights(FRP.Resource):
     """Controller class for ZTF nights database."""
