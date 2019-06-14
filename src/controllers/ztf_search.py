@@ -112,7 +112,7 @@ class ZTFFoundObjects(FRP.Resource):
 
 
 @API.route("/found/labels")
-class ZTFFoundDoc(FRP.Resource):
+class ZTFFoundLabels(FRP.Resource):
     """Controller for ZTF found object column labels."""
 
     @API.doc('--ztf/found/labels--')
