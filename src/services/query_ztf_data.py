@@ -1,6 +1,6 @@
 '''Query DB for ZTF data'''
 
-from typing import List
+from typing import List, Dict
 import sqlalchemy as sa
 from models import ztf
 from .database_provider import DATA_PROVIDER_SESSION
@@ -123,3 +123,169 @@ def nights(start_row: int = 0, end_row: int = -1, nightid: int = -1,
         rows.append(row.__dict__)
 
     return rows
+
+
+def column_labels(route: str) -> Dict[str, Dict[str, str]]:
+    """Column labels for query results."""
+    return COLUMN_LABELS.get(route, {})
+
+
+COLUMN_LABELS: Dict[str, Dict[str, Dict[str, str]]] = {
+    '/found': {
+        'foundid': {
+            'label': 'Found ID',
+            'description': ('Internal database unique ID for an observation'
+                            ' of an object')
+        },
+        'objid': {
+            'label': 'Object ID',
+            'description': 'Internal database unique object ID'
+        },
+        'obsjd': {
+            'label': 'Date',
+            'description': ('Mid-time of the observation as a Julian Date'
+                            ' (UT)')
+        },
+        'ra': {
+            'label': 'RA',
+            'description': 'Object Right Ascension (deg)'
+        },
+        'dec': {
+            'label': 'Dec',
+            'description': 'Object Declination (deg)'
+        },
+        'dra': {
+            'label': 'dRA',
+            'description': ('Right Ascension rate of change:'
+                            ' dRA/dt cos(Dec) ("/hr)')
+        },
+        'ddec': {
+            'label': 'dDec',
+            'description': 'Declination rate of change: dDec/dt ("/hr)'
+        },
+        'ra3sig': {
+            'label': 'RA 3σ',
+            'description': 'Right Ascension 3σ uncertainty (")'
+        },
+        'dec3sig': {
+            'label': 'Dec 3σ',
+            'description': 'Declination 3σ uncertainty (")'
+        },
+        'vmag': {
+            'label': 'V',
+            'description': 'Predicted V-band brightness (mag)'
+        },
+        'rh': {
+            'label': 'rh',
+            'description': 'Heliocentric distance (au)'
+        },
+        'rdot': {
+            'label': 'ṙh',
+            'description': 'Heliocentric radial velocity (km/s)'
+        },
+        'delta': {
+            'label': 'Δ',
+            'description': 'Observer-target distance (au)'
+        },
+        'phase': {
+            'label': 'Phase',
+            'description': 'Sun-observer-target angle (deg)'
+        },
+        'selong': {
+            'label': 'E(⊙)"',
+            'description': 'Solar elongation (deg)'
+        },
+        'sangle': {
+            'label': 'PA(⊙)',
+            'description': ('Position angle of projected target-Sun vector,'
+                            ' east of Celestial north (deg)')
+        },
+        'vangle': {
+            'label': 'PA(v)',
+            'description': ('Position angle of projected target velocity '
+                            '  vector, east of Celestial north (deg)')
+        },
+        'trueanomaly': {
+            'label': 'ν',
+            'description': ('True anomaly based on osculating orbital'
+                            ' elements (deg)')
+        },
+        'tmtp': {
+            'label': 'T-Tₚ',
+            'description': ('Time to nearest perihelion based on osculating'
+                            ' orbital elements (days)')
+        },
+        'pid': {
+            'label': 'Product',
+            'description': 'ZTF unique product ID'
+        },
+        'obsdate': {
+            'label': 'Date',
+            'description': 'Mid-time of the observation'
+        },
+        'infobits': {
+            'label': 'Infobits',
+            'description': 'ZTF pipeline infobits'
+        },
+        'field': {
+            'label': 'Field',
+            'description': 'ZTF field ID'
+        },
+        'ccdid': {
+            'label': 'CCD',
+            'description': 'ZTF CCD ID (1...16)'
+        },
+        'qid': {
+            'label': 'Quad',
+            'description': 'ZTF CCD quadrant ID (1...4)'
+        },
+        'rcid': {
+            'label': 'RC',
+            'description': 'Readout channel ID (0...63)'
+        },
+        'fid': {
+            'label': 'Filter ID',
+            'description': 'ZTF filter ID'
+        },
+        'filtercode': {
+            'label': 'Filter',
+            'description': 'ZTF abbreviated filter name'
+        },
+        'expid': {
+            'label': 'Exp',
+            'description': 'ZTF exposure ID'
+        },
+        'filefracday': {
+            'label': 'Filefracday',
+            'description': 'Fraction time of day of expsoure (UT)'
+        },
+        'seeing': {
+            'label': 'Seeing',
+            'description': 'Seeing, i.e., FWHM of point sources (")'
+        },
+        'airmass': {
+            'label': 'Airmass',
+            'description': 'Observation airmass'
+        },
+        'moonillf': {
+            'label': 'Moon frac',
+            'description': 'Moon illuminated fraction'
+        },
+        'maglimit': {
+            'label': 'Mag limit',
+            'description': '5σ point-source senstivity (mag)'
+        },
+        'archive_url': {
+            'label': 'Archive URL',
+            'description': 'Local archive URL'
+        },
+        'irsa_sci_url': {
+            'label': 'Sci URL',
+            'description': 'Full-frame science URL at IRSA'
+        },
+        'irsa_diff_url': {
+            'label': 'Diff URL',
+            'description': 'Full-frame differenced image URL at IRSA'
+        }
+    }
+}
