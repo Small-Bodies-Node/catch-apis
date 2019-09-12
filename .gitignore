@@ -8,6 +8,7 @@ pytest_unit.xml
 .redundant/**
 **/*.log
 _test_generic_webhook.sh
+dwd_notes
 
 # Flask_MonitorDasboard
 .dashboard.db
