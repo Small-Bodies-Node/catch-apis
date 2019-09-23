@@ -78,9 +78,10 @@ main() {
     ### 10. Ensure npm is installed and load packages
     if [[ ! -z $(which npm) ]]; then
         printf "\n\n"
-        echo "Installing npm packages"
+        echo "Checking/installing required npm packages"
         printf "\n\n"
-        npm install -g pm2 nodemon
+        if [[ ! -z $(which nodemon) ]]; then npm install -g nodemon; fi
+        if [[ ! -z $(which pm2) ]]; then npm install -g pm2; fi
     else
         echo "No npm found!!!"
         return 1
