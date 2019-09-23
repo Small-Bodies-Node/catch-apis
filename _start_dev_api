@@ -1,0 +1,9 @@
+#! /bin/bash
+
+# Start one worker in background
+python src/tasks/worker.py &
+
+sleep 2
+
+# Start dev api; nodemon used to watch for changes
+PYTHON_ENV=DEV nodemon -w 'src/**' -e py,html --exec python src/app_entry.py

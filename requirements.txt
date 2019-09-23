@@ -10,7 +10,11 @@ atomicwrites==1.3.0
 attrs==18.2.0
 autopep8==1.4.3
 beautifulsoup4==4.7.1
+<<<<<<< HEAD
 catch==0.1.0
+=======
+catch==0.2.0
+>>>>>>> 022-neat
 certifi==2019.3.9
 cffi==1.12.3
 chardet==3.0.4
@@ -67,10 +71,17 @@ pytest==4.5.0
 python-dateutil==2.8.0
 python-dotenv==0.10.1
 pytz==2018.9
+redis==3.3.8
 requests==2.7.0
 retrying==1.3.3
+<<<<<<< HEAD
 sbpy==0.1.1.dev0
 sbsearch==1.0.0
+=======
+rq==1.1.0
+sbpy==0.1.1.dev0
+sbsearch==1.0.4
+>>>>>>> 022-neat
 scipy==1.3.0
 SecretStorage==3.1.1
 six==1.12.0

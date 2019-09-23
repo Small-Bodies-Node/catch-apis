@@ -1,0 +1,112 @@
+#!/bin/sh
+
+# ============================================================================
+# This manager script is used to install/start/stop/restart the REDIS server
+# Installation is done by downloading and building binary. You need to specify
+# the latest redis distro in the .env file. The app will intereact with redis
+# using the package 'rq'. rq comes with a cli. Run `rq info` for details
+#
+# REDIS_DIST=redis-5.0.5 is latest stable build as of Sept 2019
+#
+# ============================================================================
+
+# Load vars defined in .env
+$(cat .env | sed 's/^/export /')
+
+if [[ -z $REDIS_PORT ]]; then
+    echo "REDIS_PORT is not set!"
+    exit 1
+fi
+
+# Test if we've already got redis running:
+calc_processes() {
+    NUMBER_REDIS_PROCESSES=$(($(ps -ef | grep ".redis/$REDIS_DIST/src/redis-server" | wc -l) - 1))
+    return $NUMBER_REDIS_PROCESSES
+}
+calc_processes
+
+d_install() {
+    rm -rf .redis/$REDIS_DIST
+    cd .redis
+    wget 'http://download.redis.io/releases/'$REDIS_DIST'.tar.gz'
+    tar -xf $REDIS_DIST'.tar.gz'
+    cd $REDIS_DIST
+    make
+    make test
+    cd ../..
+}
+
+d_status() {
+    calc_processes
+
+    if [[ $NUMBER_REDIS_PROCESSES -gt 0 ]]; then
+        echo "Redis is running on PID: "$(cat .redis/.redis.pid)
+    else
+        echo "No redis server is running at the moment."
+    fi
+}
+
+d_start() {
+    if [[ $NUMBER_REDIS_PROCESSES -gt 0 ]]; then
+        echo "Redis server already running on PID "$(cat .redis/.redis.pid)"; cancelling start!"
+    else
+        echo "--------------"
+        echo "Redis server is not running; beginning a daemon!"
+        # NOTE: Options for redis-server are described in .redis/$REDIS_DIST/redis.conf
+        .redis/$REDIS_DIST/src/redis-server \
+            --logfile logging-redis.log \
+            --pidfile .redis.pid \
+            --loglevel verbose \
+            --daemonize yes \
+            --dir .redis \
+            --port $REDIS_PORT
+        echo "--------------"
+        sleep 2
+        d_status
+    fi
+}
+
+d_stop() {
+    if [ $NUMBER_REDIS_PROCESSES -gt 0 ] && [ -e .redis/.redis.pid ]; then
+        printf "\nStopping redis server..."
+        kill -9 $(cat .redis/.redis.pid)
+        rm .redis/.redis.pid
+        # Archive previous logs:
+        cp .redis/logging-redis.log .redis/old-logs/logging-redis_last.log
+        mv .redis/logging-redis.log $(x=".redis/old-logs/logging-redis_last_"$(Date)"_.log" && echo ${x//" "/"_"})
+        printf " done!\n"
+    else
+        d_status
+    fi
+}
+
+d_restart() {
+    d_stop
+    sleep 1
+    calc_processes
+    d_start
+}
+
+case $1 in
+install)
+    d_install
+    ;;
+status)
+    d_status
+    ;;
+start)
+    d_start
+    ;;
+stop)
+    d_stop
+    ;;
+restart)
+    d_restart
+    ;;
+*)
+    echo "usage: $NAME {install|status|start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0

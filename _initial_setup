@@ -23,7 +23,7 @@ main() {
 
     ### 1. Load vars defined in .env
     if [[ -f .env ]]; then
-        eval $(cat .env | sed 's/^/export /')
+        $(cat .env | sed 's/^/export /')
     else
         echo "
             No .env file found! Failing set up.
@@ -60,10 +60,31 @@ main() {
     pip install --upgrade pip
 
     ### 7. Install Requirements to VENV
+    printf "\n\n"
+    echo "Installing python packages..."
+    printf "\n\n"
+    sleep 1
     pip install -r requirements.txt
 
     ### 8. Link git pre-commit-hook script
-    ln -fs $PWD/_precommit_hook.sh $PWD/.git/hooks/pre-commit
+    ln -fs $PWD/_precommit_hook $PWD/.git/hooks/pre-commit
+
+    ### 9. Check that redis has been built
+    printf "\n\n"
+    echo "Install and start redis if it's not already running; its status is:"
+    printf "\n\n"
+    ./_redis_manager status
+
+    ### 10. Ensure npm is installed and load packages
+    if [[ ! -z $(which npm) ]]; then
+        printf "\n\n"
+        echo "Installing npm packages"
+        printf "\n\n"
+        npm install -g pm2 nodemon
+    else
+        echo "No npm found!!!"
+        return 1
+    fi
 
     echo """
         Set up complete. Enjoy Flask API-ing!

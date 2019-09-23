@@ -24,7 +24,7 @@ pipeline {
             steps {
                 echo 'START TESTING ...'
                 sh '''
-                    sh _run_tests.sh                # Add argument 'fail' in order test failing
+                    sh _run_tests                # Add argument 'fail' in order test failing
                 '''
                 junit 'pytest_unit.xml'
                 echo "... END TESTING"

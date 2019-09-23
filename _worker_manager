@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# ==============================================================================
+# This mananger script is used for status/start/stop/restart the app's workers
+# that interact with the redis queue; we use pm2 to set them as background tasks
+# ==============================================================================
+
+# Load vars defined in .env
+$(cat .env | sed 's/^/export /')
+
+# Test if we've already got redis running:
+calc_processes() {
+    PM2_PROCESSES=$(pm2 pid)                          # Store pids as string
+    PM2_PROCESSES_ARRAY=($(echo $PM2_PROCESSES))      # Split pids into array elements
+    PM2_PROCESSES_LENGTH=(${#PM2_PROCESSES_ARRAY[@]}) # Get length of array
+    return $PM2_PROCESSES_LENGTH
+}
+calc_processes
+
+d_status() {
+    if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
+        echo "PM2 is running PIDs: "$(echo $PM2_PROCESSES)
+    else
+        echo "PM2 is not running any workers"
+    fi
+}
+
+d_start() {
+    if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
+        echo "PM2 is already running PIDs "$(echo $PM2_PROCESSES)"; cancelling start!"
+    else
+        echo "--------------"
+        echo "PM2 is not running; beginning "$(echo $PROD_WORKER_INSTANCES)" workers now!"
+        pm2 \
+            -i $PROD_WORKER_INSTANCES \
+            start src/tasks/worker.py
+        echo "--------------"
+    fi
+}
+
+d_stop() {
+    if [ $PM2_PROCESSES_LENGTH -gt 0 ]; then
+        printf "\nStopping pm2 workers ..."
+        pm2 delete all
+        printf " done!\n"
+    else
+        d_status
+    fi
+}
+
+d_restart() {
+    d_stop
+    sleep 1
+    calc_processes
+    d_start
+}
+
+case $1 in
+status)
+    d_status
+    ;;
+start)
+    d_start
+    ;;
+stop)
+    d_stop
+    ;;
+restart)
+    d_restart
+    ;;
+*)
+    echo "usage: $NAME {status|start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
