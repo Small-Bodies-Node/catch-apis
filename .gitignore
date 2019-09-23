@@ -7,8 +7,11 @@ generated-models/**
 pytest_unit.xml
 .redundant/**
 **/*.log
-_test_generic_webhook.sh
-dwd_notes
+_test_generic_webhook
+flask_monitoringdashboard.db
+.redis
+.redis.pid
+node_modules
 
 # Flask_MonitorDasboard
 .dashboard.db
@@ -21,7 +24,11 @@ temp
 zbrowser.db
 zchecker.db
 .env-old
+.env-old2
 .cache
+catch.log
+dwd_notes
+temp*
 
 # emacs backup files
 *~

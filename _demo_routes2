@@ -1,0 +1,13 @@
+#! /Users/dwd/work/python/catch-apis/.venv/bin/python
+
+import requests
+
+url = 'http://127.0.0.1:5002/catch-dev/neat/query'
+
+url = 'http://localhost:5002/catch-dev/neat/query?sessionid=5bab9b6a-b905-42ad-8430-caec53c724b9&designation=65P'
+
+res = requests.get(url)
+
+x = res.json()
+
+print(x)
