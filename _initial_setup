@@ -47,7 +47,7 @@ main() {
         touch .dashboard.db
     fi
 
-    ### 4. Check for existence of `.venv` dir
+    ### 4. Ensure existence of `.venv` dir
     if [[ ! -d ./.venv ]]; then
         echo "Virtual Environment Not Found -- Creating './.venv'"
         $PYTHON_3_5_OR_HIGHER -m venv .venv
@@ -69,23 +69,28 @@ main() {
     ### 8. Link git pre-commit-hook script
     ln -fs $PWD/_precommit_hook $PWD/.git/hooks/pre-commit
 
-    ### 9. Check that redis has been built
+    ### 9. Check that redis dirs exist and give status of redis:
     printf "\n\n"
     echo "Install and start redis if it's not already running; its status is:"
     printf "\n\n"
+    if [[ ! -d .redis ]]; then mkdir -p .redis; fi
+    if [[ ! -d .redis/old-logs ]]; then mkdir -p .redis/old-logs; fi
     ./_redis_manager status
 
-    ### 10. Ensure npm is installed and load packages
-    if [[ ! -z $(which npm) ]]; then
+    ### 10. Ensure npm is installed and required packages are globally available
+    if [ $(command -v npm) ]; then
         printf "\n\n"
         echo "Checking/installing required npm packages"
         printf "\n\n"
-        if [[ ! -z $(which nodemon) ]]; then npm install -g nodemon; fi
-        if [[ ! -z $(which pm2) ]]; then npm install -g pm2; fi
+        if [ $(command -v nodemon) ]; then npm install -g nodemon; fi
+        if [ $(command -v pm2) ]; then npm install -g pm2; fi
     else
         echo "No npm found!!!"
         return 1
     fi
+
+    ### 11. Ensure we have dirs for web-api logging in production
+    if [[ ! -d logging/old-logs ]]; then mkdir -p logging/old-logs; fi
 
     echo """
         Set up complete. Enjoy Flask API-ing!

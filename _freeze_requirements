@@ -1,3 +1,21 @@
 #! /bin/bash
 
-pip freeze > requirements.txt
+# pip freeze > requirements.txt
+
+echo """
+
+Do NOT try to freeze to requirements.txt! This will cause the following packages to inocrrectly stored in the requirements.txt file, which will screw up things.
+
+git+git://github.com/Small-Bodies-Node/catch.git
+https://github.com/NASA-Planetary-Science/sbpy/archive/v0.1.1.zip
+git+git://github.com/Small-Bodies-Node/sbsearch.git
+
+When you freeze, these lines get incorrectly represented as:
+
+catch==0.2.0
+sbpy==0.1.1.dev0
+sbsearch==1.0.4
+
+If you want to add a new package to requirements.txt, either write it in directly, or run freeze but then be sure to replace the above 3 lines with the correct urls!
+
+"""

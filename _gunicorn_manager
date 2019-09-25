@@ -19,8 +19,14 @@ else
     exit 1
 fi
 
+# Unpublished 2nd argument to prevent daemonization; used for debugging
+is_daemon='--daemon'
+if [[ $2 == 0 ]]; then
+    is_daemon=''
+fi
+
 # Count how many gunicorn processes are running from this virtual environment:
-GUNICORN_PROCESSES=$(ps -ef | grep $VIRTUAL_ENV"/.venv\/bin\/gunicorn" | wc -l)
+GUNICORN_PROCESSES=$(($(ps -ef | grep $VIRTUAL_ENV"/bin/gunicorn" | wc -l) - 1))
 
 d_status() {
 
@@ -47,7 +53,7 @@ d_start() {
             --pid ..\/.pid.txt \
             --name $APP_NAME \
             --bind '127.0.0.1:'$PORT \
-            --daemon
+            $is_daemon
         echo "-----------------------------------------------------"
         cd ..
     fi
@@ -55,6 +61,7 @@ d_start() {
 
 d_stop() {
     if [ -e .pid.txt ]; then
+        archive_logs
         echo "Stopping gunicorn process; this may take ~10 seconds..."
         kill -9 $(cat .pid.txt)
         sleep 10
@@ -62,6 +69,7 @@ d_stop() {
         if [ -e .pid-old.txt ]; then
             rm .pid-old.txt
         fi
+        #
         echo "... done!"
     else
         #TODO: improve logic here:
@@ -71,6 +79,7 @@ d_stop() {
 
 d_restart() {
     if [ -e $PWD/.pid.txt ]; then
+        archive_logs
         cp .pid.txt .pid-old.txt
         # Reexec a new master with new workers
         kill -s USR2 $(cat .pid.txt)
@@ -81,6 +90,7 @@ d_restart() {
         # Graceful stop old master
         kill -s QUIT $(cat .pid-old.txt)
         sleep 1
+        d_status
     else
         echo "No file '.pid.txt' found! Try starting the API:"
         if [[ $GUNICORN_PROCESSES -gt 0 ]]; then
@@ -90,6 +100,14 @@ d_restart() {
             d_start
         fi
     fi
+}
+
+archive_logs() {
+    printf "\n\nArchiving previous logs..."
+    sleep 1
+    cp logging/production_logs.log logging/old-logs/productions_logs_last.log
+    mv logging/production_logs.log $(x="logging/old-logs/production_logs_"$(Date)"_.log" && echo ${x//" "/"_"})
+    printf " done.\n"
 }
 
 case $1 in

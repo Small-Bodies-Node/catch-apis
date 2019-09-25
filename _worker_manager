@@ -19,7 +19,8 @@ calc_processes
 
 d_status() {
     if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
-        echo "PM2 is running PIDs: "$(echo $PM2_PROCESSES)
+        echo "PM2 is running "$PM2_PROCESSES_LENGTH" workers."
+        echo "Worker PIDs: $(echo $PM2_PROCESSES)"
     else
         echo "PM2 is not running any workers"
     fi

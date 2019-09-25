@@ -44,8 +44,8 @@ def bare_root() -> FLW.Response:
 flask_app.register_blueprint(rest_plus_blueprint)
 
 # Configure and associate monitoring dashboard
-dashboard.config.init_from(envvar=ENV.DASHBOARD_CONFIG)
-dashboard.bind(flask_app)
+# dashboard.config.init_from(envvar=ENV.DASHBOARD_CONFIG)
+# dashboard.bind(flask_app)
 
 # Required for custom error handler; see: https://stackoverflow.com/a/36575875/9730910
 flask_app.config['TRAP_HTTP_EXCEPTIONS'] = True
