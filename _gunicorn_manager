@@ -78,6 +78,16 @@ d_stop() {
 }
 
 d_restart() {
+
+    if [ -e $PWD/.pid.txt ] && [ $GUNICORN_PROCESSES == 0 ]; then
+        rm $PWD/.pid.txt
+    fi
+
+    if [ ! -e $PWD/.pid.txt ] && [ $GUNICORN_PROCESSES -gt 0 ]; then
+        echo "Something is messed up here!!!"
+        exit 1
+    fi
+
     if [ -e $PWD/.pid.txt ]; then
         archive_logs
         cp .pid.txt .pid-old.txt
@@ -103,11 +113,13 @@ d_restart() {
 }
 
 archive_logs() {
-    printf "\n\nArchiving previous logs..."
-    sleep 1
-    cp logging/production_logs.log logging/old-logs/productions_logs_last.log
-    mv logging/production_logs.log $(x="logging/old-logs/production_logs_"$(date)"_.log" && echo ${x//" "/"_"})
-    printf " done.\n"
+    if [ -e logging/production_logs.log ]; then
+        printf "\n\nArchiving previous logs..."
+        sleep 1
+        cp logging/production_logs.log logging/old-logs/productions_logs_last.log
+        mv logging/production_logs.log $(x="logging/old-logs/production_logs_"$(date)"_.log" && echo ${x//" "/"_"})
+        printf " done.\n"
+    fi
 }
 
 case $1 in
