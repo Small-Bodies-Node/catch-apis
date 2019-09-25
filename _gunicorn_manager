@@ -1,7 +1,10 @@
 #!/bin/sh
 
 # ============================================================================
-# This script is used to start/stop/restart the CATCH APIs in production mode
+# This script is used to start/stop/restart the CATCH APIs in deployment
+# environments; to identify processes launched from a particular deployment
+# (PROD, STAGE or DEV), we 'pgrep' on the path to the running gunicorn
+# in the virtual-environment dir
 # ============================================================================
 
 # Load vars defined in .env
@@ -26,6 +29,10 @@ if [[ $2 == 0 ]]; then
 fi
 
 # Count how many gunicorn processes are running from this virtual environment:
+if [ -z $VIRTUAL_ENV ]; then
+    echo "No VENV activated!"
+    exit 1
+fi
 GUNICORN_PROCESSES=$(($(ps -ef | grep $VIRTUAL_ENV"/bin/gunicorn" | wc -l) - 1))
 
 d_status() {

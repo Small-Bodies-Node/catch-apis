@@ -41,7 +41,7 @@ d_status() {
 
     if [[ $NUMBER_REDIS_PROCESSES -gt 0 ]]; then
         echo "Redis is running! "
-        [ -e .redis/.redis.pid ] && printf "PID: "$(cat .redis/.redis.pid)
+        [ -e .redis/.redis.pid ] && printf "PID: "$(cat .redis/.redis.pid)"\n"
     else
         echo "No redis server is running at the moment."
     fi

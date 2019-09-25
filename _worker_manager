@@ -5,15 +5,17 @@
 # that interact with the redis queue; we use pm2 to set them as background tasks
 # ==============================================================================
 
-PROC_NAME=woRQer
-
 # Load vars defined in .env
 $(cat .env | sed 's/^/export /')
+
+# Give name to workers launched from this deployment environment
+# This will be used to select them collectively by pm2
+PROC_NAME="woRQer-"$DEPLOYMENT_ENV
 
 # Test if we've already got redis running:
 calc_processes() {
     PM2_PROCESSES=$(pm2 pid $PROC_NAME)               # Store woRQer pids as string
-    PM2_PROCESSES_ARRAY=($(echo $PM2_PROCESSES))      # Split pids into array elements
+    PM2_PROCESSES_ARRAY=($(echo $PM2_PROCESSES))      # Split pids into array entries
     PM2_PROCESSES_LENGTH=(${#PM2_PROCESSES_ARRAY[@]}) # Get length of array
     return $PM2_PROCESSES_LENGTH
 }
@@ -23,8 +25,9 @@ d_status() {
     if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
         echo "PM2 is running "$PM2_PROCESSES_LENGTH" redis-queue-task workers."
         echo "Worker PIDs: $(echo $PM2_PROCESSES)"
+        echo "Run \`pm2 list $PROC_NAME\`, etc. for further details."
     else
-        echo "PM2 is not running any workers"
+        echo "PM2 is not running any workers for this deployment environment"
     fi
 }
 
