@@ -5,12 +5,14 @@
 # that interact with the redis queue; we use pm2 to set them as background tasks
 # ==============================================================================
 
+PROC_NAME=woRQer
+
 # Load vars defined in .env
 $(cat .env | sed 's/^/export /')
 
 # Test if we've already got redis running:
 calc_processes() {
-    PM2_PROCESSES=$(pm2 pid)                          # Store pids as string
+    PM2_PROCESSES=$(pm2 pid $PROC_NAME)               # Store woRQer pids as string
     PM2_PROCESSES_ARRAY=($(echo $PM2_PROCESSES))      # Split pids into array elements
     PM2_PROCESSES_LENGTH=(${#PM2_PROCESSES_ARRAY[@]}) # Get length of array
     return $PM2_PROCESSES_LENGTH
@@ -19,7 +21,7 @@ calc_processes
 
 d_status() {
     if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
-        echo "PM2 is running "$PM2_PROCESSES_LENGTH" workers."
+        echo "PM2 is running "$PM2_PROCESSES_LENGTH" redis-queue-task workers."
         echo "Worker PIDs: $(echo $PM2_PROCESSES)"
     else
         echo "PM2 is not running any workers"
@@ -34,6 +36,7 @@ d_start() {
         echo "PM2 is not running; beginning "$(echo $PROD_WORKER_INSTANCES)" workers now!"
         pm2 \
             -i $PROD_WORKER_INSTANCES \
+            -n $PROC_NAME \
             start src/tasks/worker.py
         echo "--------------"
     fi
@@ -42,7 +45,7 @@ d_start() {
 d_stop() {
     if [ $PM2_PROCESSES_LENGTH -gt 0 ]; then
         printf "\nStopping pm2 workers ..."
-        pm2 delete all
+        pm2 delete $PROC_NAME
         printf " done!\n"
     else
         d_status
@@ -51,7 +54,7 @@ d_stop() {
 
 d_restart() {
     d_stop
-    sleep 1
+    sleep 2
     calc_processes
     d_start
 }

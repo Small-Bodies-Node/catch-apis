@@ -14,9 +14,10 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
+                echo 'Sourcing and building...'
                 sh '''
                     cat .jenkins-AAA
+                    #source _initial_setup jenkins
                 '''
             }
         }
@@ -24,6 +25,9 @@ pipeline {
             steps {
                 echo 'START TESTING ...'
                 sh '''
+                    python3 -m venv .venv
+                    source .venv/bin/activate
+                    pip install pytest requests
                     sh _run_tests                # Add argument 'fail' in order test failing
                 '''
                 junit 'pytest_unit.xml'
