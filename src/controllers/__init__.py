@@ -25,10 +25,13 @@ logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 # Choose port to run app locally based on deployment environment
 if ENV.DEPLOYMENT_ENV == EDE.PROD:
     URL_PREFIX = '/catch'
+    title_suffix = ''
 elif ENV.DEPLOYMENT_ENV == EDE.STAGE:
     URL_PREFIX = '/catch-stage'
+    title_suffix = '[STAGE]'
 elif ENV.DEPLOYMENT_ENV == EDE.DEV:
     URL_PREFIX = '/catch-dev'
+    title_suffix = '[DEV]'
 else:
     raise Exception('Unrecognized DEPLOYMENT_ENV!')
 
@@ -42,7 +45,7 @@ blueprint: Blueprint = Blueprint(
 # Initiate RestPlusApi object and associate it with blueprint
 REST_PLUS_APIS = Api(
     blueprint,
-    title='CATCH APIS',
+    title='CATCH APIS '+str(title_suffix),
     version='1.0',
     description='Flask APIs for CATCH Tool',
     doc='/docs'
