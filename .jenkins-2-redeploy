@@ -72,7 +72,7 @@ pipeline {
                     #touch "hello-`date`.txt"
 
                     sleep 5
-                    curl localhost:5000/catch/demo
+                    curl localhost:5001/catch/demo
 
                     echo "... END DEPLOYING"
                 '''
