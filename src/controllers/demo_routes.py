@@ -76,6 +76,25 @@ class DemoRoutes(FRP.Resource):
         return res
 
 
+@API.route("/staged")
+class StagedDemoRoutes(FRP.Resource):
+    """Controller class for staged-demo-routes"""
+
+    @API.doc('--staged-demo--')
+    @FRP.cors.crossdomain(origin='*')
+    def get(self: 'StagedDemoRoutes') -> typing.Any:
+        '''Returns trivial json object'''
+
+        # Return a trivial json
+        res: FLW.Response = jsonify(
+            {
+                "message": "This is the STAGED demo GET route which doesn't do much."
+            }
+        )
+        res.status_code = 200
+        return res
+
+
 @API.route("/redis/")
 class DemoRedisRoutes(FRP.Resource):
     """Controller class for demo-redis-routes"""
