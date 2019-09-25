@@ -15,7 +15,7 @@ import flask_restplus as FRP
 
 from redis import Redis, StrictRedis
 from rq import Queue
-from tasks import test_task, RQueues
+from tasks import RQueues
 
 strict_redis: Redis = StrictRedis()
 
