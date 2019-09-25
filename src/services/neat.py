@@ -23,7 +23,7 @@ def query(sessionid: str = '', designation: str = '') -> int:
     }
     config: Config = Config(**opts)
     with Catch(config, sessionid=sessionid, save_log=True) as catch:
-        queryid: int = catch.query(designation, source='jpl')
+        queryid: int = catch.query(designation, source='neat palomar')
         catch.cutouts(queryid)
 
     return queryid
