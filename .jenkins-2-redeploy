@@ -60,11 +60,11 @@ pipeline {
             steps {
                 echo "START DEPLOYING ..."
                 sh '''
-                    cd $CATCH-STAGE_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                    cd $CATCH_STAGE_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
                     pwd
                     git stash
                     git pull origin master
-                    . $CATCH-STAGE_APIS_PATH/_initial_setup jenkins
+                    . $CATCH_STAGE_APIS_PATH/_initial_setup jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
                     JENKINS_NODE_COOKIE=dontKillMe sh ./_gunicorn_manager restart
