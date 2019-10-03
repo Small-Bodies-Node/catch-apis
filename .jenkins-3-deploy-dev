@@ -1,8 +1,8 @@
 /*
  *  This groovy script will be triggered by the Generic Webhook Trigger Plugin
- *  when a github push event is detected direct to the master branch and we want
- *  the production API on Musforti to automatically update to reflect those changes
- *  Job Triggered: 'jenkins-2-redeploy'
+ *  when a github push event is detected direct to the dev branch and we want
+ *  the catch-dev API on Musforti to automatically update to reflect those changes
+ *  Job Triggered: 'jenkins-3-deploy-dev'
  */
 
 pipeline {
@@ -21,14 +21,14 @@ pipeline {
             ],
 
             // The token is required both in this script AND in the Jenkins pipeline  GUI
-            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_MASTER,  //Defined as global var
+            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_DEV,  //Defined as global var
 
-            causeString: 'Triggered on $ref equalling "refs/heads/master"',
+            causeString: 'Triggered on $ref equalling "refs/heads/dev"',
             printContributedVariables: true,
             printPostContent: !true,
             silentResponse: false,
             regexpFilterText: '$ref',
-            regexpFilterExpression: 'refs/heads/master'
+            regexpFilterExpression: 'refs/heads/dev'
         )
     }
 
@@ -36,7 +36,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'START BUILD ...'
-                // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 sh '''
                     cat .jenkins-AAA
                 '''
@@ -60,11 +60,11 @@ pipeline {
             steps {
                 echo "START DEPLOYING ..."
                 sh '''
-                    cd $CATCH-STAGE_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                    cd $CATCH-DEV_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
                     pwd
                     git stash
                     git pull origin master
-                    . $CATCH-STAGE_APIS_PATH/_initial_setup jenkins
+                    . $CATCH-DEV_APIS_PATH/_initial_setup jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
                     JENKINS_NODE_COOKIE=dontKillMe sh ./_gunicorn_manager restart
@@ -73,8 +73,8 @@ pipeline {
                     #touch "hello-`date`.txt"
 
                     sleep 5
-                    # Try pinging url for catch-stage
-                    curl localhost:5001/catch/demo
+                    # Try pinging url for catch-dev
+                    curl localhost:5002/catch/demo
 
                     echo "... END DEPLOYING"
                 '''
