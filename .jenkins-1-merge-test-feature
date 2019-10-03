@@ -15,7 +15,7 @@ pipeline {
             steps {
                 echo 'Sourcing and building...'
                 sh '''
-                    cat .jenkins-AAA
+                    cat .jenkins-testing
                     #source _initial_setup jenkins
                 '''
             }

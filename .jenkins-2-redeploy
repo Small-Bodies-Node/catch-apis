@@ -38,7 +38,7 @@ pipeline {
                 echo 'START BUILD ...'
                 // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 sh '''
-                    cat .jenkins-AAA
+                    cat .jenkins-testing
                 '''
                 echo "... END BUILD"
             }
