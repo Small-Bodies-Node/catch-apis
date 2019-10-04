@@ -63,7 +63,9 @@ pipeline {
                     cd $CATCH_DEV_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
                     pwd
                     git stash
-                    git pull origin master
+                    #git pull origin master
+                    git fetch origin
+                    get checkout origin/dev -B dev
                     . $CATCH_DEV_APIS_PATH/_initial_setup jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
