@@ -2,7 +2,7 @@
  *  This groovy script will be triggered by the SCM Webhook when a github pull-request (PR)
  *  is created; this will merge the PR branch with master, run tests, and return a
  *  status to github enabling the merge to take place remotely.
- *  Job Triggered: 'jenkins-1-test-then-merge'
+ *  Job Triggered: 'jenkins-1-merge-branch-to-master'
  */
 
 

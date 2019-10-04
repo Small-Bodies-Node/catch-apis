@@ -2,7 +2,7 @@
  *  This groovy script will be triggered by the Generic Webhook Trigger Plugin
  *  when a github push event is detected direct to the master branch and we want
  *  the production API on Musforti to automatically update to reflect those changes
- *  Job Triggered: 'jenkins-2-redeploy'
+ *  Job Triggered: 'jenkins-2-deploy-stage'
  */
 
 pipeline {
