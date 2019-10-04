@@ -43,7 +43,7 @@ pipeline {
                     git pull origin master
 
                     # Ensure nvm is initialized (npm needed for _worker_manager below)
-                    . $NVM_INIT_SCRIPT
+                    . $NVM_INIT_SCRIPT || true
 
                     . $CATCH_PROD_APIS_PATH/_initial_setup jenkins
 
