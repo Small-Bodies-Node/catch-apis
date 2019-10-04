@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# ==============================================================================
+# Run this script to trigger an upgrade from stage to production delpoyment
+# Only run this after checking all looks well with stage
+# ==============================================================================
+
+# Load vars defined in .env
+$(cat .env | sed 's/^/export /')
+
+curl -X POST "https://"$JENKINS_USERNAME":"$JENKINS_UPGRADE_TOKEN"@musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/build?token=upgrade_to_prod_token"
