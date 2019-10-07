@@ -5,7 +5,32 @@
 # Only run this after checking all looks well with stage
 # ==============================================================================
 
-# Load vars defined in .env
-$(cat .env | sed 's/^/export /')
+clear
 
-curl -X POST "https://"$JENKINS_USERNAME":"$JENKINS_UPGRADE_TOKEN"@musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/build?token=upgrade_to_prod_token"
+echo """
+=================================================
+Are you sure you want to upgrade the catch-apis
+STAGE deployment to PROD deployment?
+
+(y/N)
+
+=================================================
+"""
+
+read decision
+
+if [[ $decision =~ y|ye|yes|Y|YE|YES ]]; then
+
+    # Load vars defined in .env
+    $(cat .env | sed 's/^/export /')
+
+    # Trigger Jenkins pipeline
+    curl -sv -X POST "https://"$JENKINS_USERNAME":"$JENKINS_UPGRADE_TOKEN"@musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/build?token=upgrade_to_prod_token"
+
+    echo "\n\n\nJob-trigger request sent to jenkins; check 'https://musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/' for result.\n\n\n"
+
+else
+
+    echo "OK, cancelling upgrade."
+
+fi
