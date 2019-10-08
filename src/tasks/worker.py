@@ -4,7 +4,7 @@
 
 from typing import List
 from redis import from_url, Redis
-from tasks import RQueues
+from . import RQueues
 from rq import Worker, Queue, Connection
 from env import ENV
 
