@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ============================================================================
 # This manager script is used to install/start/stop/restart the REDIS server
