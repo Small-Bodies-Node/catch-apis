@@ -1,20 +1,12 @@
-"""
-NEAT route namespace and database tables.
-"""
-
-from typing import Dict, Union
 from flask_restplus import Namespace, Model, fields
-# from catch.schema import CatchQueries, Caught, Obs, Found, Obj
-from util import FormattedStringOrNone
-from env import ENV
+from typing import Dict, Union
 
 
 class App:
-    """NEAT route namespace and return data models."""
+    """/caught route namespace and return data models."""
     api: Namespace = Namespace(
-        'Catch moving targets with NEAT',
-        path="/neat",
-        description="Near-Earth Asteroid Tracking survey."
+        'Caught moving targets',
+        path="/caught"
     )
 
     caught_data: Model = api.model('CaughtData', {
@@ -113,28 +105,25 @@ class App:
         ),
         "productid": fields.String(
             attribute='Obs.productid',
-            description='NEAT archive product ID'
+            description='Archive product ID'
         ),
         "instrument": fields.String(
             attribute='Obs.instrument',
-            description='NEAT instrument'
+            description='Instrument'
         ),
-        "archive_url": FormattedStringOrNone(
-            '/'.join((ENV.NEAT_CUTOUT_BASE_URL, '{cutout_path}')),
-            description='FITS cutout from local archive'
+        "archive_url": fields.String(
+            attribute='archive_url',
+            description='URL to full frame image'
         ),
-    })
-
-    caught: Model = api.model('CaughtModel', {
-        "data": fields.List(fields.Nested(caught_data)),
-        "sessionid": fields.String('sessionid', description='session ID'),
-        "queryid": fields.String('queryid', description='query ID'),
-        "total": fields.Integer(description='number of returned rows')
+        "cutout_url": fields.String(
+            attribute='cutout_url',
+            description='URL to cutout around target ephemeris'
+        ),
     })
 
 
 COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
-    '/caught': {
+    '/moving': {
         'designation': {
             'label': 'Designation',
             'description': 'Object designation'
@@ -259,7 +248,11 @@ COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
         },
         'archive_url': {
             'label': 'Archive URL',
-            'description': 'Image URL'
+            'description': 'Full frame image from data archive'
+        },
+        'cutout_url': {
+            'label': 'Cutout URL',
+            'description': 'Cutout image around target ephemeris'
         }
     }
 }

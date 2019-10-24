@@ -33,7 +33,12 @@ class ENV():
     DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
     DB_DATABASE: Optional[str] = os.getenv("DB_DATABASE")
     DASHBOARD_CONFIG: Optional[str] = os.getenv("DASHBOARD_CONFIG")
-    NEAT_CUTOUT_BASE_URL: str = os.getenv('NEAT_CUTOUT_BASE_URL', default='')
+    CATCH_FULLFRAME_BASE_URL: str = os.getenv('CATCH_FULLFRAME_BASE_URL',
+                                              default='')
+    CATCH_CUTOUT_BASE_URL: str = os.getenv('CATCH_CUTOUT_BASE_URL', default='')
+    CATCH_ARCHIVE_PATH: str = os.getenv('CATCH_ARCHIVE_PATH', default='')
+    CATCH_CUTOUT_PATH: str = os.getenv('CATCH_CUTOUT_PATH', default='')
+    CATCH_LOG: str = os.getenv('CATCH_LOG', default='/dev/null')
 
     # Numeric properties
     REDIS_PORT: int = int(os.getenv("REDIS_PORT") or -1)
@@ -41,7 +46,7 @@ class ENV():
         "PROD_GUNICORN_INSTANCES") or -1)
 
     # Boolean properties; requires casting a string to bool
-    DEVELOPMENT_MODE: bool = 'False' != os.getenv("DEVELOPMENT_MODE")
+    DEVELOPMENT_MODE: bool = os.getenv("DEVELOPMENT_MODE") != 'False'
 
     # ENUM Properties
     DEPLOYMENT_ENV: EDeploymentEnvironment = APP_DEPLOYMENT_ENV
