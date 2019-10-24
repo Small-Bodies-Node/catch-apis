@@ -47,7 +47,7 @@ pipeline {
             steps {
                 echo 'START TESTING ...'
                 sh '''
-                    source _initial_setup
+                    source _initial_setup jenkins
                     #python3 -m venv .venv
                     #source .venv/bin/activate
                     pip install pytest requests
