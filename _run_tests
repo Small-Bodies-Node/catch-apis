@@ -1,7 +1,9 @@
 #! /bin/bash
 
 if [ "$1" == "fail" ]; then
+    echo ">>> Running tests with fail"
     # pytest --junit-xml=pytest_unit.xml
 else
+    echo ">>> Running tests"
     # pytest --junit-xml=pytest_unit.xml --ignore=./tests/test_will_fail.py
 fi
