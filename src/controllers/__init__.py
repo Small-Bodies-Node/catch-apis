@@ -7,7 +7,7 @@ Flask-RESTPlus namespacing example: https://flask-restplus.readthedocs.io/en/sta
 # import os
 import logging
 import traceback
-from typing import Any, Tuple, Optional
+from typing import Any, Tuple
 from flask_restplus import Api
 from flask import jsonify, Blueprint
 from flask.wrappers import Response
@@ -15,23 +15,28 @@ from sqlalchemy.orm.exc import NoResultFound
 from env import ENV, EDeploymentEnvironment as EDE
 
 # Import all restplus namespaces
-from .demo_routes import API as ns0
-from .neat import API as ns1
+from .demo_routes import API as demos
+from .query import API as query
+from .images import API as images
+from .stream import API as stream
+from .caught import API as caught
 
 logger: logging.Logger = logging.getLogger(__name__)
 logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 
 
 # Choose port to run app locally based on deployment environment
+URL_PREFIX: str
+TITLE_SUFFIX: str
 if ENV.DEPLOYMENT_ENV == EDE.PROD:
     URL_PREFIX = '/catch'
-    title_suffix = ''
+    TITLE_SUFFIX = ''
 elif ENV.DEPLOYMENT_ENV == EDE.STAGE:
     URL_PREFIX = '/catch-stage'
-    title_suffix = '[STAGE]'
+    TITLE_SUFFIX = '[STAGE]'
 elif ENV.DEPLOYMENT_ENV == EDE.DEV:
     URL_PREFIX = '/catch-dev'
-    title_suffix = '[DEV]'
+    TITLE_SUFFIX = '[DEV]'
 else:
     raise Exception('Unrecognized DEPLOYMENT_ENV!')
 
@@ -45,17 +50,22 @@ blueprint: Blueprint = Blueprint(
 # Initiate RestPlusApi object and associate it with blueprint
 REST_PLUS_APIS = Api(
     blueprint,
-    title='CATCH APIS '+str(title_suffix),
+    title='CATCH APIS '+str(TITLE_SUFFIX),
     version='1.0',
     description='Flask APIs for CATCH Tool',
     doc='/docs'
 )
 
 # Combine Namespaces
-REST_PLUS_APIS.add_namespace(ns0)
-REST_PLUS_APIS.add_namespace(ns1)
+REST_PLUS_APIS.add_namespace(query)
+REST_PLUS_APIS.add_namespace(caught)
+REST_PLUS_APIS.add_namespace(images)
+REST_PLUS_APIS.add_namespace(stream)
+REST_PLUS_APIS.add_namespace(demos)
 
 # Add error handlers:
+
+
 @REST_PLUS_APIS.errorhandler
 def default_error_handler(exception: Exception) -> Tuple[Response, Any]:
     """ -- Default Error Handler -- """

@@ -4,7 +4,7 @@ import flask
 import flask.wrappers as FLW
 from werkzeug.contrib.fixers import ProxyFix
 
-import flask_monitoringdashboard as dashboard
+#import flask_monitoringdashboard as dashboard
 from logging_setup import logger    # Must come BEFORE controllers import
 from controllers import default_error_handler, blueprint as rest_plus_blueprint
 from env import ENV, EDeploymentEnvironment
@@ -24,6 +24,8 @@ flask_app: flask.Flask = flask.Flask(__name__)
 flask_app.url_map.strict_slashes = False
 
 # Define sth at flask's bare root; must come BEFORE associating flask app with restplus
+
+
 @flask_app.route('/')
 def bare_root() -> FLW.Response:
     """Message for bare-api route"""

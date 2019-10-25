@@ -47,8 +47,9 @@ pipeline {
             steps {
                 echo 'START TESTING ...'
                 sh '''
-                    python3 -m venv .venv
-                    source .venv/bin/activate
+                    source _initial_setup jenkins
+                    #python3 -m venv .venv
+                    #source .venv/bin/activate
                     pip install pytest requests
                     sh _run_tests                # Add argument 'fail' in order test failing
                 '''
