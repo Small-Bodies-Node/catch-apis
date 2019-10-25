@@ -5,14 +5,15 @@
 ### OVERVIEW
 
 - This is a flask webapp
-- It uses a virtual environment launched by running `source _init_setup`
+- It uses a python virtual environment launched by running `source _init_setup`
 - The library `FlaskRestPlus` is used to generate swagger documentation
 - The app uses redis and the python `rq` library to perform long-lived/async tasks
+- Environment variables are set in `.env` that you create by copying and editing the `.env-template` file
 - To launch the app in production, you need to have running:
   - the flask application server itself with gunicorn launched with `_gunicorn_manager`
-  - `redis-server` launched with `_redis_manager`
-  - workers to process the queued tasks launched with `_workers_manager` (uses pm2 under the hood)
-  - proxying through a web server (we use apache)
+  - A `redis-server` instance; the script `_redis_manager` will let you install/start/stop/restart a redis instance
+  - workers to process the queued tasks launched with `_workers_manager`; this script uses pm2 under the hood, so you need to have node installed with a global `pm2` package
+  - a web server to proxy-pass http requests to the gunicorn workers; we use apache
   - postgres DB
 
 ### LOCAL DEVELOPMENT
