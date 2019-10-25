@@ -27,6 +27,7 @@ pipeline {
                     python3 -m venv .venv
                     source .venv/bin/activate
                     pip install pytest requests
+                    # pip install -r requirements.txt
                     sh _run_tests                # Add argument 'fail' in order test failing
                 '''
                 junit 'pytest_unit.xml'
