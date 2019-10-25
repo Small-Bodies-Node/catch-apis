@@ -5,20 +5,23 @@ import uuid
 import logging
 from typing import List, Tuple
 
+from PIL import Image
 import numpy as np
 import astropy.units as u
 from astropy.coordinates import Angle
 from astropy.wcs import WCS
 from astropy.nddata import CCDData
 from astropy.io import fits
+from astropy.visualization import ZScaleInterval
 
 from env import ENV
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def neat_cutout(productid: str, job_id: uuid.UUID, ra: float, dec: float,
-                size: int = 5) -> None:
+def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
+                dec: float, size: int = 5, prefix: str = '',
+                overwrite: bool = False, thumbnail: bool = True) -> None:
     """Cutout NEAT image at location.
 
     Parameters
@@ -35,6 +38,15 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float, dec: float,
     size : int, optional
         Cutout size, arcminutes.
 
+    prefix : str, optional
+        File name prefix.
+
+    overwrite : bool, optional
+        Overwrite existing files.
+
+    thumbnail : bool, optional
+        Generate JPEG thumbnail.
+
     """
 
     ra = ra % 360
@@ -47,14 +59,14 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float, dec: float,
         'data'] + productid.lower().split('_')
     inf: str = '{}.fit.fz'.format(os.path.join(*path))
 
-    outf: str = ('{}/{}_ra{:09.5f}_dec{:+09.5f}_{}arcmin.fits'
-                 .format(ENV.CATCH_CUTOUT_PATH, productid,
+    outf: str = ('{}/{}{}_ra{:09.5f}_dec{:+09.5f}_{}arcmin.fits'
+                 .format(ENV.CATCH_CUTOUT_PATH, prefix, productid,
                          ra, dec, size))
 
     logger.info('Cutout for {}: {}'.format(
         job_id.hex, ' → '.join((inf, outf))))
 
-    if os.path.exists(outf):
+    if os.path.exists(outf) and not overwrite:
         logger.debug('  Already exists.')
         return
 
@@ -103,5 +115,41 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float, dec: float,
 
     cutout: CCDData = ccd[i]
     cutout.write(outf, overwrite=True)
+    logger.debug('  Wrote {}×{} image'.format(*cutout.shape))
 
-    logger.debug('{}×{} image written.'.format(*cutout.shape))
+    if thumbnail:
+        zscale: ZScaleInterval = ZScaleInterval()
+        vmin: float
+        vmax: float
+        vmin, vmax = zscale.get_limits(cutout.data)
+        thumbf: str = (
+            outf.replace(ENV.CATCH_CUTOUT_PATH, ENV.CATCH_THUMBNAIL_PATH)
+            .replace('.fits', '_thumb.jpg'))
+        array_to_thumbnail(cutout.data, vmin, vmax, thumbf)
+
+
+def array_to_thumbnail(data: np.ndarray, vmin: float, vmax: float,
+                       filename: str):
+    """Convert array to JPEG thumbnail and save.
+
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        Data.
+
+    vmin, vmax : float
+        Color scale data minimum and maximum.
+
+    filename : str
+        File name.
+
+    """
+
+    # reverse y-axis for standard astronomical orientation
+    scaled: np.ndarray = ((data[::-1] - vmin) / (vmax - vmin)) * 255
+    scaled = np.minimum(np.maximum(0, scaled), 255)
+    im: Image = Image.fromarray(np.uint8(scaled), 'L')
+    im.thumbnail((128, 128))
+    im.save(filename, "JPEG")
+    logger.debug('  Wrote thumbnail'.format(filename))

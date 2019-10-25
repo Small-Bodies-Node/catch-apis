@@ -29,6 +29,9 @@ To develop this flask API locally on a linux-like machine:
    5. `DASHBOARD_CONFIG` needs to point to a file called `.config.cfg` in your root directory; create one by copying from `.config-template.cfg` and setting variables therein accordingly.
    6. Create an empty file `.dashboard.db` in your root directory; this will be used by the flask_monitoringdashboard library to track API usage
    7. `TEST_URL_BASE` is used in the script `_demo_routes`; you're unlikely to need to change this.
+   8. `CATCH_ARCHIVE_PATH` is the source directory for local data.
+   9. `CATCH_CUTOUT_PATH` and `CATCH_THUMBNAIL_PATH` are the directories to which cutouts and thumbnails are saved.
+   11. `CATCH_ARCHIVE_BASE_URL`, `CATCH_CUTOUT_BASE_URL`, and `CATCH_THUMBNAIL_BASE_URL` are the URL prefixes for serving the archive, cutouts, and thumbnails.
 
 2. Run `source _initial_setup` in order to:
 
@@ -92,10 +95,6 @@ The following tools/conventions are used to promote codebase quality amidst mult
 
 - pytest
   - Unit-test capabilities are in place; just run `sh _run_tests` to execute them. Failed tests will cause merge requests to be rejected if attempted at origin. Tests are recommended mainly for functions that you expect to be established for the long haul.
-
-## GENERATING SQLALCHEMY-ORM MODELS
-
-This only needs to be done when the DB schema gets changed. Run `_generate_models` to generate an output of the latest DB schema based on the state of the remote DB, and translated into sqlalchemy-ORM syntax in `generated-models/gen-models.txt`, then we essentially copy-paste those contents into `src/models/models.py`
 
 ## TODOs
 

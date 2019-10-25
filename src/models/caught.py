@@ -113,11 +113,15 @@ class App:
         ),
         "archive_url": fields.String(
             attribute='archive_url',
-            description='URL to full frame image'
+            description='URL to original archive image'
         ),
         "cutout_url": fields.String(
             attribute='cutout_url',
             description='URL to cutout around target ephemeris'
+        ),
+        "thumbnail_url": fields.String(
+            attribute='thumbnail_url',
+            description='URL to cutout thumbnail'
         ),
     })
 

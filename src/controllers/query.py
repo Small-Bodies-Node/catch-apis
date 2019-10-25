@@ -68,7 +68,8 @@ class Query(FRP.Resource):
             job_id: uuid.UUID = uuid.uuid4()
 
             results_url: str = '{}/{}/caught/{}'.format(
-                request.url_root.strip('/'), URL_PREFIX.strip('/'), job_id.hex)
+                request.url_root.strip('/'), URL_PREFIX.strip('/'),
+                job_id.hex)
 
             payload: Dict[str, Union[Dict[str, Union[str, bool]], str]] = {
                 "message": "",
@@ -80,7 +81,8 @@ class Query(FRP.Resource):
             cached = False
             if query['cached']:
                 # check Catch Queries cache for previous search results
-                cached = service.check_cache(query['target'], query['source'])
+                cached = service.check_cache(
+                    query['target'], query['source'])
 
             if cached:
                 # store cached results in catch_queries table:

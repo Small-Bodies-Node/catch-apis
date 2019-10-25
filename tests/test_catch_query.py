@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 
+import argparse
 import requests
 from sseclient import SSEClient
 
-url = 'http://127.0.0.1:5002/catch-dev/query/moving?target=65P&cached=false'
+parser = argparse.ArgumentParser()
+parser.add_argument('target', default='65P')
+args = parser.parse_args()
+
+url = ('http://127.0.0.1:5002/catch-dev/query/moving?target={}&cached=false'
+       .format(args.target))
 res = requests.get(url)
 data = res.json()
 print(data)

@@ -5,7 +5,8 @@ from env import ENV
 
 
 def build_url(productid: str, ra: Optional[float] = None,
-              dec: Optional[float] = None, size: int = 1) -> str:
+              dec: Optional[float] = None, size: int = 1,
+              prefix: str = '') -> str:
     """Build the URL for full-frame and cutout images."""
 
     url: str
@@ -18,7 +19,7 @@ def build_url(productid: str, ra: Optional[float] = None,
             path = 'tricam'
 
         url = '{}/neat/{}/data/{}.fits'.format(
-            ENV.CATCH_FULLFRAME_BASE_URL, path,
+            ENV.CATCH_ARCHIVE_BASE_URL, path,
             '/'.join(productid.lower().split('_')))
     else:
         r: float = ra % 360
@@ -26,7 +27,7 @@ def build_url(productid: str, ra: Optional[float] = None,
         s: float = max(1, size)
 
         # cutout URL
-        url = '{}/{}_ra{:09.5f}_dec{:+09.5f}_{:d}arcmin.fits'.format(
-            ENV.CATCH_CUTOUT_BASE_URL, productid, ra, dec, size)
+        url = '{}/{}{}_ra{:09.5f}_dec{:+09.5f}_{:d}arcmin.fits'.format(
+            ENV.CATCH_CUTOUT_BASE_URL, prefix, productid, ra, dec, size)
 
     return url

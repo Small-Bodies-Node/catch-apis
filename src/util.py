@@ -28,3 +28,9 @@ class FormattedStringOrNone(fields.FormattedString):
             return super().output(key, obj, **kwargs)
         except (KeyError, AttributeError):
             return None
+
+
+def desg_to_prefix(desg: str):
+    """Convert small body designation to file prefix."""
+    return (desg.replace('/', '').replace(' ', '')
+            .replace('(', '_').replace(')', '_'))

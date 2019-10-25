@@ -33,11 +33,14 @@ class ENV():
     DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
     DB_DATABASE: Optional[str] = os.getenv("DB_DATABASE")
     DASHBOARD_CONFIG: Optional[str] = os.getenv("DASHBOARD_CONFIG")
-    CATCH_FULLFRAME_BASE_URL: str = os.getenv('CATCH_FULLFRAME_BASE_URL',
-                                              default='')
+    CATCH_ARCHIVE_BASE_URL: str = os.getenv('CATCH_ARCHIVE_BASE_URL',
+                                            default='')
     CATCH_CUTOUT_BASE_URL: str = os.getenv('CATCH_CUTOUT_BASE_URL', default='')
+    CATCH_THUMBNAIL_BASE_URL: str = os.getenv(
+        'CATCH_THUMBNAIL_BASE_URL', default='')
     CATCH_ARCHIVE_PATH: str = os.getenv('CATCH_ARCHIVE_PATH', default='')
     CATCH_CUTOUT_PATH: str = os.getenv('CATCH_CUTOUT_PATH', default='')
+    CATCH_THUMBNAIL_PATH: str = os.getenv('CATCH_THUMBNAIL_PATH', default='')
     CATCH_LOG: str = os.getenv('CATCH_LOG', default='/dev/null')
 
     # Numeric properties

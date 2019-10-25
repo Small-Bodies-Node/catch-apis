@@ -75,7 +75,7 @@ class NeatCutouts(FRP.Resource):
                                     dec=query['dec'], size=query['size'])
 
             message: str
-            if url.startswith(ENV.CATCH_FULLFRAME_BASE_URL):
+            if url.startswith(ENV.CATCH_ARCHIVE_BASE_URL):
                 message = 'Full-frame image.'
             else:
                 message = 'Generating cutout.'
