@@ -70,6 +70,7 @@ pipeline {
 
                     # Must set this env for daemon to survive pipeline's termination
                     JENKINS_NODE_COOKIE=dontKillMe sh ./_gunicorn_manager restart
+                    JENKINS_NODE_COOKIE=dontKillMe sh ./_worker_manager restart
 
                     #touch "hello-`date +%Y-%m-%d`.txt"
                     #touch "hello-`date`.txt"
