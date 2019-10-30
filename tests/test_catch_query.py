@@ -8,13 +8,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('target', default='65P')
 args = parser.parse_args()
 
-url = ('http://127.0.0.1:5002/catch-dev/query/moving?target={}&cached=false'
+url = ('http://127.0.0.1:5002/catch-sandbox/query/moving?target={}&cached=false'
        .format(args.target))
 res = requests.get(url)
 data = res.json()
 print(data)
 
-messages = SSEClient('http://127.0.0.1:5002/catch-dev/stream')
+messages = SSEClient('http://127.0.0.1:5002/catch-sandbox/stream')
 for msg in messages:
     if msg.data == data['job_id']:
         break

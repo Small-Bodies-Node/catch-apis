@@ -9,8 +9,8 @@ import sqlalchemy
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session, sessionmaker
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
-from catch import Catch, Config
 
+from catch import Catch, Config
 from env import ENV
 
 # Build URI and instantiate data-provider service
@@ -41,6 +41,7 @@ def data_provider_session() -> Iterator[Session]:
 
 
 @contextmanager
-def catch_manager(save_log=True) -> Iterator[Catch]:
+def catch_manager(save_log: bool = True) -> Iterator[Catch]:
+    """ TBD """
     with Catch(catch_config, save_log=save_log) as catch:
         yield catch

@@ -125,9 +125,20 @@ class App:
         ),
     })
 
+    caught_model: Model = api.model('Caught', {
+        'count': fields.Integer(
+            description=("Number of observations that caught the target's"
+                         " ephemeris position")
+        ),
+        'job_id': fields.String(
+            description='Unique job ID of results'
+        ),
+        'data': fields.List(fields.Nested(caught_data))
+    })
+
 
 COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
-    '/moving': {
+    '/': {
         'designation': {
             'label': 'Designation',
             'description': 'Object designation'

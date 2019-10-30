@@ -22,7 +22,7 @@ read decision
 if [[ $decision =~ y|ye|yes|Y|YE|YES ]]; then
 
     # Load vars defined in .env
-    $(cat .env | sed 's/^/export /')
+    source _load_env_vars
 
     # Trigger Jenkins pipeline
     curl -sv -X POST "https://"$JENKINS_USERNAME":"$JENKINS_UPGRADE_TOKEN"@musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/build?token=upgrade_to_prod_token"

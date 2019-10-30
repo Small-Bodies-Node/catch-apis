@@ -7,15 +7,17 @@ from werkzeug.contrib.fixers import ProxyFix
 #import flask_monitoringdashboard as dashboard
 from logging_setup import logger    # Must come BEFORE controllers import
 from controllers import default_error_handler, blueprint as rest_plus_blueprint
-from env import ENV, EDeploymentEnvironment
+from env import ENV, EDeploymentTier
 
 # Choose port to run app locally based on deployment environment
-if ENV.DEPLOYMENT_ENV == EDeploymentEnvironment.PROD:
+if ENV.DEPLOYMENT_TIER == EDeploymentTier.PROD:
     PORT = 5000
-elif ENV.DEPLOYMENT_ENV == EDeploymentEnvironment.STAGE:
+elif ENV.DEPLOYMENT_TIER == EDeploymentTier.STAGE:
     PORT = 5001
-elif ENV.DEPLOYMENT_ENV == EDeploymentEnvironment.DEV:
+elif ENV.DEPLOYMENT_TIER == EDeploymentTier.SANDBOX:
     PORT = 5002
+elif ENV.DEPLOYMENT_TIER == EDeploymentTier.LOCAL:
+    PORT = 5003
 else:
     raise Exception('Unrecognized DEPLOYMENT_ENV')
 

@@ -40,7 +40,9 @@ class Query(FRP.Resource):
         description='Return cached results, if available.'
     )
     @FRP.cors.crossdomain(origin='*')
-    def get(self: 'Query') -> Response:
+    @jsonify_output
+    @API.marshal_with(App.query_model)
+    def get(self: 'Query') -> Dict[str, Union[str, Dict[str, Union[str, bool]]]]:
         """Query for moving target."""
         from . import URL_PREFIX    # avoid circular dependency
 
@@ -57,12 +59,11 @@ class Query(FRP.Resource):
         total_jobs = len(queue.jobs)
 
         # Build immediate response
-        response: Response
+        response: Dict[str, Union[str, Dict[str, Union[str, bool]]]]
         if total_jobs > 100:
-            response = jsonify({
+            response = {
                 "message": "Error: queue is full."
-            })
-            response.status_code = 200
+            }
         else:
             # unique job ID
             job_id: uuid.UUID = uuid.uuid4()
@@ -71,7 +72,7 @@ class Query(FRP.Resource):
                 request.url_root.strip('/'), URL_PREFIX.strip('/'),
                 job_id.hex)
 
-            payload: Dict[str, Union[Dict[str, Union[str, bool]], str]] = {
+            response = {
                 "message": "",
                 "query": query,
                 "job_id": job_id.hex,
@@ -89,7 +90,7 @@ class Query(FRP.Resource):
                 service.query(query['target'], job_id,
                               source=query['source'], cached=True)
 
-                payload['message'] = (
+                response['message'] = (
                     'Cached query.  Retrieve data from results URL.'
                 )
             else:
@@ -98,26 +99,9 @@ class Query(FRP.Resource):
                               query['source'], query['cached'], job_id,
                               job_id=job_id.hex)
 
-                payload['message'] = (
+                response['message'] = (
                     'Enqueued search.  Listen to event stream until job'
                     ' completed, then retrieve data from results URL.'
                 )
 
-            response = jsonify(payload)
-            response.status_code = 200
-
         return response
-
-
-@API.route("/moving/labels")
-class QueryMovingLabels(FRP.Resource):
-    """Controller for query caught moving object column labels."""
-
-    @API.doc('--query/moving/labels--')
-    @FRP.cors.crossdomain(origin='*')
-    @jsonify_output
-    def get(self: 'QueryMovingLabels') -> Dict[str, Dict[str, str]]:
-        """Query caught moving object table labels."""
-        data: Dict[str, Dict[str, str]] = (
-            service.column_labels('/moving'))
-        return data

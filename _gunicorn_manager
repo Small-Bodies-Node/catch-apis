@@ -8,24 +8,28 @@
 # ============================================================================
 
 # Load vars defined in .env
-$(cat .env | sed 's/^/export /')
+source _load_env_vars
 
 # Determine port
-if [[ $DEPLOYMENT_ENV == 'PROD' ]]; then
+if [[ $DEPLOYMENT_TIER == 'PROD' ]]; then
     PORT=5000
-elif [[ $DEPLOYMENT_ENV == 'STAGE' ]]; then
+elif [[ $DEPLOYMENT_TIER == 'STAGE' ]]; then
     PORT=5001
-elif [[ $DEPLOYMENT_ENV == 'DEV' ]]; then
+elif [[ $DEPLOYMENT_TIER == 'SANDBOX' ]]; then
     PORT=5002
+elif [[ $DEPLOYMENT_TIER == 'LOCAL' ]]; then
+    PORT=5003
 else
-    echo "DEPLOYMENT_ENV not found/recognized!"
+    echo "DEPLOYMENT_TIER not found/recognized!"
     exit 1
 fi
 
 # Unpublished 2nd argument to prevent daemonization; used for debugging
-is_daemon='--daemon'
+is_daemon=False
+is_daemon_flag='--daemon'
 if [[ $2 == 0 ]]; then
-    is_daemon=''
+    is_daemon=False
+    is_daemon_flag=''
 fi
 
 # Count how many gunicorn processes are running from this virtual environment:
@@ -55,12 +59,12 @@ d_start() {
         cd src
         echo "-----------------------------------------------------"
         echo "This API is not running; begin workers in production!"
-        gunicorn app_entry:flask_app \
+        IS_DAEMON=$is_daemon gunicorn app_entry:flask_app \
             --config ..\/.gunicorn.config.py \
             --pid ..\/.pid.txt \
             --name $APP_NAME \
             --bind '127.0.0.1:'$PORT \
-            $is_daemon
+            $is_daemon_flag
         echo "-----------------------------------------------------"
         cd ..
     fi

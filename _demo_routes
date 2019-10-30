@@ -10,7 +10,7 @@ printblock() {
     """
 }
 
-$(cat .env | sed 's/^/export /') ### Load vars defined in .env
+source _load_env_vars
 
 printblock
 

@@ -3,24 +3,26 @@
 import os
 from enum import Enum, auto
 from typing import Optional
-from dotenv import load_dotenv
-load_dotenv(verbose=True)
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv(), override=True, verbose=True)
 
 
-# Match DEPLOYMENT_ENV string in .env to equivalent ENUM
-class EDeploymentEnvironment(Enum):
-    """ Enum possible values of deployment environment """
-    PROD = auto()
+class EDeploymentTier(Enum):
+    """ Enum possible values of deployment tier """
+    LOCAL = auto()
+    SANDBOX = auto()
     STAGE = auto()
-    DEV = auto()
+    PROD = auto()
 
 
-raw_deployment_env: Optional[str] = os.getenv("DEPLOYMENT_ENV")
-APP_DEPLOYMENT_ENV: EDeploymentEnvironment = EDeploymentEnvironment.DEV
-if raw_deployment_env == "STAGE":
-    APP_DEPLOYMENT_ENV = EDeploymentEnvironment.STAGE
-if raw_deployment_env == "PROD":
-    APP_DEPLOYMENT_ENV = EDeploymentEnvironment.PROD
+raw_deployment_tier: Optional[str] = os.getenv("DEPLOYMENT_TIER")
+APP_DEPLOYMENT_TIER: EDeploymentTier = EDeploymentTier.LOCAL
+if raw_deployment_tier == "SANDBOX":
+    APP_DEPLOYMENT_TIER = EDeploymentTier.SANDBOX
+if raw_deployment_tier == "STAGE":
+    APP_DEPLOYMENT_TIER = EDeploymentTier.STAGE
+if raw_deployment_tier == "PROD":
+    APP_DEPLOYMENT_TIER = EDeploymentTier.PROD
 
 
 class ENV():
@@ -48,12 +50,23 @@ class ENV():
     PROD_GUNICORN_INSTANCES: int = int(os.getenv(
         "PROD_GUNICORN_INSTANCES") or -1)
 
-    # Boolean properties; requires casting a string to bool
-    DEVELOPMENT_MODE: bool = os.getenv("DEVELOPMENT_MODE") != 'False'
-
     # ENUM Properties
-    DEPLOYMENT_ENV: EDeploymentEnvironment = APP_DEPLOYMENT_ENV
+    DEPLOYMENT_TIER: EDeploymentTier = APP_DEPLOYMENT_TIER
+
+    # Boolean Properties
+    IS_DAEMON: bool = os.getenv("IS_DAEMON") == 'TRUE'
 
 
+# Debugging block
+# print("=========================")
 # print(ENV.PROD_GUNICORN_INSTANCES)
-# print(ENV.DEVELOPMENT_MODE)
+# print(ENV.DEPLOYMENT_TIER)
+# print(ENV.DB_DATABASE)
+# print(ENV.DB_PASSWORD)
+# print(ENV.DB_USERNAME)
+# print()
+# print(ENV.CATCH_LOG)
+# print(ENV.CATCH_ARCHIVE_PATH)
+# print(ENV.CATCH_CUTOUT_PATH)
+# print(ENV.CATCH_THUMBNAIL_PATH)
+# print("=========================")

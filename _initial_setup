@@ -8,22 +8,21 @@ main() {
     clear
 
     echo "
-    =======================================================
-
+    =======================================
     Initializing Python Virtual Environment
-
-    =======================================================
+    =======================================
     "
 
     sleep 1
 
     ### 0. Get rid of cached versions
     rm -rf .mypy_cache
-    rm -rf src/__pycache__
+    # rm -rf src/__pycache__
+    find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
 
     ### 1. Load vars defined in .env
     if [[ -f .env ]]; then
-        $(cat .env | sed 's/^/export /')
+        source _load_env_vars
     else
         echo "
             No .env file found! Failing set up.
@@ -43,13 +42,13 @@ main() {
 
     ### 3. Make sure there's a DB file for flask_dashboardmonitor
     if [[ ! -f .dashboard.db ]]; then
-        echo "No file '.dashboard.db' found; creating now"
+        echo ">>> No file '.dashboard.db' found; creating now"
         touch .dashboard.db
     fi
 
     ### 4. Ensure existence of `.venv` dir
     if [[ ! -d ./.venv ]]; then
-        echo "Virtual Environment Not Found -- Creating './.venv'"
+        echo ">>> Virtual Environment Not Found -- Creating './.venv'"
         $PYTHON_3_5_OR_HIGHER -m venv .venv
     fi
 
@@ -61,7 +60,7 @@ main() {
 
     ### 7. Install Requirements to VENV
     printf "\n\n"
-    echo "Installing python packages..."
+    echo ">>> Installing python packages..."
     printf "\n\n"
     sleep 1
     pip install -r requirements.txt
@@ -71,7 +70,7 @@ main() {
 
     ### 9. Check that redis dirs exist and give status of redis:
     printf "\n\n"
-    echo "Install and start redis if it's not already running; its status is:"
+    echo ">>> Install and start redis if it's not already running; its status is:"
     printf "\n\n"
     if [[ ! -d .redis ]]; then mkdir -p .redis; fi
     if [[ ! -d .redis/old-logs ]]; then mkdir -p .redis/old-logs; fi
@@ -80,10 +79,20 @@ main() {
     ### 10. Ensure npm is installed and required packages are globally available
     if [ $(command -v npm) ]; then
         printf "\n\n"
-        echo "Checking/installing required npm packages"
+        echo ">>> Checking/installing required npm packages"
         printf "\n\n"
-        if [ ! $(command -v nodemon) ]; then npm install -g nodemon; fi
-        if [ ! $(command -v pm2) ]; then npm install -g pm2; fi
+        if [ $(command -v nodemon) ]; then
+            echo ">>> nodemon found"
+        else
+            echo ">>> nodemon not found; installing:"
+            npm install -g nodemon
+        fi
+        if [ $(command -v pm2) ]; then
+            echo ">>> pm2 found"
+        else
+            echo ">>> pm2 not found; installing:"
+            npm install -g pm2
+        fi
     else
         echo "No npm found!!!"
         return 1
@@ -93,13 +102,13 @@ main() {
     if [[ ! -d logging/old-logs ]]; then mkdir -p logging/old-logs; fi
 
     echo """
-        Set up complete. Enjoy Flask API-ing!
+        >>> Set up complete. Enjoy Flask API-ing!
     """
 }
 
 if [[ $1 == 'jenkins' ]]; then
     ## Jenkins will error if you use the trick in the else clause
-    echo "Running from jenkins"
+    echo ">>> Running from jenkins"
     main
 else
     ## Trick to check if this script is being sourced or sh-ed

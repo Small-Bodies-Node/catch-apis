@@ -12,6 +12,7 @@ flask_monitoringdashboard.db
 .redis
 .redis.pid
 node_modules
+catch-images
 
 # Flask_MonitorDasboard
 .dashboard.db

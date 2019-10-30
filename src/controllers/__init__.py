@@ -12,7 +12,7 @@ from flask_restplus import Api
 from flask import jsonify, Blueprint
 from flask.wrappers import Response
 from sqlalchemy.orm.exc import NoResultFound
-from env import ENV, EDeploymentEnvironment as EDE
+from env import ENV, EDeploymentTier as EDE
 
 # Import all restplus namespaces
 from .demo_routes import API as demos
@@ -28,15 +28,18 @@ logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 # Choose port to run app locally based on deployment environment
 URL_PREFIX: str
 TITLE_SUFFIX: str
-if ENV.DEPLOYMENT_ENV == EDE.PROD:
+if ENV.DEPLOYMENT_TIER == EDE.PROD:
     URL_PREFIX = '/catch'
     TITLE_SUFFIX = ''
-elif ENV.DEPLOYMENT_ENV == EDE.STAGE:
+elif ENV.DEPLOYMENT_TIER == EDE.STAGE:
     URL_PREFIX = '/catch-stage'
     TITLE_SUFFIX = '[STAGE]'
-elif ENV.DEPLOYMENT_ENV == EDE.DEV:
-    URL_PREFIX = '/catch-dev'
-    TITLE_SUFFIX = '[DEV]'
+elif ENV.DEPLOYMENT_TIER == EDE.SANDBOX:
+    URL_PREFIX = '/catch-sandbox'
+    TITLE_SUFFIX = '[SANDBOX]'
+elif ENV.DEPLOYMENT_TIER == EDE.LOCAL:
+    URL_PREFIX = '/catch-local'
+    TITLE_SUFFIX = '[LOCAL]'
 else:
     raise Exception('Unrecognized DEPLOYMENT_ENV!')
 

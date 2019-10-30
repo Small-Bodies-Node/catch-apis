@@ -6,7 +6,7 @@
 # ==============================================================================
 
 # Load vars defined in .env
-$(cat .env | sed 's/^/export /')
+source _load_env_vars
 
 # Give name to workers launched from this deployment environment
 # This will be used to select them collectively by pm2

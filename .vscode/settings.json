@@ -1,15 +1,19 @@
 {
     "python.pythonPath": ".venv/bin/python",
     "python.envFile": "${workspaceRoot}/.env",
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
-    "python.linting.flake8Enabled": false,
-    "python.linting.mypyEnabled": true,
-    "workbench.settings.openDefaultSettings": true,
-    "workbench.settings.editor": "json",
     "python.jediEnabled": false,
-    "files.trimTrailingWhitespace": true,
-    "editor.detectIndentation": false,
     "editor.snippetSuggestions": "none",
-    "python.analysis.downloadChannel": "beta"
+    "python.linting.pylintEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "cSpell.ignoreWords": [
+        "desg"
+    ],
+    //
+    // "python.linting.enabled": true,
+    // "python.linting.flake8Enabled": false,
+    // "workbench.settings.openDefaultSettings": true,
+    // "workbench.settings.editor": "json",
+    // "files.trimTrailingWhitespace": true,
+    // "editor.detectIndentation": false,
+    // "python.analysis.downloadChannel": "beta"
 }

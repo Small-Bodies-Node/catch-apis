@@ -10,7 +10,7 @@ def build_url(productid: str, ra: Optional[float] = None,
     """Build the URL for full-frame and cutout images."""
 
     url: str
-    if None in [ra, dec]:
+    if ra is None or dec is None:
         # full frame URL
         path: str
         if productid[0] == 'G':
@@ -28,6 +28,6 @@ def build_url(productid: str, ra: Optional[float] = None,
 
         # cutout URL
         url = '{}/{}{}_ra{:09.5f}_dec{:+09.5f}_{:d}arcmin.fits'.format(
-            ENV.CATCH_CUTOUT_BASE_URL, prefix, productid, ra, dec, size)
+            ENV.CATCH_CUTOUT_BASE_URL, prefix, productid, r, d, s)
 
     return url

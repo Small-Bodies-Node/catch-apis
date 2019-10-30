@@ -1,156 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-        >
-        <meta
-            http-equiv="X-UA-Compatible"
-            content="ie=edge"
-        >
-        <style>
-            html, body{
-                position: relative;
-                width: 100%;
-                height: 100%;
-                margin: 0 0 0 0;
-            }
-            .body-proxy{
-                position: fixed;
-                top: 0px;
-                bottom: 0px;
-                left: 0px;
-                right: 0px;
-                z-index: -1;
-                background-image: url(https://1.bp.blogspot.com/-FC6FsJdnjB8/W7FMrVvrfsI/AAAAAAAAB-0/1TurnTHtANUyfjQhuXnX226VcLTEfPQlgCLcBGAs/s1600/rameses%2Bii%2Bcolossus%2Bat%2Bthe%2Bmemnonium%2B%255Bwallcoo%255D%2B-%2BDavidRoberts-FallenColossusOfThebes_1838.jpg);
-                filter: blur(18px);
-                -webkit-filter: blur(18px);
-                background-position: center;
-                background-repeat: no-repeat;
-                background-size: cover;
-                opacity: 0;
-                animation: fade-in-animation 0.4s ease-in-out 0.0s forwards;
-            }
-            @keyframes fade-in-animation {
-                0%   { opacity: 0;}
-                100% { opacity: 1;}
-            }
-            .title-div{
-                position: absolute;
-                top: 0px;
-                left: 0px;
-                right: 0px;
-                height: 15%;
-                font-size: 20px;
-                display: flex;
-                z-index: 1;
-                align-items:center;
-                align-content: center;
-                justify-content: center;
-                justify-items: center;
-                opacity: 0;
-                animation: fade-in-animation2 0.4s ease-in-out 1.0s forwards;
-            }
-            .title-div span{
-                align-items:center;
-                align-content: center;
-                justify-content: center;
-                justify-items: center;
-                color: brown;
-            }
-            @keyframes fade-in-animation2 {
-                0%   { opacity: 0;}
-                100% { opacity: 1;}
-            }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <style>
+      html,
+      body {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: 0 0 0 0;
+      }
+      .body-proxy {
+        position: fixed;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        z-index: -1;
+        background-image: url(https://1bp.blogspot.com/-FC6FsJdnjB8/W7FMrVvrfsI/AAAAAAAAB-0/1TurnTHtANUyfjQhuXnX226VcLTEfPQlgCLcBGAs/s1600/rameses%2Bii%2Bcolossus%2Bat%2Bthe%2Bmemnonium%2B%255Bwallcoo%255D%2B-%2BDavidRoberts-FallenColossusOfThebes_1838.jpg);
+        filter: blur(18px);
+        -webkit-filter: blur(18px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        opacity: 0;
+        animation: fade-in-animation 0.4s ease-in-out 0s forwards;
+      }
+      @keyframes fade-in-animation {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      .title-div {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        height: 15%;
+        font-size: 20px;
+        display: flex;
+        z-index: 1;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        justify-items: center;
+        opacity: 0;
+        animation: fade-in-animation2 0.4s ease-in-out 1s forwards;
+      }
+      .title-div span {
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        justify-items: center;
+        color: brown;
+      }
+      @keyframes fade-in-animation2 {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
 
-            .caption-div{
-                position: absolute;
-                bottom: 0px;
-                left: 0px;
-                right: 0px;
-                height: 15%;
-                font-size: 20px;
-                display: flex;
-                z-index: 1;
-                align-items:center;
-                align-content: center;
-                justify-content: center;
-                justify-items: center;
-                opacity: 0;
-                animation: fade-in-animation2 0.4s ease-in-out 4.0s forwards;
-            }
-            .caption-div span{
-                align-items:center;
-                align-content: center;
-                justify-content: center;
-                justify-items: center;
-                color: white;
-            }
-            @keyframes fade-in-animation3 {
-                0%   { opacity: 0;}
-                100% { opacity: 1;}
-            }
-            .container{
-                position: relative;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                align-content: center;
-                background-color: rgba(0,255,0,0);
-            }
-            .img-wrapper{
-                flex: 1;
-                position: relative;
-                height: 70%;
-                background-color: rgba(255,0,0,0);
-            }
-            .img-wrapper > img {
-                position: absolute;
-                top: 0px;
-                left: 0px;
-                right: 0px;
-                opacity: 0;
-                animation: example 0.8s ease-in-out 4.0s forwards;
-                object-fit: contain;
-                margin: auto auto;
-
-            }
-            @keyframes example {
-                0%   {top: 40px;opacity: 0;}
-                100% {top: 0px;opacity: 1;}
-            }
-
-
-        </style>
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        <title>Document</title>
-    </head>
-    <body>
-        <div class="body-proxy"></div>
-        <div class="title-div">
-            <span>
-                {% if True -%}
-                {{"This is a simple demo template served from flask_restplus"}}
-                {%- endif %}
-            </span>
-        </div>
-        <div class="caption-div">
-            <span>βασιλεὺς βασιλέων Ὀσυμανδύας εἰμί...</span>
-
-        </div>
-        <div class="container">
-            <div class="img-wrapper">
-                <img
-                    height="100%"
-                    src="https://1.bp.blogspot.com/-FC6FsJdnjB8/W7FMrVvrfsI/AAAAAAAAB-0/1TurnTHtANUyfjQhuXnX226VcLTEfPQlgCLcBGAs/s1600/rameses%2Bii%2Bcolossus%2Bat%2Bthe%2Bmemnonium%2B%255Bwallcoo%255D%2B-%2BDavidRoberts-FallenColossusOfThebes_1838.jpg"
-                >
-            </div>
-
-        </div>
-
-    </body>
+      .caption-div {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        height: 15%;
+        font-size: 20px;
+        display: flex;
+        z-index: 1;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        justify-items: center;
+        opacity: 0;
+        animation: fade-in-animation2 0.4s ease-in-out 4s forwards;
+      }
+      .caption-div span {
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        justify-items: center;
+        color: white;
+      }
+      @keyframes fade-in-animation3 {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        background-color: rgba(0, 255, 0, 0);
+      }
+      .img-wrapper {
+        flex: 1;
+        position: relative;
+        height: 70%;
+        background-color: rgba(255, 0, 0, 0);
+      }
+      .img-wrapper > img {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        opacity: 0;
+        animation: example 0.8s ease-in-out 4s forwards;
+        object-fit: contain;
+        margin: auto auto;
+      }
+      @keyframes example {
+        0% {
+          top: 40px;
+          opacity: 0;
+        }
+        100% {
+          top: 0px;
+          opacity: 1;
+        }
+      }
+    </style>
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="body-proxy"></div>
+    <div class="title-div">
+      <span>
+        {% if True -%}
+        {{ "This is a simple demo template served from flask_restplus" }}
+        {%- endif %}
+      </span>
+    </div>
+    <div class="caption-div">
+      <span>βασιλεὺς βασιλέων Ὀσυμανδύας εἰμί...</span>
+    </div>
+    <div class="container">
+      <div class="img-wrapper">
+        <img
+          height="100%"
+          src="https://1.bp.blogspot.com/-FC6FsJdnjB8/W7FMrVvrfsI/AAAAAAAAB-0/1TurnTHtANUyfjQhuXnX226VcLTEfPQlgCLcBGAs/s1600/rameses%2Bii%2Bcolossus%2Bat%2Bthe%2Bmemnonium%2B%255Bwallcoo%255D%2B-%2BDavidRoberts-FallenColossusOfThebes_1838.jpg"
+        />
+      </div>
+    </div>
+  </body>
 </html>

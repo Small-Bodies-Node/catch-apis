@@ -13,8 +13,6 @@ subscribed_queues: List[str] = [RQueues.START_JOBS]
 
 redis_url: str = 'redis://localhost:'+str(ENV.REDIS_PORT)
 
-print(">>> "+redis_url)
-
 conn: Redis = from_url(redis_url)
 
 if __name__ == '__main__':

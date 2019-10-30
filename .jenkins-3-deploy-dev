@@ -1,8 +1,8 @@
 /*
  *  This groovy script will be triggered by the Generic Webhook Trigger Plugin
- *  when a github push event is detected direct to the dev branch and we want
- *  the catch-dev API on Musforti to automatically update to reflect those changes
- *  Job Triggered: 'jenkins-3-deploy-dev'
+ *  when a github push event is detected direct to the sandbox branch and we want
+ *  the catch-sandbox API on Musforti to automatically update to reflect those changes
+ *  Job Triggered: 'jenkins-3-deploy-sandbox'
  */
 
 pipeline {
@@ -21,14 +21,14 @@ pipeline {
             ],
 
             // The token is required both in this script AND in the Jenkins pipeline  GUI
-            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_DEV,  //Defined as global var
+            token: env.GENERIC_WEBHOOK_TOKEN_TEST_DEPLOY_SANDBOX,  //Defined as global var
 
-            causeString: 'Triggered on $ref equalling "refs/heads/dev"',
+            causeString: 'Triggered on $ref equalling "refs/heads/sandbox"',
             printContributedVariables: true,
             printPostContent: !true,
             silentResponse: false,
             regexpFilterText: '$ref',
-            regexpFilterExpression: 'refs/heads/dev'
+            regexpFilterExpression: 'refs/heads/sandbox'
         )
     }
 
@@ -36,7 +36,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'START BUILD ...'
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/sandbox']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/dwd-umd/catch-apis.git']]])
                 sh '''
                     cat .jenkins-testing
                 '''
@@ -60,13 +60,13 @@ pipeline {
             steps {
                 echo "START DEPLOYING ..."
                 sh '''
-                    cd $CATCH_DEV_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
+                    cd $CATCH_SANDBOX_APIS_PATH       # Global env var (go to 'Manage Jenkins > Configure System > Global properties' and add vars)
                     pwd
                     git stash
                     #git pull origin master
                     git fetch origin
-                    git checkout origin/dev -B dev
-                    . $CATCH_DEV_APIS_PATH/_initial_setup jenkins
+                    git checkout origin/sandbox -B sandbox
+                    . $CATCH_SANDBOX_APIS_PATH/_initial_setup jenkins
 
                     # Must set this env for daemon to survive pipeline's termination
                     JENKINS_NODE_COOKIE=dontKillMe sh ./_gunicorn_manager restart
@@ -76,7 +76,7 @@ pipeline {
                     #touch "hello-`date`.txt"
 
                     sleep 5
-                    # Try pinging url for catch-dev
+                    # Try pinging url for catch-sandbox
                     curl localhost:5002/catch/demo
 
                     echo "... END DEPLOYING"

@@ -1,0 +1,21 @@
+#! /bin/bash
+
+clear
+
+echo """
+==================================================
+
+    Running single worker in development mode.
+    Worker will be refreshed on code changes.
+
+    An active redis server is required;
+    use _redis_manager to set one up.
+
+    Logging is to console.
+
+==================================================
+"""
+
+sleep 2
+
+nodemon -w 'src/**' -e py,html --exec python src/tasks/worker.py

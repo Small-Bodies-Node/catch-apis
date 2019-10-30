@@ -1,7 +1,7 @@
 #! /bin/bash
 
 ### Load vars defined in .env
-$(cat .env | sed 's/^/export /')
+source _load_env_vars
 
 ### Build URI
 URI=$DB_DIALECT'://'$DB_USERNAME':'$DB_PASSWORD'@'$DB_HOST'/'$DB_DATABASE

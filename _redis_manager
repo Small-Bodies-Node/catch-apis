@@ -11,7 +11,7 @@
 # ============================================================================
 
 # Load vars defined in .env
-$(cat .env | sed 's/^/export /')
+source _load_env_vars
 
 if [[ -z $REDIS_PORT ]]; then
     echo "REDIS_PORT is not set!"

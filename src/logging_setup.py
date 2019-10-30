@@ -9,9 +9,12 @@ import logging
 import logging.config
 from env import ENV
 
+print("++++++++++++++")
+print(ENV.DEPLOYMENT_TIER)
+
 # Setup logging throughout application
-logging_config_name: str = "logging_dev.ini" \
-    if ENV.DEVELOPMENT_MODE else "logging_prod.ini"
+logging_config_name: str = "logging_prod.ini" \
+    if ENV.IS_DAEMON else "logging_dev.ini"
 
 logging_conf_path: str = os.path.normpath(os.path.join(
     os.path.dirname(__file__), '..', 'logging', logging_config_name))
