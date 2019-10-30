@@ -36,7 +36,7 @@ main() {
     $($MYSED -ne '/^#/d; /^export / {p;d}; /.*=/ s/^/export / p' .env)
 }
 
-if [[ $2 == 'jenkins' ]]; then
+if [[ $1 == 'jenkins' ]]; then
     ## Jenkins will error if you use the trick in the else clause
     echo ">>> Running from jenkins"
     main
