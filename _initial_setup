@@ -22,7 +22,7 @@ main() {
 
     ### 1. Load vars defined in .env
     if [[ -f .env ]]; then
-        source _load_env_vars
+        source _load_env_vars $1
     else
         echo "
             No .env file found! Failing set up.
