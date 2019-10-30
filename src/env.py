@@ -61,7 +61,8 @@ class ENV():
 
 # Debugging block
 # print("=========================")
-# print(ENV.PROD_GUNICORN_INSTANCES)
+# print(ENV.LIVE_GUNICORN_INSTANCES)
+# print(ENV.LIVE_WORKER_INSTANCES)
 # print(ENV.DEPLOYMENT_TIER)
 # print(ENV.DB_DATABASE)
 # print(ENV.DB_PASSWORD)
@@ -71,4 +72,5 @@ class ENV():
 # print(ENV.CATCH_ARCHIVE_PATH)
 # print(ENV.CATCH_CUTOUT_PATH)
 # print(ENV.CATCH_THUMBNAIL_PATH)
+# print(ENV.IS_DAEMON)
 # print("=========================")

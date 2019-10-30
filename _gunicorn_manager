@@ -3,7 +3,7 @@
 # ============================================================================
 # This script is used to start/stop/restart the CATCH APIs in deployment
 # environments; to identify processes launched from a particular deployment
-# (PROD, STAGE or DEV), we 'pgrep' on the path to the running gunicorn
+# (PROD, STAGE or SANDBOX), we 'pgrep' on the path to the running gunicorn
 # in the virtual-environment dir
 # ============================================================================
 
@@ -25,10 +25,10 @@ else
 fi
 
 # Unpublished 2nd argument to prevent daemonization; used for debugging
-is_daemon=False
+is_daemon=TRUE
 is_daemon_flag='--daemon'
 if [[ $2 == 0 ]]; then
-    is_daemon=False
+    is_daemon=FALSE
     is_daemon_flag=''
 fi
 
