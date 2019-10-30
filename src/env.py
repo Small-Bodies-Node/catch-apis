@@ -47,8 +47,10 @@ class ENV():
 
     # Numeric properties
     REDIS_PORT: int = int(os.getenv("REDIS_PORT") or -1)
-    PROD_GUNICORN_INSTANCES: int = int(os.getenv(
-        "PROD_GUNICORN_INSTANCES") or -1)
+    LIVE_GUNICORN_INSTANCES: int = int(
+        os.getenv("LIVE_GUNICORN_INSTANCES") or -1)
+    LIVE_WORKER_INSTANCES: int = int(
+        os.getenv("LIVE_WORKER_INSTANCES") or -1)
 
     # ENUM Properties
     DEPLOYMENT_TIER: EDeploymentTier = APP_DEPLOYMENT_TIER

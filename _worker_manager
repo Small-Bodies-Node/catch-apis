@@ -36,9 +36,9 @@ d_start() {
         echo "PM2 is already running PIDs "$(echo $PM2_PROCESSES)"; cancelling start!"
     else
         echo "--------------"
-        echo "PM2 is not running; beginning "$(echo $PROD_WORKER_INSTANCES)" workers now!"
+        echo "PM2 is not running; beginning "$(echo $LIVE_WORKER_INSTANCES)" workers now!"
         pm2 \
-            -i $PROD_WORKER_INSTANCES \
+            -i $LIVE_WORKER_INSTANCES \
             -n $PROC_NAME \
             start src/tasks/worker.py
         echo "--------------"
