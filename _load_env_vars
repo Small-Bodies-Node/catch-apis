@@ -5,7 +5,7 @@
 ### Run with -v for verbose output
 #############################################################
 
-[[ $1 == '-v' ]] && echo "Before test: "$APP_NAME
+[[ $2== '-v' ]] && echo "Before test: "$APP_NAME
 
 main() {
 
@@ -16,11 +16,11 @@ main() {
     # If gnu isn't mentioned after `sed --version` then conclude it's not gnu sed
     if [[ $gnu_mentions == 0 ]]; then
 
-        [[ $1 == '-v' ]] && echo "sed is not gnu sed!!!"
+        [[ $2 == '-v' ]] && echo "sed is not gnu sed!!!"
 
         # If gsed exists then use it instead of sed
         if [[ $(command -v gsed) ]]; then
-            [[ $1 == '-v' ]] && echo "Using gsed instead of sed"
+            [[ $2 == '-v' ]] && echo "Using gsed instead of sed"
             MYSED=gsed
         else
             echo """
@@ -32,11 +32,11 @@ main() {
     fi
 
     # GNU-sed expression to export vars while ignore comments in .env file
-    [[ $1 == '-v' ]] && echo ">>>>>>>>>"
+    [[ $2 == '-v' ]] && echo ">>>>>>>>>"
     $($MYSED -ne '/^#/d; /^export / {p;d}; /.*=/ s/^/export / p' .env)
 }
 
-if [[ $1 == 'jenkins' ]]; then
+if [[ $2 == 'jenkins' ]]; then
     ## Jenkins will error if you use the trick in the else clause
     echo ">>> Running from jenkins"
     main
@@ -46,4 +46,4 @@ else
     test ".$0" == ".$BASH_SOURCE" && echo "You must <SOURCE> (not SH) this script!!!" || main "$@"
 fi
 
-[[ $1 == '-v' ]] && echo "After test: "$APP_NAME
+[[ $2 == '-v' ]] && echo "After test: "$APP_NAME
