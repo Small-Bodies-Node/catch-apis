@@ -4,6 +4,8 @@
 ### We only want the main function to be called if this script is sourced (not sh-ed)
 ### This script uses a 'trick' to tell if it's being sourced or sh-ed
 
+jenkins_arg=$1
+
 main() {
     clear
 
@@ -22,7 +24,7 @@ main() {
 
     ### 1. Load vars defined in .env
     if [[ -f .env ]]; then
-        source _load_env_vars $1
+        source _load_env_vars $jenkins_arg
     else
         echo "
             No .env file found! Failing set up.
@@ -106,7 +108,7 @@ main() {
     """
 }
 
-if [[ $1 == 'jenkins' ]]; then
+if [[ $jenkins_arg == 'jenkins' ]]; then
     ## Jenkins will error if you use the trick in the else clause
     echo ">>> Running from jenkins"
     main
