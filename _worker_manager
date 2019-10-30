@@ -10,7 +10,7 @@ source _load_env_vars
 
 # Give name to workers launched from this deployment environment
 # This will be used to select them collectively by pm2
-PROC_NAME="woRQer-"$DEPLOYMENT_ENV
+PROC_NAME="woRQer-"$DEPLOYMENT_TIER
 
 # Test if we've already got redis running:
 calc_processes() {

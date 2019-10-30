@@ -41,7 +41,7 @@ elif ENV.DEPLOYMENT_TIER == EDE.LOCAL:
     URL_PREFIX = '/catch-local'
     TITLE_SUFFIX = '[LOCAL]'
 else:
-    raise Exception('Unrecognized DEPLOYMENT_ENV!')
+    raise Exception('Unrecognized DEPLOYMENT_TIER!')
 
 
 # Define flask blueprint to apply prefix to whole api

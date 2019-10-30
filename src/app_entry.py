@@ -19,7 +19,7 @@ elif ENV.DEPLOYMENT_TIER == EDeploymentTier.SANDBOX:
 elif ENV.DEPLOYMENT_TIER == EDeploymentTier.LOCAL:
     PORT = 5003
 else:
-    raise Exception('Unrecognized DEPLOYMENT_ENV')
+    raise Exception('Unrecognized DEPLOYMENT_TIER')
 
 # Init Flask App and associate it with RestPlus controllers
 flask_app: flask.Flask = flask.Flask(__name__)
