@@ -8,6 +8,7 @@ from contextlib import contextmanager
 import sqlalchemy
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session, sessionmaker
+from sqlalchemy.orm import scoped_session
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
 
 from catch import Catch, Config
@@ -19,8 +20,7 @@ db_engine_URI: str = (
     f"/{ENV.DB_DATABASE}")
 db_engine: Engine = sqlalchemy.create_engine(
     db_engine_URI, pool_recycle=3600)
-db_session: sessionmaker = sqlalchemy.orm.sessionmaker(bind=db_engine)
-
+db_session: scoped_session = scoped_session(sessionmaker(bind=db_engine))
 
 # catch library configuration
 catch_config: Config = Config(database=db_engine_URI, log=ENV.CATCH_LOG)
@@ -37,11 +37,11 @@ def data_provider_session() -> Iterator[Session]:
         session.rollback()
         raise
     finally:
-        session.close()
+        db_session.remove()
 
 
 @contextmanager
 def catch_manager(save_log: bool = True) -> Iterator[Catch]:
-    """ TBD """
+    """Catch library session manager."""
     with Catch(catch_config, save_log=save_log) as catch:
         yield catch
