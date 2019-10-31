@@ -21,6 +21,10 @@ def caught(job_id: uuid.UUID) -> List[dict]:
 
     """
 
+    # unpack into list of dictionaries for marshaling
+    found: List[Dict[str, Union[Found, Obs, Obj, str, float, int, bool, None]]]
+    found = []
+
     with data_provider_session() as session:
         data = (session.query(Found, Obs, Obj)
                 .join(Caught, Found.foundid == Caught.foundid)
@@ -28,22 +32,27 @@ def caught(job_id: uuid.UUID) -> List[dict]:
                 .join(Obs, Found.obsid == Obs.obsid)
                 .join(Obj, Found.objid == Obj.objid)
                 .filter(CatchQueries.jobid == job_id.hex))
-        session.expunge_all()
 
-    # unpack into list of dictionaries for marshaling
-    found: List[Dict[str, Union[Found, Obs, Obj, str, float, int, bool, None]]]
-    found = []
-    for row in data:
-        found.append(row._asdict())
+        for row in data:
+            found.append({})
+            for name, obj in row._asdict().items():
+                fields: dict = {}
+                for k, v in obj.__dict__.items():
+                    if k.startswith('_'):
+                        continue
+                    fields[k] = v
+                found[-1][name] = fields
 
-        # some extras
-        cutout_url: str = images.build_url(
-            row.Obs.productid, ra=row.Found.ra, dec=row.Found.dec,
-            size=5, prefix=desg_to_prefix(row.Obj.desg) + '_')
-        found[-1]['cutout_url'] = cutout_url
-        found[-1]['thumbnail_url'] = cutout_url \
-            .replace(ENV.CATCH_CUTOUT_BASE_URL, ENV.CATCH_THUMBNAIL_BASE_URL) \
-            .replace('.fits', '_thumb.jpg')
-        found[-1]['archive_url'] = images.build_url(row.Obs.productid)
+            # some extras
+            cutout_url: str = images.build_url(
+                row.Obs.productid, ra=row.Found.ra, dec=row.Found.dec,
+                size=5, prefix=desg_to_prefix(row.Obj.desg) + '_')
+            found[-1]['cutout_url'] = cutout_url
+            found[-1]['thumbnail_url'] = (
+                cutout_url
+                .replace(ENV.CATCH_CUTOUT_BASE_URL, ENV.CATCH_THUMBNAIL_BASE_URL)
+                .replace('.fits', '_thumb.jpg')
+            )
+            found[-1]['archive_url'] = images.build_url(row.Obs.productid)
 
     return found
