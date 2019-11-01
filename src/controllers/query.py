@@ -83,15 +83,11 @@ class Query(FRP.Resource):
             if query['cached']:
                 # check Catch Queries cache for previous search results
                 cached = service.check_cache(
-                    query['target'], query['source'])
+                    query['target'], query['source'], save_to=job_id)
 
             if cached:
-                # store cached results in catch_queries table:
-                service.query(query['target'], job_id,
-                              source=query['source'], cached=True)
-
                 response['message'] = (
-                    'Cached query.  Retrieve data from results URL.'
+                    'Found cached data.  Retrieve from results URL.'
                 )
             else:
                 # Spin out task to worker

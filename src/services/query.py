@@ -2,7 +2,7 @@
 Catch a moving target in survey data.
 """
 
-from typing import List, Any
+from typing import List, Any, Optional
 import uuid
 
 from .caught import caught
@@ -42,7 +42,8 @@ def query(target: str, job_id: uuid.UUID, source: str,
     return found
 
 
-def check_cache(target: str, source: str) -> bool:
+def check_cache(target: str, source: str,
+                save_to: Optional[uuid.UUID]) -> bool:
     """Check CATCH cache for previous query.
 
 
@@ -54,11 +55,13 @@ def check_cache(target: str, source: str) -> bool:
     source : string
         Observation source or ``'any'``.
 
+    save_to : UUID, optional
+        Save the cached query under this job ID.
+
 
     Returns
     -------
     cached : bool
-
         ``True`` if ``source`` has already been searched for
         ``target``.  When ``source`` is ``'any'``, then if any source
         was not searched, ``cached`` will be ``False``.
@@ -67,4 +70,6 @@ def check_cache(target: str, source: str) -> bool:
 
     with catch_manager(save_log=False) as catch:
         cached = catch.check_cache(target, source=source)
+        if cached and (save_to is not None):
+            catch.query(target, save_to, source=source, cached=True)
     return cached
