@@ -42,7 +42,8 @@ class Query(FRP.Resource):
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
     @API.marshal_with(App.query_model)
-    def get(self: 'Query') -> Dict[str, Union[str, Dict[str, Union[str, bool]]]]:
+    def get(self: 'Query') -> Dict[
+            str, Union[str, bool, Dict[str, Union[str, bool]]]]:
         """Query for moving target."""
         from . import URL_PREFIX    # avoid circular dependency
 
@@ -53,14 +54,24 @@ class Query(FRP.Resource):
             'cached': request.args.get('cached', True, FRP.inputs.boolean)
         }
 
+        # Test target name, if valid, proceed
+        target_type: str
+        match: str
+        target_type, match = service.parse_target_name(query['target'])
+
         # Connect to started-jobs queue
         conn = Redis.from_url('redis://')
         queue = Queue(RQueues.START_JOBS, connection=conn)
         total_jobs = len(queue.jobs)
 
         # Build immediate response
-        response: Dict[str, Union[str, Dict[str, Union[str, bool]]]]
-        if total_jobs > 100:
+        response: Dict[str, Union[str, bool, Dict[str, Union[str, bool]]]]
+        if target_type == 'unknown':
+            response = {
+                "message": "Invalid target name.",
+                "query": query
+            }
+        elif total_jobs > 100:
             response = {
                 "message": "Error: queue is full."
             }
@@ -74,6 +85,7 @@ class Query(FRP.Resource):
 
             response = {
                 "message": "",
+                "queued": True,
                 "query": query,
                 "job_id": job_id.hex,
                 "results": results_url
@@ -89,6 +101,7 @@ class Query(FRP.Resource):
                 response['message'] = (
                     'Found cached data.  Retrieve from results URL.'
                 )
+                response['queued'] = False
             else:
                 # Spin out task to worker
                 queue.enqueue(catch_moving_target, query['target'],
@@ -103,23 +116,32 @@ class Query(FRP.Resource):
         return response
 
 
-@API.route("/target/<string:name>")
-class TargetName(FRP.Resource):
+@API.route("/target")
+class QueryTarget(FRP.Resource):
     """Controller class for testing target names."""
 
     @API.doc('--query/target--')
+    @API.param(
+        'name', _in='query',
+        description='Target name to test.'
+    )
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
     @API.marshal_with(App.target_name_model)
-    def get(self: 'TargetName', name: str) -> Dict[str, Union[bool, str]]:
+    def get(self: 'QueryTarget') -> Dict[str, Union[bool, str]]:
         """Test target name."""
 
-        target_type: str = service.parse_target_name(name)
+        # Extract parameter from URL
+        name: str = request.args.get('name', '', str)
+        target_type: str
+        match: str
+        target_type, match = service.parse_target_name(name)
         valid: bool = target_type != 'unknown'
 
         response: Dict[str, Union[str, Union[bool, str]]] = {
             'name': name,
             'type': target_type,
+            'match': match,
             'valid': valid
         }
         return response
