@@ -2,8 +2,11 @@
 Catch a moving target in survey data.
 """
 
-from typing import List, Any, Optional
+import re
+from typing import List, Any, Optional, Callable
 import uuid
+
+from sbpy.data.names import Names, TargetNameParseError
 
 from .caught import caught
 from .database_provider import catch_manager
@@ -73,3 +76,40 @@ def check_cache(target: str, source: str,
         if cached and (save_to is not None):
             catch.query(target, save_to, source=source, cached=True)
     return cached
+
+
+def parse_target_name(name: str) -> str:
+    """Parse moving target name.
+
+
+    Parameters
+    ----------
+    name : str
+        String to test.
+
+
+    Returns
+    -------
+    target_type : str
+        'asteroid', 'comet', or 'unknown'.
+
+    """
+
+    parser: Callable
+    target_type: str
+    if re.match('(^[PCDXA]/)|(^[0-9]+[PD])', name):
+        parser = Names.parse_comet
+        target_type = 'comet'
+    else:
+        parser = Names.parse_asteroid
+        target_type = 'asteroid'
+
+    try:
+        parser(name)
+        if target_type.startswith('A/'):
+            # in sbpy v0.1.1, this parses as a comet but should be asteroid
+            target_type = 'asteroid'
+    except TargetNameParseError:
+        target_type = 'unknown'
+
+    return target_type

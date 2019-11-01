@@ -26,3 +26,11 @@ class App:
             description='URL from which to retrieve results'
         )
     })
+
+    target_name_model: Model = api.model('TargetName', {
+        'name': fields.String(description='Input name'),
+        'type': fields.String(
+            description='Target type: asteroid, comet, or unknown'
+        ),
+        'valid': fields.Boolean(description='false if unknown, otherwise true.')
+    })

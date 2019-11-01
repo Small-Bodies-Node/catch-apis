@@ -101,3 +101,25 @@ class Query(FRP.Resource):
                 )
 
         return response
+
+
+@API.route("/target/<string:name>")
+class TargetName(FRP.Resource):
+    """Controller class for testing target names."""
+
+    @API.doc('--query/target--')
+    @FRP.cors.crossdomain(origin='*')
+    @jsonify_output
+    @API.marshal_with(App.target_name_model)
+    def get(self: 'TargetName', name: str) -> Dict[str, Union[bool, str]]:
+        """Test target name."""
+
+        target_type: str = service.parse_target_name(name)
+        valid: bool = target_type != 'unknown'
+
+        response: Dict[str, Union[str, Union[bool, str]]] = {
+            'name': name,
+            'type': target_type,
+            'valid': valid
+        }
+        return response
