@@ -55,17 +55,16 @@ def cutout_moving_targets(job_id: uuid.UUID, overwrite: bool = False) -> None:
 
     with catch_manager(save_log=True) as catch:
         rows: list = catch.caught(job_id)
-        catch.db.session.expunge_all()
 
-    # target cutouts
-    found: Found
-    obs: Obs
-    obj: Obj
-    for found, obs, obj in rows:
-        prefix: str = '{}_'.format(desg_to_prefix(obj.desg))
-        if isinstance(obs, (NEATPalomar, NEATMauiGEODSS)):
-            images.neat_cutout(obs.productid, job_id, found.ra, found.dec,
-                               prefix=prefix, overwrite=overwrite,
-                               thumbnail=True)
+        # target cutouts
+        found: Found
+        obs: Obs
+        obj: Obj
+        for found, obs, obj in rows:
+            prefix: str = '{}_'.format(desg_to_prefix(obj.desg))
+            if isinstance(obs, (NEATPalomar, NEATMauiGEODSS)):
+                images.neat_cutout(obs.productid, job_id, found.ra, found.dec,
+                                   prefix=prefix, overwrite=overwrite,
+                                   thumbnail=True)
 
     strict_redis.publish(RQueues.FINISH_JOBS, job_id.hex)
