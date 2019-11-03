@@ -7,7 +7,7 @@ import uuid
 from typing import Dict, Union
 
 import flask_restplus as FRP
-from flask import request, Response, jsonify
+from flask import request
 from redis import Redis
 from rq import Queue
 
@@ -56,8 +56,7 @@ class Query(FRP.Resource):
 
         # Test target name, if valid, proceed
         target_type: str
-        match: str
-        target_type, match = service.parse_target_name(query['target'])
+        target_type = service.parse_target_name(query['target'])[0]
 
         # Connect to started-jobs queue
         conn = Redis.from_url('redis://')

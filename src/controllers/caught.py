@@ -7,7 +7,6 @@ import uuid
 from typing import Dict, Union
 
 import flask_restplus as FRP
-from flask import jsonify, Response
 
 from models.caught import App, COLUMN_LABELS
 import services.caught as service

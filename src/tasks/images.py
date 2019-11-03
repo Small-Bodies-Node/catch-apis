@@ -90,10 +90,6 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
     s: u.Quantity = u.Quantity(size * u.arcmin)
     r: Angle = Angle(ra, 'deg')
     d: Angle = Angle(dec, 'deg')
-    x0: float
-    y0: float
-    x0, y0 = wcs.all_world2pix([[ra, dec]], 0)[0]
-
     corners: np.ndarray = Angle([
         [r - s, d - s],
         [r + s, d - s],
@@ -152,4 +148,4 @@ def array_to_thumbnail(data: np.ndarray, vmin: float, vmax: float,
     im: Image = Image.fromarray(np.uint8(scaled), 'L')
     im.thumbnail((128, 128))
     im.save(filename, "JPEG")
-    logger.debug('  Wrote thumbnail'.format(filename))
+    logger.debug('  Wrote thumbnail.')

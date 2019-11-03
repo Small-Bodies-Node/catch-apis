@@ -3,16 +3,15 @@ Catch a moving target in survey data.
 """
 
 import re
-from typing import List, Any, Optional, Callable, Tuple, Pattern, Match
+from typing import List, Any, Optional, Tuple, Pattern, Match, Union
 import uuid
-
-from sbpy.data.names import Names, TargetNameParseError
 
 from .caught import caught
 from .database_provider import catch_manager
 
 
 class TargetTypePatterns:
+    """Approximate regular expression patterns for small body names."""
     # developed with some guidance from sbpy code.
     temporary_designation: str = (
         '(18|19|20)[0-9][0-9] [A-Z]{1,2}([1-9][0-9]{0,2})?'
@@ -33,7 +32,7 @@ class TargetTypePatterns:
     )
 
     asteroidal: Pattern = re.compile(
-        '(^\([1-9][0-9]*\)( {name})?)|(^[1-9][0-9]*)|(^{temp})'
+        r'(^\([1-9][0-9]*\)( {name})?)|(^[1-9][0-9]*)|(^{temp})'
         .format(name=name, temp=temporary_designation)
     )
 
