@@ -2,6 +2,7 @@
 import uuid
 from typing import List, Dict, Union, Iterator
 
+from sqlalchemy.inspection import inspect
 from catch.schema import Found, Obs, Obj, Caught, CatchQueries
 
 from . import images
@@ -37,10 +38,9 @@ def caught(job_id: uuid.UUID) -> List[dict]:
             found.append({})
             for name, obj in row._asdict().items():
                 fields: dict = {}
-                for k, v in obj.__dict__.items():
-                    if k.startswith('_'):
-                        continue
-                    fields[k] = v
+                mapper = inspect(obj).mapper
+                for col in mapper.columns:
+                    fields[col.name] = getattr(obj, col.name)
                 found[-1][name] = fields
 
             # some extras
