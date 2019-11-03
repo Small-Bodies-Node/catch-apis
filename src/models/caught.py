@@ -1,5 +1,7 @@
-from flask_restplus import Namespace, Model, fields
+"""/caught namspace and data models."""
+
 from typing import Dict, Union
+from flask_restplus import Namespace, Model, fields
 
 
 class App:

@@ -30,11 +30,14 @@ class StreamRoute(Resource):
 
     @staticmethod
     def event_stream() -> Iterator[str]:
+        """Inspect event stream."""
         pubsub: PubSub = strict_redis.pubsub()
         pubsub.subscribe(RQueues.FINISH_JOBS)
         for message in pubsub.listen():
             print(message)
-            msg = message['data']
-            if type(msg) is bytes:
-                msg = msg.decode('utf-8')
+            msg: str
+            if isinstance(message['data'], bytes):
+                msg = message['data'].decode('utf-8')
+            else:
+                msg = message['data']
             yield f'data: {msg}\n\n'

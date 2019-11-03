@@ -1,15 +1,14 @@
 """Caught moving object data services."""
 import uuid
-from typing import List, Dict, Union, Iterator
+from typing import List, Dict, Union
 
 from sqlalchemy.inspection import inspect
 from catch.schema import Found, Obs, Obj, Caught, CatchQueries
 
-from . import images
-from .database_provider import data_provider_session, Session
-# from sqlalchemy.orm.session import Session, sessionmaker
 from util import desg_to_prefix
 from env import ENV
+from . import images
+from .database_provider import data_provider_session, Session
 
 
 def caught(job_id: uuid.UUID) -> List[dict]:
@@ -26,6 +25,7 @@ def caught(job_id: uuid.UUID) -> List[dict]:
     found: List[Dict[str, Union[Found, Obs, Obj, str, float, int, bool, None]]]
     found = []
 
+    session: Session
     with data_provider_session() as session:
         data = (session.query(Found, Obs, Obj)
                 .join(Caught, Found.foundid == Caught.foundid)
@@ -50,7 +50,8 @@ def caught(job_id: uuid.UUID) -> List[dict]:
             found[-1]['cutout_url'] = cutout_url
             found[-1]['thumbnail_url'] = (
                 cutout_url
-                .replace(ENV.CATCH_CUTOUT_BASE_URL, ENV.CATCH_THUMBNAIL_BASE_URL)
+                .replace(ENV.CATCH_CUTOUT_BASE_URL,
+                         ENV.CATCH_THUMBNAIL_BASE_URL)
                 .replace('.fits', '_thumb.jpg')
             )
             found[-1]['archive_url'] = images.build_url(row.Obs.productid)
