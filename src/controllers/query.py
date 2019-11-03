@@ -14,7 +14,7 @@ from rq import Queue
 from models.query import App
 import services.query as service
 from tasks import RQueues
-from tasks.query import catch_moving_target
+from tasks.query import catch_moving_target, cutout_moving_targets
 from util import jsonify_output
 
 API: FRP.Namespace = App.api
@@ -101,8 +101,13 @@ class Query(FRP.Resource):
                     'Found cached data.  Retrieve from results URL.'
                 )
                 response['queued'] = False
+
+                # Make sure cutouts are avilable.  Spin out task to worker.
+                queue.enqueue(cutout_moving_targets, job_id,
+                              job_id=job_id.hex)
+
             else:
-                # Spin out task to worker
+                # Spin out actual search to worker
                 queue.enqueue(catch_moving_target, query['target'],
                               query['source'], query['cached'], job_id,
                               job_id=job_id.hex)

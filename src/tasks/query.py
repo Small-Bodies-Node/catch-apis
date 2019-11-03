@@ -35,7 +35,7 @@ def catch_moving_target(desg: str, source: str, cached: bool,
         catch.query(desg, job_id, source=source,
                     cached=cached, eph_source='jpl')
 
-    cutout_moving_targets(job_id, overwrite=True)
+    cutout_moving_targets(job_id, overwrite=False)
 
     strict_redis.publish(RQueues.FINISH_JOBS, job_id.hex)
 

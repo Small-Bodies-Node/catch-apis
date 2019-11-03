@@ -66,8 +66,12 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
     logger.info('Cutout for {}: {}'.format(
         job_id.hex, ' → '.join((inf, outf))))
 
+    if not os.path.exists(inf):
+        logger.debug('  Source file missing.')
+        return
+
     if os.path.exists(outf) and not overwrite:
-        logger.debug('  Already exists.')
+        logger.debug('  Cutout already exists.')
         return
 
     # read data
