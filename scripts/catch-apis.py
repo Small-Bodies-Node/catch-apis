@@ -50,6 +50,19 @@ def query_moving(args):
         print(data)
 
 
+def listen_to_stream(args):
+    """Inspect the CATCH event stream."""
+
+    messages = SSEClient('{}/stream'.format(args.base))
+    print('Listening to event stream.  Use ctrl-c to stop.')
+
+    try:
+        for msg in messages:
+            print(msg)
+    except KeyboardInterrupt:
+        pass
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--base', default='https://musforti.astro.umd.edu/catch',
                     help='base URL for query, e.g., https://host/location')
@@ -67,6 +80,9 @@ parser_moving.add_argument('--force', dest='cached', action='store_false',
 parser_moving.add_argument('--format', choices=['json', 'table'],
                            default='table', help='output format')
 parser_moving.set_defaults(func=query_moving)
+
+parser_stream = subparsers.add_parser('stream')
+parser_stream.set_defaults(func=listen_to_stream)
 
 args = parser.parse_args()
 args.func(args)
