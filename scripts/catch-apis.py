@@ -19,8 +19,9 @@ def query_target(args):
 def query_moving(args):
     """Catch a moving object with query/moving route."""
 
-    # first, validate target name
-    query_target(args)
+    if args.name_test:
+        # first, validate target name
+        query_target(args)
 
     params = {
         'target': args.target,
@@ -77,6 +78,9 @@ parser_moving.add_argument('target', help='moving target designation')
 parser_moving.add_argument('--force', dest='cached', action='store_false',
                            help=('do not use cached results and force a '
                                  'new query'))
+parser_moving.add_argument('--no-name-test', dest='name_test',
+                           action='store_false',
+                           help='skip target name testing')
 parser_moving.add_argument('--format', choices=['json', 'table'],
                            default='table', help='output format')
 parser_moving.set_defaults(func=query_moving)
