@@ -1,7 +1,9 @@
 """Tasks for CATCH searches."""
 import uuid
+import logging
 
 from redis import Redis, StrictRedis
+from sbsearch.exceptions import SBSException
 from catch.schema import Found, Obs, Obj, NEATPalomar, NEATMauiGEODSS
 
 from services.database_provider import catch_manager
@@ -9,6 +11,7 @@ from tasks import RQueues, images
 from util import desg_to_prefix
 
 strict_redis: Redis = StrictRedis()
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 def catch_moving_target(desg: str, source: str, cached: bool,
@@ -31,11 +34,13 @@ def catch_moving_target(desg: str, source: str, cached: bool,
 
     """
 
-    with catch_manager(save_log=True) as catch:
-        catch.query(desg, job_id, source=source,
-                    cached=cached, eph_source='jpl')
-
-    cutout_moving_targets(job_id, overwrite=False)
+    try:
+        with catch_manager(save_log=True) as catch:
+            catch.query(desg, job_id, source=source,
+                        cached=cached, eph_source='jpl')
+        cutout_moving_targets(job_id, overwrite=False)
+    except (RuntimeError, SBSException) as e:
+        logger.error(str(e))
 
     strict_redis.publish(RQueues.FINISH_JOBS, job_id.hex)
 
