@@ -58,7 +58,7 @@ class Query(FRP.Resource):
         target_type: str
         target_type = service.parse_target_name(query['target'])[0]
 
-        # Connect unique queue
+        # Connect to start jobs queue
         conn = Redis.from_url('redis://')
         queue = Queue(RQueues.START_JOBS, connection=conn)
         total_jobs = len(queue.jobs)

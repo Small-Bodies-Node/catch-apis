@@ -32,7 +32,7 @@ def query_moving(args):
     print(data)
 
     if data['queued']:
-        messages = SSEClient('{}/stream/{}'.format(args.base, data['job_id']))
+        messages = SSEClient('{}/stream'.format(args.base))
         print('Connected to stream...')
         for msg in messages:
             if msg.data == data['job_id']:
@@ -54,7 +54,7 @@ def query_moving(args):
 def listen_to_stream(args):
     """Inspect the CATCH event stream."""
 
-    messages = SSEClient('{}/stream/{}'.format(args.base, args.job_id))
+    messages = SSEClient('{}/stream'.format(args.base))
     print('Listening to event stream.  Use ctrl-c to stop.')
 
     try:
@@ -86,7 +86,6 @@ parser_moving.add_argument('--format', choices=['json', 'table'],
 parser_moving.set_defaults(func=query_moving)
 
 parser_stream = subparsers.add_parser('stream')
-parser_stream.add_argument('job_id', help='CATCH job ID')
 parser_stream.set_defaults(func=listen_to_stream)
 
 args = parser.parse_args()
