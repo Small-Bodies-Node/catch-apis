@@ -2,7 +2,8 @@
 /stream route namespace.
 """
 
-from typing import Iterator
+from typing import Iterator, Union
+import uuid
 
 from flask import Response
 from flask_restplus import Namespace, Resource, cors
@@ -17,24 +18,30 @@ API: Namespace = Namespace(name='Stream', path='/stream',
 strict_redis: Redis = StrictRedis()
 
 
-@API.route("")
+@API.route("/<string:job_id>")
 class StreamRoute(Resource):
     """Controller class for stream"""
 
-    @API.doc('--demo-stream--')
+    @API.doc('--event-stream--')
     @cors.crossdomain(origin='*')
-    def get(self: 'StreamRoute') -> Response:
+    def get(self: 'StreamRoute', job_id: Union[str, uuid.UUID]) -> Response:
         '''CATCH-APIs event stream'''
 
-        return Response(self.event_stream(), mimetype="text/event-stream")
+        job_id = uuid.UUID(job_id, version=4)
+
+        return Response(self.event_stream(job_id), mimetype="text/event-stream")
 
     @staticmethod
-    def event_stream() -> Iterator[str]:
+    def event_stream(job_id: uuid.UUID) -> Iterator[str]:
         """Inspect event stream."""
+
         pubsub: PubSub = strict_redis.pubsub()
-        pubsub.subscribe(RQueues.FINISH_JOBS)
+        pubsub.subscribe()
         for message in pubsub.listen():
             print(message)
+            if message['job_id'] != job_id.hex:
+                continue
+
             msg: str
             if isinstance(message['data'], bytes):
                 msg = message['data'].decode('utf-8')

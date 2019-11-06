@@ -58,7 +58,7 @@ class Query(FRP.Resource):
         target_type: str
         target_type = service.parse_target_name(query['target'])[0]
 
-        # Connect to started-jobs queue
+        # Connect unique queue
         conn = Redis.from_url('redis://')
         queue = Queue(RQueues.START_JOBS, connection=conn)
         total_jobs = len(queue.jobs)
@@ -120,11 +120,11 @@ class Query(FRP.Resource):
         return response
 
 
-@API.route("/target")
-class QueryTarget(FRP.Resource):
+@API.route("/name")
+class QueryName(FRP.Resource):
     """Controller class for testing target names."""
 
-    @API.doc('--query/target--')
+    @API.doc('--query/name--')
     @API.param(
         'name', _in='query',
         description='Target name to test.'
@@ -132,8 +132,8 @@ class QueryTarget(FRP.Resource):
     @FRP.cors.crossdomain(origin='*')
     @jsonify_output
     @API.marshal_with(App.target_name_model)
-    def get(self: 'QueryTarget') -> Dict[str, Union[bool, str]]:
-        """Test target name."""
+    def get(self: 'QueryName') -> Dict[str, Union[bool, str]]:
+        """Query moving target name."""
 
         # Extract parameter from URL
         name: str = request.args.get('name', '', str)
