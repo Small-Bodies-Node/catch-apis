@@ -6,9 +6,9 @@ from sseclient import SSEClient
 from astropy.table import Table
 
 
-def query_target(args):
-    """Test target name with query/target route."""
-    res = requests.get('{}/query/target'.format(args.base),
+def query_name(args):
+    """Test target name with query/name route."""
+    res = requests.get('{}/query/name'.format(args.base),
                        params={'name': args.target})
     data = res.json()
     print(data)
@@ -21,7 +21,7 @@ def query_moving(args):
 
     if args.name_test:
         # first, validate target name
-        query_target(args)
+        query_name(args)
 
     params = {
         'target': args.target,
@@ -69,9 +69,9 @@ parser.add_argument('--base', default='https://musforti.astro.umd.edu/catch',
                     help='base URL for query, e.g., https://host/location')
 
 subparsers = parser.add_subparsers(title='API routes')
-parser_target = subparsers.add_parser('query/target', aliases=['target'])
-parser_target.add_argument('target', help='moving target designation')
-parser_target.set_defaults(func=query_target)
+parser_name = subparsers.add_parser('query/name')
+parser_name.add_argument('target', help='moving target designation')
+parser_name.set_defaults(func=query_name)
 
 parser_moving = subparsers.add_parser('query/moving')
 parser_moving.add_argument('target', help='moving target designation')
@@ -89,4 +89,7 @@ parser_stream = subparsers.add_parser('stream')
 parser_stream.set_defaults(func=listen_to_stream)
 
 args = parser.parse_args()
-args.func(args)
+if hasattr(args, 'func'):
+    args.func(args)
+else:
+    parser.print_help()

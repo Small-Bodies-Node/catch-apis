@@ -3,6 +3,7 @@
 """
 
 from typing import Iterator
+import uuid
 
 from flask import Response
 from flask_restplus import Namespace, Resource, cors
@@ -17,11 +18,11 @@ API: Namespace = Namespace(name='Stream', path='/stream',
 strict_redis: Redis = StrictRedis()
 
 
-@API.route("")
+@API.route("/")
 class StreamRoute(Resource):
     """Controller class for stream"""
 
-    @API.doc('--demo-stream--')
+    @API.doc('--event-stream--')
     @cors.crossdomain(origin='*')
     def get(self: 'StreamRoute') -> Response:
         '''CATCH-APIs event stream'''
@@ -31,6 +32,7 @@ class StreamRoute(Resource):
     @staticmethod
     def event_stream() -> Iterator[str]:
         """Inspect event stream."""
+
         pubsub: PubSub = strict_redis.pubsub()
         pubsub.subscribe(RQueues.FINISH_JOBS)
         for message in pubsub.listen():

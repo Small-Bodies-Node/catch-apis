@@ -14,17 +14,17 @@ class App:
 
     query_model: Model = api.model('QueryMoving', {
         'message': fields.String(
-            description='Text message for user'
+            description='text message for user'
         ),
         'queued': fields.Boolean(
             description=('true if a search has been queued, '
                          'false if the results are ready')
         ),
         'query': fields.String(
-            description="User's inputs"
+            description="user's inputs"
         ),
         'job_id': fields.String(
-            description='Unique job ID for retrieving results'
+            description='unique job ID for retrieving results'
         ),
         'results': fields.String(
             description='URL from which to retrieve results'
@@ -32,15 +32,15 @@ class App:
     })
 
     target_name_model: Model = api.model('QueryTarget', {
-        'name': fields.String(description='Input name'),
+        'name': fields.String(description='input name'),
         'type': fields.String(
-            description=('Target type: asteroid, comet, '
+            description=('target type: asteroid, comet, '
                          'interstellar object, or unknown')
         ),
         'match': fields.String(
-            description='Target type identification was based on this string'
+            description='target type identification was based on this string'
         ),
         'valid': fields.Boolean(
-            description='false if unknown, otherwise true.'
+            description='false if unknown, otherwise true'
         )
     })

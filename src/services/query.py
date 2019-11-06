@@ -14,9 +14,9 @@ class TargetTypePatterns:
     """Approximate regular expression patterns for small body names."""
     # developed with some guidance from sbpy code.
     temporary_designation: str = (
-        '(18|19|20)[0-9][0-9] [A-Z]{1,2}([1-9][0-9]{0,2})?'
+        '(18|19|20)[0-9][0-9] (([A-Z]{1,2}[1-9][0-9]{0,2})|([A-Z][A-Z]))(?![A-Z])'
     )
-    name: str = "['`]?[dvA-Z][A-Z]*['`]?[a-z][a-z]*['`]?[^0-9]*"
+    # name: str = "['`]?(d'|de\s|di\s|du\s|van\s|von\s|[A-Z])?\D+"
     cometary_fragment: str = '-[A-Z]{1,2}'
 
     cometary: Pattern = re.compile(
@@ -24,21 +24,22 @@ class TargetTypePatterns:
         # allow fragments like 73P-B
         # First check for 99P/2030 A2, then P/2030 A2
         # This avoids nonsense like 32C/Asdf
-        ('(^([1-9][0-9]*[PD]({frag})?)(/(({temp}({frag})?)))?)|({name})'
-         '|(^[PDCX]/{temp}({frag})?)'
-         )
-        .format(frag=cometary_fragment, temp=temporary_designation,
-                name=name)
+        (r'(^([1-9][0-9]*[PD]({frag})?((?=/)|(?!\S))))'
+         # r'|(/(({temp}({frag})?)))?)|({name})'
+         r'|(^[PDCX]/{temp}({frag})?)'
+         ).format(frag=cometary_fragment, temp=temporary_designation)
     )
 
     asteroidal: Pattern = re.compile(
-        r'(^\([1-9][0-9]*\)( {name})?)|(^[1-9][0-9]*)|(^{temp})'
-        .format(name=name, temp=temporary_designation)
+        (r'(^{temp})'  # 2019 DQ123
+         r'|(^\([1-9][0-9]*\))'  # (1234)
+         r'|(^[1-9][0-9]*\b(?!\S))'  # 1234
+         r'|(^A/{temp})'  # A/2019 Q1
+         ).format(temp=temporary_designation)
     )
 
     interstellar_object: Pattern = re.compile(
-        '[1-9][0-9]*I((/{name})|(/{temp}))'.format(
-            name=name, temp=temporary_designation)
+        r'[1-9][0-9]*I((?=/)|(?!\S)|)'
     )
 
 
@@ -131,6 +132,7 @@ def parse_target_name(name: str) -> Tuple[str, str]:
     pattern: Pattern
     match: str
     target_type: str
+    name = name.strip()
     for target_type, pattern in (('comet', TargetTypePatterns.cometary),
                                  ('asteroid', TargetTypePatterns.asteroidal),
                                  ('interstellar object',
@@ -143,4 +145,4 @@ def parse_target_name(name: str) -> Tuple[str, str]:
         target_type = 'unknown'
         match = ''
 
-    return target_type, match
+    return target_type, match.strip()
