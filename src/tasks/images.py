@@ -47,6 +47,12 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
     thumbnail : bool, optional
         Generate JPEG thumbnail.
 
+
+    Returns
+    -------
+    success : bool
+        ``True`` if a cutout was generated.
+
     """
 
     ra = ra % 360
@@ -68,11 +74,11 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
 
     if not os.path.exists(inf):
         logger.debug('  Source file missing.')
-        return
+        return False
 
     if os.path.exists(outf) and not overwrite:
         logger.debug('  Cutout already exists.')
-        return
+        return False
 
     # read data
     im: np.ndarray
@@ -111,7 +117,7 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
     ]
     if i[0].start == i[0].stop or i[1].start == i[1].stop:
         logger.error('Cutout has a length = 0 dimension.')
-        return
+        return False
 
     cutout: CCDData = ccd[i]
     cutout.write(outf, overwrite=True)
@@ -126,6 +132,8 @@ def neat_cutout(productid: str, job_id: uuid.UUID, ra: float,
             outf.replace(ENV.CATCH_CUTOUT_PATH, ENV.CATCH_THUMBNAIL_PATH)
             .replace('.fits', '_thumb.jpg'))
         array_to_thumbnail(cutout.data, vmin, vmax, thumbf)
+
+    return True
 
 
 def array_to_thumbnail(data: np.ndarray, vmin: float, vmax: float,

@@ -55,9 +55,9 @@ class NeatCutouts(FRP.Resource):
             'size': request.args.get('size', 5, int)
         }
 
-        # Connect to started-jobs queue
+        # Connect to jobs queue
         conn = Redis.from_url('redis://')
-        queue: Queue = Queue(RQueues.START_JOBS, connection=conn)
+        queue: Queue = Queue(RQueues.JOBS, connection=conn)
         total_jobs = len(queue.jobs)
 
         # Build immediate response
