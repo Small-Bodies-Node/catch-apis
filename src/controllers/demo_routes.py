@@ -104,9 +104,9 @@ class DemoRedisRoutes(FRP.Resource):
     def get(self: 'DemoRedisRoutes') -> typing.Any:
         '''Returns json object with uuid for job spun out to worker'''
 
-        # Connect to started-jobs queue
+        # Connect to jobs queue
         conn = Redis.from_url('redis://')
-        queue = Queue(RQueues.START_JOBS, connection=conn)
+        queue = Queue(RQueues.JOBS, connection=conn)
         total_jobs = len(queue.jobs)
 
         # Build immediate response
@@ -149,7 +149,7 @@ class DemoStreamRoutes(FRP.Resource):
 def event_stream() -> typing.Any:
     """ Stream generator function piping data to clients subscribed via SSE API """
     pubsub = strict_redis.pubsub()
-    pubsub.subscribe(RQueues.FINISH_JOBS)
+    pubsub.subscribe(RQueues.TASK_MESSAGES)
     # TODO: handle client disconnection.
     for message in pubsub.listen():
         print(message)
@@ -175,9 +175,9 @@ def example_task(seconds: int, job_uuid: uuid.UUID) -> None:
     for i in range(seconds):
         print(i)
         msg.text = str(i)
-        strict_redis.publish(RQueues.FINISH_JOBS, str(msg))
+        strict_redis.publish(RQueues.TASK_MESSAGES, str(msg))
         time.sleep(1)
     print('Task completed: '+job_uuid.hex)
     msg.status = 'success'
     msg.text = str(seconds)
-    strict_redis.publish(RQueues.FINISH_JOBS, str(msg))
+    strict_redis.publish(RQueues.TASK_MESSAGES, str(msg))

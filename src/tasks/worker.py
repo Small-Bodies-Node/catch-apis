@@ -1,5 +1,5 @@
 """
-    Script to launch a new rq worker listening to START_JOBS queue
+    Script to launch a new rq worker listening to JOBS queue
 """
 
 from typing import List
@@ -9,7 +9,7 @@ from env import ENV
 
 from tasks import RQueues
 
-subscribed_queues: List[str] = [RQueues.START_JOBS]
+subscribed_queues: List[str] = [RQueues.JOBS]
 
 redis_url: str = 'redis://localhost:'+str(ENV.REDIS_PORT)
 

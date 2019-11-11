@@ -25,7 +25,7 @@ class StreamRoute(Resource):
     @API.doc('--event-stream--')
     @cors.crossdomain(origin='*')
     def get(self: 'StreamRoute') -> Response:
-        '''CATCH-APIs event stream'''
+        '''Task messaging stream'''
 
         return Response(self.event_stream(), mimetype="text/event-stream")
 
@@ -34,7 +34,7 @@ class StreamRoute(Resource):
         """Inspect event stream."""
 
         pubsub: PubSub = strict_redis.pubsub()
-        pubsub.subscribe(RQueues.FINISH_JOBS)
+        pubsub.subscribe(RQueues.TASK_MESSAGES)
         for message in pubsub.listen():
             print(message)
             msg: str

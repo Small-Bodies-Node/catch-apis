@@ -8,17 +8,19 @@ from typing import Dict, Union
 
 import flask_restplus as FRP
 from flask import request
-from redis import Redis
+from redis import Redis, StrictRedis
 from rq import Queue
 
 from models.query import App
 import services.query as service
 from tasks import RQueues
+from tasks.message import Message
 from tasks.query import catch_moving_target, cutout_moving_targets
 from util import jsonify_output
 
 API: FRP.Namespace = App.api
 
+strict_redis: Redis = StrictRedis()
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -58,9 +60,9 @@ class Query(FRP.Resource):
         target_type: str
         target_type = service.parse_target_name(query['target'])[0]
 
-        # Connect to start jobs queue
+        # Connect to jobs queue
         conn = Redis.from_url('redis://')
-        queue = Queue(RQueues.START_JOBS, connection=conn)
+        queue = Queue(RQueues.JOBS, connection=conn)
         total_jobs = len(queue.jobs)
 
         # Build immediate response
@@ -96,26 +98,30 @@ class Query(FRP.Resource):
                 cached = service.check_cache(
                     query['target'], query['source'], save_to=job_id)
 
+            # message for task messaging stream
+            msg: Message = Message(job_id)
+            msg.status = 'queued'
+            msg.text = 'Job queue number {}'.format(total_jobs + 1)
+            strict_redis.publish(RQueues.TASK_MESSAGES, str(msg))
+
             if cached:
+                # Make sure cutouts are avilable.  Spin out task to worker.
+                queue.enqueue(cutout_moving_targets, job_id)
+
                 response['message'] = (
                     'Found cached data.  Retrieve from results URL.'
                 )
-                response['queued'] = False
-
-                # Make sure cutouts are avilable.  Spin out task to worker.
-                queue.enqueue(cutout_moving_targets, job_id,
-                              job_id=job_id.hex)
-
+                response['queued'] = False  # query is not queued
             else:
                 # Spin out actual search to worker
                 queue.enqueue(catch_moving_target, query['target'],
-                              query['source'], query['cached'], job_id,
-                              job_id=job_id.hex)
+                              query['source'], query['cached'], job_id)
 
                 response['message'] = (
-                    'Enqueued search.  Listen to event stream until job'
-                    ' completed, then retrieve data from results URL.'
+                    'Enqueued search.  Listen to task messaging stream until'
+                    ' job completed, then retrieve data from results URL.'
                 )
+                response['queued'] = True  # query is queued
 
         return response
 

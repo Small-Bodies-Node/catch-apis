@@ -90,6 +90,6 @@ wcwidth==0.1.7
 webencodings==0.5.1
 werkzeug>=0.15.3
 wrapt==1.11.1
--e git+git://github.com/Small-Bodies-Node/catch.git@v0.3.4#egg=catch
+-e git+git://github.com/Small-Bodies-Node/catch.git@v0.3.6#egg=catch
 -e git+git://github.com/NASA-Planetary-Science/sbpy.git@v0.1.1#egg=sbpy
 -e git+git://github.com/Small-Bodies-Node/sbsearch.git@v1.0.7#egg=sbsearch
