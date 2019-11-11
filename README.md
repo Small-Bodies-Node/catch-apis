@@ -98,6 +98,12 @@ The following tools/conventions are used to promote codebase quality amidst mult
 - pytest
   - Unit-test capabilities are in place; just run `sh _run_tests` to execute them. Failed tests will cause merge requests to be rejected if attempted at origin. Tests are recommended mainly for functions that you expect to be established for the long haul.
 
+## DEVELOPER DOCUMENTATION
+
+### Task Messaging
+
+Tasks communicate to the user via the `stream` route. Redis requires strings for messsages. So, CATCH-APIs uses JSON-formatted data. See `tasks.message` for message format and a helper class.
+
 ## TODOs
 
 - Fix and enable testing with Jenkins CI

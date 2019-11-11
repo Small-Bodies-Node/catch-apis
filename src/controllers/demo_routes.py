@@ -160,14 +160,24 @@ def event_stream() -> typing.Any:
 
 
 def example_task(seconds: int, job_uuid: uuid.UUID) -> None:
+    """Simple demo of long-running task to be handled by async worker.
+
+    As work is done, post the API-formatted message as JSON string to
+    redis queue, which will be piped to client's SSE API
+
     """
-        Simple demo of long-running task to be handled by async worker
-        When work is done, post the job_uuid received to redis queue,
-        which will be piped to client's SSE API
-    """
+
+    from tasks.message import Message
+
+    msg: Message = Message(job_uuid)
     print('Starting task')
+    msg.status = 'running'
     for i in range(seconds):
         print(i)
+        msg.text = str(i)
+        strict_redis.publish(RQueues.FINISH_JOBS, str(msg))
         time.sleep(1)
     print('Task completed: '+job_uuid.hex)
-    strict_redis.publish(RQueues.FINISH_JOBS, job_uuid.hex)
+    msg.status = 'success'
+    msg.text = str(seconds)
+    strict_redis.publish(RQueues.FINISH_JOBS, str(msg))
