@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import json
 import requests
 from sseclient import SSEClient
 from astropy.table import Table
@@ -34,10 +35,18 @@ def query_moving(args):
     if data['queued']:
         messages = SSEClient('{}/stream'.format(args.base))
         print('Connected to stream...')
-        for msg in messages:
-            if msg.data == data['job_id']:
+        for m in messages:
+            message_data = json.loads(m.data)
+            if not isinstance(message_data, dict):
+                # edit out keep-alive messages
+                continue
+
+            if message_data['job_prefix'] != data['job_id'][:8]:
+                continue
+
+            print(message_data['text'])
+            if message_data['status'] in ['error', 'success']:
                 break
-        print('...task completed.')
 
     res = requests.get(data['results'])
     data = res.json()
@@ -80,7 +89,7 @@ parser_moving.add_argument('--force', dest='cached', action='store_false',
                                  'new query'))
 parser_moving.add_argument('--no-name-test', dest='name_test',
                            action='store_false',
-                           help='skip target name testing')
+                           help='skip internal target name testing')
 parser_moving.add_argument('--format', choices=['json', 'table'],
                            default='table', help='output format')
 parser_moving.set_defaults(func=query_moving)
