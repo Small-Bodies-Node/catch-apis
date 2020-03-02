@@ -1,7 +1,6 @@
 """Entry file into the Flask-REST API server."""
 
-import flask
-import flask.wrappers as FLW
+from flask import Flask, wrappers as FLW, jsonify
 from werkzeug.contrib.fixers import ProxyFix
 
 #import flask_monitoringdashboard as dashboard
@@ -9,7 +8,7 @@ from logging_setup import logger    # Must come BEFORE controllers import
 from controllers import default_error_handler, blueprint as rest_plus_blueprint
 from env import ENV, EDeploymentTier
 
-# Choose port to run app locally based on deployment environment
+# Choose port to run app locally based on deployment tier
 if ENV.DEPLOYMENT_TIER == EDeploymentTier.PROD:
     PORT = 5000
 elif ENV.DEPLOYMENT_TIER == EDeploymentTier.STAGE:
@@ -22,16 +21,14 @@ else:
     raise Exception('Unrecognized DEPLOYMENT_TIER')
 
 # Init Flask App and associate it with RestPlus controllers
-flask_app: flask.Flask = flask.Flask(__name__)
+flask_app: Flask = Flask(__name__)
 flask_app.url_map.strict_slashes = False
 
 # Define sth at flask's bare root; must come BEFORE associating flask app with restplus
-
-
 @flask_app.route('/')
 def bare_root() -> FLW.Response:
     """Message for bare-api route"""
-    res: FLW.Response = flask.jsonify(
+    res: FLW.Response = jsonify(
         {
             "message":
             """

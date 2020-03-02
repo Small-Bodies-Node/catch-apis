@@ -21,7 +21,7 @@
       let awaitedJobUuid;
 
       // Begin listening to SSE route
-      const source = new EventSource(base_url + "demo/stream/");
+      const source = new EventSource(base_url + "/stream/");
       source.onmessage = function(e) {
         console.log(">>>>>>>>>>>>>>>");
         console.log(e, awaitedJobUuid);

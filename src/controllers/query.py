@@ -4,15 +4,16 @@ Controller for survey searches.
 
 import logging
 import uuid
-from typing import Dict, Union
+from typing import Dict, Union, Any, List
 
 import flask_restplus as FRP
-from flask import request
+from flask import request, wrappers as FLW, jsonify
 from redis import Redis
 from rq import Queue
 
 from models.query import App
 import services.query as service
+from services.name_search import name_search
 from tasks import RQueues
 from tasks.query import catch_moving_target, cutout_moving_targets
 from util import jsonify_output
@@ -120,7 +121,7 @@ class Query(FRP.Resource):
         return response
 
 
-@API.route("/name")
+@API.route("/name-old")
 class QueryName(FRP.Resource):
     """Controller class for testing target names."""
 

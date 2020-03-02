@@ -103,9 +103,7 @@ main() {
     ### 11. Ensure we have dirs for web-api logging in production
     if [[ ! -d logging/old-logs ]]; then mkdir -p logging/old-logs; fi
 
-    echo """
-        >>> Set up complete. Enjoy Flask API-ing!
-    """
+    echo ">>> Set up complete. Enjoy Flask API-ing!"
 }
 
 if [[ $jenkins_arg == 'jenkins' ]]; then

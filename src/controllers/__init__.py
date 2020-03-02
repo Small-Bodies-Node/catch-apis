@@ -20,35 +20,33 @@ from .query import API as query
 from .images import API as images
 from .stream import API as stream
 from .caught import API as caught
+from .name_search import API as name_search
 
 logger: logging.Logger = logging.getLogger(__name__)
 logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 
 
-# Choose port to run app locally based on deployment environment
+# Choose base root to run app locally based on deployment tier
 URL_PREFIX: str
-TITLE_SUFFIX: str
+TITLE_SUFFIX: str = f'[{ENV.DEPLOYMENT_TIER.name}]'
 if ENV.DEPLOYMENT_TIER == EDE.PROD:
     URL_PREFIX = '/catch'
     TITLE_SUFFIX = ''
 elif ENV.DEPLOYMENT_TIER == EDE.STAGE:
     URL_PREFIX = '/catch-stage'
-    TITLE_SUFFIX = '[STAGE]'
 elif ENV.DEPLOYMENT_TIER == EDE.SANDBOX:
     URL_PREFIX = '/catch-sandbox'
-    TITLE_SUFFIX = '[SANDBOX]'
 elif ENV.DEPLOYMENT_TIER == EDE.LOCAL:
     URL_PREFIX = '/catch-local'
-    TITLE_SUFFIX = '[LOCAL]'
 else:
     raise Exception('Unrecognized DEPLOYMENT_TIER!')
-
 
 # Define flask blueprint to apply prefix to whole api
 blueprint: Blueprint = Blueprint(
     'some_blueprint_name',
     __name__,
-    url_prefix=URL_PREFIX)
+    url_prefix=URL_PREFIX
+)
 
 # Initiate RestPlusApi object and associate it with blueprint
 REST_PLUS_APIS = Api(
@@ -65,10 +63,9 @@ REST_PLUS_APIS.add_namespace(caught)
 REST_PLUS_APIS.add_namespace(images)
 REST_PLUS_APIS.add_namespace(stream)
 REST_PLUS_APIS.add_namespace(demos)
+REST_PLUS_APIS.add_namespace(name_search)
 
-# Add error handlers:
-
-
+# Add error handlers
 @REST_PLUS_APIS.errorhandler
 def default_error_handler(exception: Exception) -> Tuple[Response, Any]:
     """ -- Default Error Handler -- """

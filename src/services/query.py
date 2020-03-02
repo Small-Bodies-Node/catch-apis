@@ -8,6 +8,7 @@ import uuid
 
 from .caught import caught
 from .database_provider import catch_manager
+from models.name_search import EBodyType
 
 
 class TargetTypePatterns:
@@ -133,16 +134,23 @@ def parse_target_name(name: str) -> Tuple[str, str]:
     match: str
     target_type: str
     name = name.strip()
-    for target_type, pattern in (('comet', TargetTypePatterns.cometary),
-                                 ('asteroid', TargetTypePatterns.asteroidal),
-                                 ('interstellar object',
+    # for target_type, pattern in (('comet', TargetTypePatterns.cometary),
+    #                              ('asteroid', TargetTypePatterns.asteroidal),
+    #                              ('interstellar object',
+    #                               TargetTypePatterns.interstellar_object)):
+
+    for target_type, pattern in ((EBodyType.comet.name, TargetTypePatterns.cometary),
+                                 (EBodyType.asteroid.name,
+                                  TargetTypePatterns.asteroidal),
+                                 (EBodyType.interstellar_object.name,
                                   TargetTypePatterns.interstellar_object)):
+
         m: Union[Match, None] = pattern.match(name)
         if m is not None:
             match = m[0]
             break
     if m is None:
-        target_type = 'unknown'
+        target_type = EBodyType.unknown.name
         match = ''
 
     return target_type, match.strip()

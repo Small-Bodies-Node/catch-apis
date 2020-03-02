@@ -28,6 +28,7 @@ main() {
 
     # GNU-sed expression to export vars while ignore comments in .env file
     cmd=$($MYSED -ne '/^#/d; /^export / {p;d}; /.*=/ s/^/export / p' .env)
+    echo $cmd
     eval $cmd
 }
 

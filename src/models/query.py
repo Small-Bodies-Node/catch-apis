@@ -44,3 +44,14 @@ class App:
             description='false if unknown, otherwise true'
         )
     })
+
+    # Todo: matches is supposed to return a list of dictionaries
+    # Todo: ... I tried using fields.List and fields.Nested, but got opaque errors
+    # Todo: ... For now, fields.String seems to work
+    search_name_model: Model = api.model('SearchTarget', {
+        'name': fields.String(description='input name'),
+        'matches': fields.String(
+            description='list of best matches'
+        )
+
+    })

@@ -274,6 +274,9 @@ missing-member-hint-distance=1
 # showing a hint for a missing member.
 missing-member-max-choices=1
 
+# dwd: added to allow exceptions without specfying the type of error incurred
+# ??? How are you expected to know in advance the type of error ???
+ignore-bare-except
 
 [VARIABLES]
 

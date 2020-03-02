@@ -13,6 +13,7 @@ flask_monitoringdashboard.db
 .redis.pid
 node_modules
 catch-images
+**/mpcdata/*
 
 # Flask_MonitorDasboard
 .dashboard.db
