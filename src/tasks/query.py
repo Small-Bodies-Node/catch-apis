@@ -41,6 +41,8 @@ def catch_moving_target(desg: str, source: str, cached: bool,
         cutout_moving_targets(job_id, overwrite=False)
     except (RuntimeError, SBSException) as e:
         logger.error(str(e))
+    except:
+        logger.error("Some error occurred. Perhaps this objid does not exist")
 
     strict_redis.publish(RQueues.FINISH_JOBS, job_id.hex)
 

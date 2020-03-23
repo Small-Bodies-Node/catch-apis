@@ -6,7 +6,7 @@
 # ==============================================================================
 
 # Load vars defined in .env
-source _load_env_vars
+source .env
 
 # Give name to workers launched from this deployment environment
 # This will be used to select them collectively by pm2
@@ -14,71 +14,71 @@ PROC_NAME="woRQer-"$DEPLOYMENT_TIER
 
 # Test if we've already got redis running:
 calc_processes() {
-    PM2_PROCESSES=$(pm2 pid $PROC_NAME)               # Store woRQer pids as string
-    PM2_PROCESSES_ARRAY=($(echo $PM2_PROCESSES))      # Split pids into array entries
-    PM2_PROCESSES_LENGTH=(${#PM2_PROCESSES_ARRAY[@]}) # Get length of array
-    return $PM2_PROCESSES_LENGTH
+  PM2_PROCESSES=$(pm2 pid $PROC_NAME)               # Store woRQer pids as string
+  PM2_PROCESSES_ARRAY=($(echo $PM2_PROCESSES))      # Split pids into array entries
+  PM2_PROCESSES_LENGTH=(${#PM2_PROCESSES_ARRAY[@]}) # Get length of array
+  return $PM2_PROCESSES_LENGTH
 }
 calc_processes
 
 d_status() {
-    if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
-        echo "PM2 is running "$PM2_PROCESSES_LENGTH" redis-queue-task workers."
-        echo "Worker PIDs: $(echo $PM2_PROCESSES)"
-        echo "Run \`pm2 list $PROC_NAME\`, etc. for further details."
-    else
-        echo "PM2 is not running any workers for this deployment environment"
-    fi
+  if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
+    echo "PM2 is running "$PM2_PROCESSES_LENGTH" redis-queue-task workers."
+    echo "Worker PIDs: $(echo $PM2_PROCESSES)"
+    echo "Run \`pm2 list $PROC_NAME\`, etc. for further details."
+  else
+    echo "PM2 is not running any workers for this deployment environment"
+  fi
 }
 
 d_start() {
-    if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
-        echo "PM2 is already running PIDs "$(echo $PM2_PROCESSES)"; cancelling start!"
-    else
-        echo "--------------"
-        echo "PM2 is not running; beginning "$(echo $LIVE_WORKER_INSTANCES)" workers now!"
-        pm2 \
-            -i $LIVE_WORKER_INSTANCES \
-            -n $PROC_NAME \
-            start src/tasks/worker.py
-        echo "--------------"
-    fi
+  if [[ $PM2_PROCESSES_LENGTH -gt 0 ]]; then
+    echo "PM2 is already running PIDs "$(echo $PM2_PROCESSES)"; cancelling start!"
+  else
+    echo "--------------"
+    echo "PM2 is not running; beginning "$(echo $LIVE_WORKER_INSTANCES)" workers now!"
+    pm2 \
+      -i $LIVE_WORKER_INSTANCES \
+      -n $PROC_NAME \
+      start src/tasks/worker.py
+    echo "--------------"
+  fi
 }
 
 d_stop() {
-    if [ $PM2_PROCESSES_LENGTH -gt 0 ]; then
-        printf "\nStopping pm2 workers ..."
-        pm2 delete $PROC_NAME
-        printf " done!\n"
-    else
-        d_status
-    fi
+  if [ $PM2_PROCESSES_LENGTH -gt 0 ]; then
+    printf "\nStopping pm2 workers ..."
+    pm2 delete $PROC_NAME
+    printf " done!\n"
+  else
+    d_status
+  fi
 }
 
 d_restart() {
-    d_stop
-    sleep 2
-    calc_processes
-    d_start
+  d_stop
+  sleep 2
+  calc_processes
+  d_start
 }
 
 case $1 in
 status)
-    d_status
-    ;;
+  d_status
+  ;;
 start)
-    d_start
-    ;;
+  d_start
+  ;;
 stop)
-    d_stop
-    ;;
+  d_stop
+  ;;
 restart)
-    d_restart
-    ;;
+  d_restart
+  ;;
 *)
-    echo "usage: $NAME {status|start|stop|restart}"
-    exit 1
-    ;;
+  echo "usage: $NAME {status|start|stop|restart}"
+  exit 1
+  ;;
 esac
 
 exit 0

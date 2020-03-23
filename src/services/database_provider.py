@@ -10,6 +10,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session, sessionmaker
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
+from sqlalchemy.pool import NullPool
 
 from catch import Catch, Config
 from env import ENV
@@ -19,11 +20,12 @@ db_engine_URI: str = (
     f"{ENV.DB_DIALECT}://{ENV.DB_USERNAME}:{ENV.DB_PASSWORD}@{ENV.DB_HOST}"
     f"/{ENV.DB_DATABASE}")
 db_engine: Engine = sqlalchemy.create_engine(
-    db_engine_URI, pool_recycle=3600)
+    db_engine_URI, pool_recycle=3600, pool_pre_ping=True)
 db_session: scoped_session = scoped_session(sessionmaker(bind=db_engine))
 
 # catch library configuration
-catch_config: Config = Config(database=db_engine_URI, log=ENV.CATCH_LOG)
+catch_config: Config = Config(
+    database=db_engine_URI, poolclass=NullPool, log=ENV.CATCH_LOG)
 
 
 @contextmanager

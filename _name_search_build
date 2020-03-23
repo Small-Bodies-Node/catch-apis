@@ -2,7 +2,7 @@
 
 clear
 
-. _load_env_vars
+source .env
 
 echo """
 ===============================================================
@@ -27,34 +27,34 @@ sleep 2
 
 # function to decide whether or not stage is to be executed
 runStage() {
-    stage=$1
-    if [[ -z $1 ]]; then
-        echo "runStage must receive an argument"
-        exit 1
-    fi
-    if [[ $stage -ge $choice_lower && $stage -le $choice_upper ]]; then
-        echo true
-    else
-        echo false
-    fi
+  stage=$1
+  if [[ -z $1 ]]; then
+    echo "runStage must receive an argument"
+    exit 1
+  fi
+  if [[ $stage -ge $choice_lower && $stage -le $choice_upper ]]; then
+    echo true
+  else
+    echo false
+  fi
 }
 
 if $(runStage 0); then
-    echo "<<<RUNNING STAGE 0>>>"
-    python name-search/stage0.py
+  echo "<<<RUNNING STAGE 0>>>"
+  python name-search/stage0.py
 fi
 
 if $(runStage 1); then
-    echo "<<<RUNNING STAGE 1>>>"
-    python name-search/stage1.py
+  echo "<<<RUNNING STAGE 1>>>"
+  python name-search/stage1.py
 fi
 
 if $(runStage 2); then
-    echo "<<<RUNNING STAGE 2>>>"
-    python name-search/stage2.py
+  echo "<<<RUNNING STAGE 2>>>"
+  python name-search/stage2.py
 fi
 
 if $(runStage 3); then
-    echo "<<<RUNNING STAGE 2>>>"
-    python name-search/stage3.py
+  echo "<<<RUNNING STAGE 2>>>"
+  python name-search/stage3.py
 fi

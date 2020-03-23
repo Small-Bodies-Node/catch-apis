@@ -3,14 +3,14 @@
 ### This is a script to simply call some routes and print out result:
 
 printblock() {
-    echo """
+  echo """
 
         ============================
 
     """
 }
 
-source _load_env_vars
+source .env
 
 printblock
 

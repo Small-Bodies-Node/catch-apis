@@ -27,7 +27,16 @@ class StreamRoute(Resource):
     def get(self: 'StreamRoute') -> Response:
         '''CATCH-APIs event stream'''
 
-        return Response(self.event_stream(), mimetype="text/event-stream")
+        return Response(
+            self.event_stream(),
+            mimetype="text/event-stream",
+            headers={
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Keep-Alive': 'timeout=55'
+            }
+        )
 
     @staticmethod
     def event_stream() -> Iterator[str]:

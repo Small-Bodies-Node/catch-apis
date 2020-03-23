@@ -18,4 +18,6 @@ sbsearch==1.0.4
 
 If you want to add a new package to requirements.txt, either write it in directly, or run freeze but then be sure to replace the above 3 lines with the correct urls!
 
+Also, we want to limit version of werkzeug to 0.16.0, which requires \`werkzeug <=0.16.0\`
+
 """

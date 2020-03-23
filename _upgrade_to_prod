@@ -21,16 +21,16 @@ read decision
 
 if [[ $decision =~ y|ye|yes|Y|YE|YES ]]; then
 
-    # Load vars defined in .env
-    source _load_env_vars
+  # Load vars defined in .env
+  source .env
 
-    # Trigger Jenkins pipeline
-    curl -sv -X POST "https://"$JENKINS_USERNAME":"$JENKINS_UPGRADE_TOKEN"@musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/build?token=upgrade_to_prod_token"
+  # Trigger Jenkins pipeline
+  curl -sv -X POST "https://"$JENKINS_USERNAME":"$JENKINS_UPGRADE_TOKEN"@musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/build?token=upgrade_to_prod_token"
 
-    echo "\n\n\nJob-trigger request sent to jenkins; check 'https://musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/' for result.\n\n\n"
+  echo "\n\n\nJob-trigger request sent to jenkins; check 'https://musforti.astro.umd.edu/jenkins/job/.jenkins-4-upgrade-stage-to-prod/' for result.\n\n\n"
 
 else
 
-    echo "OK, cancelling upgrade."
+  echo "OK, cancelling upgrade."
 
 fi

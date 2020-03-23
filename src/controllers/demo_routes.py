@@ -122,7 +122,7 @@ class DemoRedisRoutes(FRP.Resource):
         else:
             # Create uuid for job, spin out task to worker, return uuid
             job_uuid: uuid.UUID = uuid.uuid4()
-            job = queue.enqueue(example_task, 5, job_uuid)
+            job = queue.enqueue(example_task, 15, job_uuid)
             res = jsonify(
                 {
                     "message": "This is the demo GET route which doesn't do much.",
@@ -141,7 +141,7 @@ class DemoStreamRoutes(FRP.Resource):
     @FRP.cors.crossdomain(origin='*')
     def get(self: 'DemoStreamRoutes') -> typing.Any:
         '''Returns streamed stuff'''
-
+        print('??????')
         return Response(event_stream(),
                         mimetype="text/event-stream")
 

@@ -1,43 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="icon" href="data:," />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>SSE Tester</h1>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="icon" href="data:," />
+		<title>Document</title>
+	</head>
+	<body>
+		<h1>SSE Tester</h1>
 
-    <p>
-      This html/js is just to test a call to trigger the server-side async
-      worker and then listen to the SSE route for that job to finish.
-    </p>
+		<p>
+			This html/js is just to test a call to trigger the server-side async worker and then listen to the SSE route
+			for that job to finish.
+		</p>
 
-    <script>
-      //   const base_url = "http://127.0.0.1:5002/catch-dev/";
-      const base_url = "http://127.0.0.1:5001/catch/";
-      let awaitedJobUuid;
+		<script>
+			//   const base_url = "http://127.0.0.1:5002/catch-dev/";
+			// const base_url = 'http://127.0.0.1:5001/catch-sandbox/';
+			const base_url = 'https://musforti.astro.umd.edu/catch-sandbox';
 
-      // Begin listening to SSE route
-      const source = new EventSource(base_url + "/stream/");
-      source.onmessage = function(e) {
-        console.log(">>>>>>>>>>>>>>>");
-        console.log(e, awaitedJobUuid);
-        if (e.data === awaitedJobUuid) {
-          this.close(); // Sever connection to SSE route
-          console.log("Events matched!!!", this.CLOSED);
-        }
-      };
+			const startDate = new Date();
 
-      // Call route to start worker running
-      const pingWorker = async () => {
-        const res = await fetch(base_url + "demo/redis/");
-        const data = await res.json();
-        awaitedJobUuid = data.job_uuid;
-      };
-      pingWorker();
-    </script>
-  </body>
+			const getNewJobId = async () => {
+				const p = new Promise(async resolve => {
+					fetch(base_url + '/query/moving?target=65P&cached=false')
+						.then(res => res.json())
+						.then(data => {
+							const xxx = data;
+							resolve(data.job_id);
+						});
+				});
+				return p;
+			};
+
+			const listenStream = async () => {
+				const p = new Promise(async resolve => {
+					//
+					const x = 1;
+					const y = 2;
+					//
+
+					const awaitedJobUuid = await getNewJobId();
+					console.log('awaitedJobUuid', awaitedJobUuid);
+					// Begin listening to SSE route
+					const source = new EventSource(base_url + '/stream/');
+					source.onmessage = function(e) {
+						console.log('>>>>>>>>>>>>>>>');
+						console.log(e, typeof e, awaitedJobUuid);
+						if (e.data === awaitedJobUuid) {
+							this.close(); // Sever connection to SSE route
+							console.log('Events matched!!!', this.CLOSED);
+							console.log('Time Taken Secs: ', (new Date() - startDate) / 1000);
+							resolve();
+						}
+					};
+				});
+			};
+
+			window.onload = function() {
+				listenStream();
+			};
+		</script>
+	</body>
 </html>
