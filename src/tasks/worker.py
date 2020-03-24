@@ -2,12 +2,18 @@
     Script to launch a new rq worker listening to START_JOBS queue
 """
 
+import sys
+print(">>>>>"+str(sys.path))
+
+
 from typing import List
 from redis import from_url, Redis
 from rq import Worker, Queue, Connection
 from env import ENV
 
 from tasks import RQueues
+
+
 
 subscribed_queues: List[str] = [RQueues.START_JOBS]
 

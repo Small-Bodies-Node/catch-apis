@@ -18,4 +18,5 @@ echo """
 
 sleep 2
 
+echo $PYTHONPATH
 nodemon -w 'src/**' -e py,html --exec python src/tasks/worker.py
