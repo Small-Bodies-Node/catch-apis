@@ -17,6 +17,7 @@ from services.name_search import name_search
 from tasks import RQueues
 from tasks.query import catch_moving_target, cutout_moving_targets
 from util import jsonify_output
+from env import ENV
 
 API: FRP.Namespace = App.api
 
@@ -71,9 +72,10 @@ class Query(FRP.Resource):
                 "message": "Invalid target name.",
                 "query": query
             }
-        elif total_jobs > 100:
+        elif ENV.REDIS_MAX_QUEUE_SIZE > 0 and total_jobs > ENV.REDIS_MAX_QUEUE_SIZE:
             response = {
-                "message": "Error: queue is full."
+                "message": "Error: queue is full.",
+                "isQueueFull": True
             }
         else:
             # unique job ID

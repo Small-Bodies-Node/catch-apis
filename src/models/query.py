@@ -16,9 +16,14 @@ class App:
         'message': fields.String(
             description='text message for user'
         ),
+        # Todo: establish consistent naming conventions; e.g. booleans isXXX
         'queued': fields.Boolean(
             description=('true if a search has been queued, '
                          'false if the results are ready')
+        ),
+        'isQueueFull': fields.Boolean(
+            description=('true if redis queue is above some threshold, '
+                         'false if the redis queue is still accepting')
         ),
         'query': fields.String(
             description="user's inputs"

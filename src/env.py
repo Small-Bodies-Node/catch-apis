@@ -47,6 +47,7 @@ class ENV():
 
     # Numeric properties
     REDIS_PORT: int = int(os.getenv("REDIS_PORT") or -1)
+    REDIS_MAX_QUEUE_SIZE: int = int(os.getenv("REDIS_MAX_QUEUE_SIZE") or -1)
     LIVE_GUNICORN_INSTANCES: int = int(
         os.getenv("LIVE_GUNICORN_INSTANCES") or -1)
     LIVE_WORKER_INSTANCES: int = int(
