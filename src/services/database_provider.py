@@ -20,7 +20,7 @@ db_engine_URI: str = (
     f"{ENV.DB_DIALECT}://{ENV.DB_USERNAME}:{ENV.DB_PASSWORD}@{ENV.DB_HOST}"
     f"/{ENV.DB_DATABASE}")
 db_engine: Engine = sqlalchemy.create_engine(
-    db_engine_URI, pool_recycle=3600, pool_pre_ping=True)
+    db_engine_URI, poolclass=NullPool, pool_recycle=3600, pool_pre_ping=True)
 db_session: scoped_session = scoped_session(sessionmaker(bind=db_engine))
 
 # catch library configuration
