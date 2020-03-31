@@ -7,7 +7,7 @@ import uuid
 from typing import Dict, Union, Any, List
 
 import flask_restplus as FRP
-from flask import request, wrappers as FLW, jsonify
+from flask import request
 from redis import Redis, StrictRedis
 from rq import Queue
 
