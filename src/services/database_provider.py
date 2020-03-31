@@ -24,8 +24,7 @@ db_engine: Engine = sqlalchemy.create_engine(
 db_session: scoped_session = scoped_session(sessionmaker(bind=db_engine))
 
 # catch library configuration
-catch_config: Config = Config(
-    database=db_engine_URI, poolclass=NullPool, log=ENV.CATCH_LOG)
+catch_config: Config = Config(log=ENV.CATCH_LOG)
 
 
 @contextmanager
@@ -45,5 +44,5 @@ def data_provider_session() -> Iterator[Session]:
 @contextmanager
 def catch_manager(save_log: bool = True) -> Iterator[Catch]:
     """Catch library session manager."""
-    with Catch(catch_config, save_log=save_log) as catch:
+    with Catch(catch_config, session=db_session(), save_log=save_log) as catch:
         yield catch

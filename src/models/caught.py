@@ -51,7 +51,7 @@ class App:
         ),
         "vmag": fields.Float(
             attribute='Found.vmag',
-            description='brightness estimate (magnitude)'
+            description='brightness estimate (magnitude); for comet ephemerides from JPL, this value is T-mag, if available, otherwise N-mag'
         ),
         "rh": fields.Float(
             attribute='Found.rh',
@@ -189,7 +189,7 @@ COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
         },
         'vmag': {
             'label': 'V',
-            'description': 'Predicted V-band brightness (mag)',
+            'description': 'Predicted V-band brightness (mag); For comet ephemerides from JPL, this value is T-mag, if available, otherwise N-mag',
             'fractionSize': 1
         },
         'rh': {
