@@ -72,11 +72,13 @@ class Query(FRP.Resource):
         if target_type == 'unknown':
             response = {
                 "message": "Invalid target name.",
-                "query": query
+                "query": query,
+                "queued": False
             }
         elif ENV.REDIS_MAX_QUEUE_SIZE > 0 and total_jobs > ENV.REDIS_MAX_QUEUE_SIZE:
             response = {
                 "message": "Error: queue is full.",
+                "queued": False,
                 "isQueueFull": True
             }
         else:
@@ -90,6 +92,7 @@ class Query(FRP.Resource):
             response = {
                 "message": "",
                 "queued": True,
+                "isQueueFull": False,
                 "query": query,
                 "job_id": job_id.hex,
                 "results": results_url
