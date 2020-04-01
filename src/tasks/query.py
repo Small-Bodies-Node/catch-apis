@@ -5,6 +5,7 @@ import logging
 from redis import Redis, StrictRedis
 from sbsearch.exceptions import SBSException
 from catch.schema import Found, Obs, Obj, NEATPalomar, NEATMauiGEODSS
+from catch.catch import CatchException
 
 from services.database_provider import catch_manager
 from tasks import RQueues, images
@@ -51,10 +52,14 @@ def catch_moving_target(desg: str, source: str, cached: bool,
 
         msg.status = 'success'
         msg.text = 'Task complete.'
-    except (RuntimeError, SBSException) as e:
+    except (CatchException, SBSException) as e:
         logger.error(str(e))
         msg.status = 'error'
         msg.text = str(e)
+    except Exception as e:
+        logger.error(str(e))
+        msg.status = 'error'
+        msg.text = 'An unknown error occured.  If this happens again contact us.'
 
     strict_redis.publish(RQueues.TASK_MESSAGES, str(msg))
 
