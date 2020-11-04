@@ -36,24 +36,33 @@ def caught(job_id: uuid.UUID) -> List[dict]:
 
         for row in data:
             found.append({})
-            for name, obj in row._asdict().items():
+            for table in row:
                 fields: dict = {}
-                mapper = inspect(obj).mapper
-                for col in mapper.columns:
-                    fields[col.name] = getattr(obj, col.name)
-                found[-1][name] = fields
+                for k in dir(type(table)):
+                    if k.startswith('_'):
+                        continue
+                    fields[k] = getattr(table, k)
+                found[-1][table.__class__.__name__] = fields
 
             # some extras
-            cutout_url: str = images.build_url(
-                row.Obs.productid, ra=row.Found.ra, dec=row.Found.dec,
-                size=5, prefix=desg_to_prefix(row.Obj.desg) + '_')
+            # cutout around target
+            cutout_url: str = images.build_cutout_url(
+                row, size=5, prefix=desg_to_prefix(row.Obj.desg) + '_')
             found[-1]['cutout_url'] = cutout_url
-            found[-1]['thumbnail_url'] = (
-                cutout_url
-                .replace(ENV.CATCH_CUTOUT_BASE_URL,
-                         ENV.CATCH_THUMBNAIL_BASE_URL)
-                .replace('.fits', '_thumb.jpg')
-            )
-            found[-1]['archive_url'] = images.build_url(row.Obs.productid)
+
+            # preview image
+            if row.Obs.source[:4] == 'neat':
+                found[-1]['thumbnail_url'] = (
+                    cutout_url
+                    .replace(ENV.CATCH_CUTOUT_BASE_URL,
+                             ENV.CATCH_THUMBNAIL_BASE_URL)
+                    .replace('.fits', '_thumb.jpg')
+                )
+            elif row.Obs.source == 'skymapper':
+                found[-1]['thumbnail_url'] = str(found[-1]['cutout_url']).replace(
+                    'fits', 'png')
+
+            # full-frame image
+            found[-1]['archive_url'] = images.build_fullframe_url(row)
 
     return found

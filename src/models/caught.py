@@ -12,6 +12,10 @@ class App:
     )
 
     caught_data: Model = api.model('CaughtData', {
+        "survey": fields.String(
+            attribute='Obs.source',
+            description='Survey'
+        ),
         "designation": fields.String(
             attribute='Obj.desg',
             description='Object designation'
