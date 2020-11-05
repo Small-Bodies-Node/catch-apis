@@ -2,7 +2,6 @@
 Controller for survey searches.
 """
 
-import logging
 import uuid
 from typing import Dict, Union, Any, List
 
@@ -23,7 +22,6 @@ from env import ENV
 API: FRP.Namespace = App.api
 
 strict_redis: Redis = StrictRedis()
-logger: logging.Logger = logging.getLogger(__name__)
 
 
 @API.route("/moving")

@@ -9,7 +9,7 @@ echo """
 
     RUNNING PIPELINE TO ADD NAME-SEARCH FUNCTIONALITY TO DB
 
-(Hint: add 1-2 numbered args to run subsections of the pipeline)
+(Hint: add 1-3 numbered args to run subsections of the pipeline)
 
 ===============================================================
 """
@@ -19,7 +19,7 @@ sleep 2
 # If args aren't provided, assign default values to choice_* vars
 # Note syntax: FOO=${VARIABLE:-default}  # If variable not set or null, use default.
 choice_lower=${1:-0}
-choice_upper=${2:-2}
+choice_upper=${3:-3}
 
 echo "Running stages "$choice_lower" to "$choice_upper
 
