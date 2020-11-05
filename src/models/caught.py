@@ -129,6 +129,10 @@ class App:
             attribute='thumbnail_url',
             description='URL to cutout thumbnail'
         ),
+        "preview_url": fields.String(
+            attribute='preview_url',
+            description='URL to cutout web preview image'
+        ),
     })
 
     caught_model: Model = api.model('Caught', {

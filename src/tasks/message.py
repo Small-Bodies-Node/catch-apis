@@ -67,22 +67,22 @@ class Message:
         self.status = status
 
     @property
-    def job_id(self):
+    def job_id(self) -> UUID:
         return self._job_id
 
     @job_id.setter
-    def job_id(self, j: Union[str, UUID]):
+    def job_id(self, j: Union[str, UUID]) -> None:
         self._job_id = UUID(str(j), version=4)
 
     @property
-    def status(self):
+    def status(self) -> Status:
         return self._status
 
     @status.setter
-    def status(self, s: Union[str, Status]):
+    def status(self, s: Union[str, Status]) -> None:
         self._status = Status(s)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """JSON-formatted string."""
         msg: Dict[str, str] = {
             'job_prefix': self.job_id.hex[:8],
@@ -94,7 +94,7 @@ class Message:
 
         return json.dumps(msg)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation."""
         return '<Message: {}>'.format(str(self))
 
@@ -110,27 +110,27 @@ class MessageHandler(logging.Handler):
 
     """
 
-    def __init__(self, job_id: Union[str, UUID], level=logging.INFO):
+    def __init__(self, job_id: Union[str, UUID], level: int = logging.INFO) -> None:
         self.job_id = job_id
         self.strict_redis: Redis = StrictRedis()
         logging.Handler.__init__(self, level)
 
     @property
-    def job_id(self):
+    def job_id(self) -> UUID:
         return self._job_id
 
     @job_id.setter
-    def job_id(self, j: Union[str, UUID]):
+    def job_id(self, j: Union[str, UUID]) -> None:
         self._job_id = UUID(str(j), version=4)
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         msg: Message = Message(self.job_id)
         msg.text = record.msg
-        msg.status = 'running'
+        msg.status = Status.RUNNING
         self.strict_redis.publish(RQueues.TASK_MESSAGES, str(msg))
 
 
-def listen_to_task_messenger(job_id: Union[str, UUID]):
+def listen_to_task_messenger(job_id: Union[str, UUID]) -> None:
     """Publish messages for this job ID to the task messaging stream.
 
     Intended for messages with `status='running'`.

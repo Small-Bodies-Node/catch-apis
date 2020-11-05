@@ -25,6 +25,8 @@ flask_app: Flask = Flask(__name__)
 flask_app.url_map.strict_slashes = False
 
 # Define sth at flask's bare root; must come BEFORE associating flask app with restplus
+
+
 @flask_app.route('/')
 def bare_root() -> FLW.Response:
     """Message for bare-api route"""

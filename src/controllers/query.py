@@ -2,7 +2,6 @@
 Controller for survey searches.
 """
 
-import logging
 import uuid
 from typing import Dict, Union, Any, List
 
@@ -13,7 +12,6 @@ from rq import Queue
 
 from models.query import App
 import services.query as service
-from services.name_search import name_search
 from tasks import RQueues
 from tasks.message import Message
 from tasks.query import catch_moving_target, cutout_moving_targets
@@ -23,7 +21,6 @@ from env import ENV
 API: FRP.Namespace = App.api
 
 strict_redis: Redis = StrictRedis()
-logger: logging.Logger = logging.getLogger(__name__)
 
 
 @API.route("/moving")
@@ -61,6 +58,11 @@ class Query(FRP.Resource):
         # Test target name, if valid, proceed
         target_type: str
         target_type = service.parse_target_name(query['target'])[0]
+
+        print("----------------------")
+        print(target_type)
+        print(query)
+        print("----------------------")
 
         # Connect to jobs queue
         conn = Redis.from_url('redis://')
@@ -129,35 +131,4 @@ class Query(FRP.Resource):
                 )
                 response['queued'] = True  # query is queued
 
-        return response
-
-
-@API.route("/name-old")
-class QueryName(FRP.Resource):
-    """Controller class for testing target names."""
-
-    @API.doc('--query/name--')
-    @API.param(
-        'name', _in='query',
-        description='Target name to test.'
-    )
-    @FRP.cors.crossdomain(origin='*')
-    @jsonify_output
-    @API.marshal_with(App.target_name_model)
-    def get(self: 'QueryName') -> Dict[str, Union[bool, str]]:
-        """Query moving target name."""
-
-        # Extract parameter from URL
-        name: str = request.args.get('name', '', str)
-        target_type: str
-        match: str
-        target_type, match = service.parse_target_name(name)
-        valid: bool = target_type != 'unknown'
-
-        response: Dict[str, Union[str, Union[bool, str]]] = {
-            'name': name,
-            'type': target_type,
-            'match': match,
-            'valid': valid
-        }
         return response

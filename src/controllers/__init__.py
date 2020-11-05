@@ -20,7 +20,6 @@ from .query import API as query
 from .images import API as images
 from .stream import API as stream
 from .caught import API as caught
-from .name_search import API as name_search
 
 logger: logging.Logger = logging.getLogger(__name__)
 logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
@@ -63,9 +62,10 @@ REST_PLUS_APIS.add_namespace(caught)
 REST_PLUS_APIS.add_namespace(images)
 REST_PLUS_APIS.add_namespace(stream)
 REST_PLUS_APIS.add_namespace(demos)
-REST_PLUS_APIS.add_namespace(name_search)
 
 # Add error handlers
+
+
 @REST_PLUS_APIS.errorhandler
 def default_error_handler(exception: Exception) -> Tuple[Response, Any]:
     """ -- Default Error Handler -- """

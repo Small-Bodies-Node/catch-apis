@@ -8,7 +8,7 @@ import uuid
 
 from .caught import caught
 from .database_provider import catch_manager
-from models.name_search import EBodyType
+from models.body_type import EBodyType
 
 
 class TargetTypePatterns:
@@ -78,7 +78,7 @@ def query(target: str, job_id: uuid.UUID, source: str,
 
 
 def check_cache(target: str, source: str,
-                save_to: Optional[uuid.UUID]) -> bool:
+                save_to: Optional[uuid.UUID]) -> Any:
     """Check CATCH cache for previous query.
 
 
@@ -134,23 +134,19 @@ def parse_target_name(name: str) -> Tuple[str, str]:
     match: str
     target_type: str
     name = name.strip()
-    # for target_type, pattern in (('comet', TargetTypePatterns.cometary),
-    #                              ('asteroid', TargetTypePatterns.asteroidal),
-    #                              ('interstellar object',
-    #                               TargetTypePatterns.interstellar_object)):
 
-    for target_type, pattern in ((EBodyType.comet.name, TargetTypePatterns.cometary),
-                                 (EBodyType.asteroid.name,
-                                  TargetTypePatterns.asteroidal),
-                                 (EBodyType.interstellar_object.name,
-                                  TargetTypePatterns.interstellar_object)):
+    for target_type, pattern in (
+        (EBodyType.comet.name, TargetTypePatterns.cometary),
+        (EBodyType.asteroid.name, TargetTypePatterns.asteroidal),
+        (EBodyType.interstellar_object.name, TargetTypePatterns.interstellar_object)
+    ):
 
         m: Union[Match, None] = pattern.match(name)
         if m is not None:
             match = m[0]
             break
-    if m is None:
-        target_type = EBodyType.unknown.name
-        match = ''
+        if m is None:
+            target_type = EBodyType.unknown.name
+            match = ''
 
     return target_type, match.strip()
