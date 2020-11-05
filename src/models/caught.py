@@ -12,9 +12,9 @@ class App:
     )
 
     caught_data: Model = api.model('CaughtData', {
-        "survey": fields.String(
+        "source": fields.String(
             attribute='Obs.source',
-            description='Survey'
+            description='Observational data source'
         ),
         "designation": fields.String(
             attribute='Obj.desg',
@@ -149,6 +149,10 @@ COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
             'label': 'Designation',
             'description': 'Object designation'
         },
+        'source': {
+            'label': 'Source',
+            'description': 'Observational data source'
+        },
         'jd': {
             'label': 'Date',
             'description': ('Mid-time of the observation as a Julian Date'
@@ -193,7 +197,9 @@ COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
         },
         'vmag': {
             'label': 'V',
-            'description': 'Predicted V-band brightness (mag); For comet ephemerides from JPL, this value is T-mag, if available, otherwise N-mag',
+            'description': ('Predicted V-band brightness (mag); For comet '
+                            'ephemerides from JPL, this value is T-mag, if '
+                            'available, otherwise N-mag'),
             'fractionSize': 1
         },
         'rh': {

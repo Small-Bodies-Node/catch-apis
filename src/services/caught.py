@@ -38,11 +38,20 @@ def caught(job_id: uuid.UUID) -> List[dict]:
             found.append({})
             for table in row:
                 fields: dict = {}
+                print(dir(type(table)))
                 for k in dir(type(table)):
                     if k.startswith('_'):
                         continue
                     fields[k] = getattr(table, k)
-                found[-1][table.__class__.__name__] = fields
+
+                name: str
+                if issubclass(type(table), Obs):
+                    # Obs rather than SkyMapper, NEATPalomar, etc.
+                    name = 'Obs'
+                else:
+                    name = table.__class__.__name__
+
+                found[-1][name] = fields
 
             # some extras
             # cutout around target
