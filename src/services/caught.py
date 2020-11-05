@@ -58,7 +58,6 @@ def caught(job_id: uuid.UUID) -> List[dict]:
             cutout_url: str = images.build_cutout_url(
                 row, size=5, prefix=desg_to_prefix(row.Obj.desg) + '_')
             found[-1]['cutout_url'] = cutout_url
-<<<<<<< HEAD
 
             # preview image
             if row.Obs.source[:4] == 'neat':
@@ -74,15 +73,5 @@ def caught(job_id: uuid.UUID) -> List[dict]:
 
             # full-frame image
             found[-1]['archive_url'] = images.build_fullframe_url(row)
-=======
-            found[-1]['thumbnail_url'] = (
-                cutout_url
-                .replace(ENV.CATCH_CUTOUT_BASE_URL,
-                         ENV.CATCH_THUMBNAIL_BASE_URL)
-                .replace('.fits', '_thumb.jpg')
-            )
-            found[-1]['preview_url'] = cutout_url.replace('.fits', '.jpg')
-            found[-1]['archive_url'] = images.build_url(row.Obs.productid)
->>>>>>> origin/master
 
     return found

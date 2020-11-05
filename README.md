@@ -11,8 +11,8 @@
 - Environment variables are set in `.env` that you create by copying and editing the `.env-template` file
 - To launch the app in production, you need to have running:
   - the flask application server itself with gunicorn launched with `_gunicorn_manager`
-  - A `redis-server` instance; the script `_redis_manager` will let you install/start/stop/restart a redis instance
-  - workers to process the queued tasks launched with `_workers_manager`; this script uses pm2 under the hood, so you need to have node installed with a global `pm2` package
+  - a `redis-server` instance; the script `_redis_manager` will let you install/start/stop/restart a redis instance
+  - workers to process the queued tasks launched with `_workers_manager`; this script uses `pm2` under the hood, so you need to have node installed with a global `pm2` package
   - a web server to proxy-pass http requests to the gunicorn workers; we use apache
   - postgres DB
 
@@ -27,7 +27,7 @@ To develop this flask API locally on a linux-like machine:
    3. Ask an admin for DB credentials.
    4. The `PYTHONPATH` variable is needed iff you're using vscode (to enable the microsoft python server to resolve modules).
    5. `DASHBOARD_CONFIG` needs to point to a file called `.config.cfg` in your root directory; create one by copying from `.config-template.cfg` and setting variables therein accordingly.
-   6. Create an empty file `.dashboard.db` in your root directory; this will be used by the flask_monitoringdashboard library to track API usage
+   6. Create an empty file `.dashboard.db` in your root directory; this will be used by the `flask_monitoringdashboard` library to track API usage
    7. `TEST_URL_BASE` is used in the script `_demo_routes`; you're unlikely to need to change this.
    8. `CATCH_ARCHIVE_PATH` is the source directory for local data.
    9. `CATCH_CUTOUT_PATH` and `CATCH_THUMBNAIL_PATH` are the directories to which cutouts and thumbnails are saved.
@@ -44,19 +44,21 @@ To develop this flask API locally on a linux-like machine:
 
    Note: `source _initial_setup` is an idempotent process of readying your dev environment, so you can call it liberally.
 
-3. Run `_start_dev_api` to start the flask api directly in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes as you develop. (You'll thus need to have node and nodemon installed; if you prefer then you can just call `python3 -m src/app_entry.py` directly and restart it whenever you make changes in development.)
+3. Run `_develop_apis` to start the flask api directly in development mode. [Nodemon](https://www.npmjs.com/package/nodemon) is used here to watch for file changes as you develop. (You'll thus need to have node and nodemon installed; if you prefer then you can just call `python3 -m src/app_entry.py` directly and restart it whenever you make changes in development.)
 
-4. If in the course of your development you add new package dependencies, don't forget to 'freeze' your changes by running `_freeze_requirements` while in the `.venv`, and commit those changes.
+4. Run `_develop_workers` to start a single worker that logs to console so you can develop it.
 
-5. To test the routes, there is a crude `_test_routes` script that prints out the result of making local http requests to the defined routes. This will be augmented/replaced with proper end-to-end tests soon.
+5. If in the course of your development you add new package dependencies, don't forget to add them to your `requirements.txt` file. However, do not directly 'freeze' installed packages to `requirements.txt`, else you'll overwrite some carefully set package links.
 
-6. Go to `localhost:5001/catch/docs` to see the swagger documentation for the API
+6. To test the routes, there is a crude `_test_routes` script that prints out the result of making local http requests to the defined routes.
+
+7. Go to `localhost:5003/catch-local/docs` to see the swagger documentation for the API
 
 ### RUNNING IN PRODUCTION
 
-The production version of the API uses gunicorn to start the workers that serve content according to the python-flask configurations. This is controlled by the script `_gunicorn_manager`, with one of the following arguments: `start, stop, restart, status`.
+The production version of the API uses gunicorn to start the workers that serve content according to the python-flask configurations. This is controlled by the script `_gunicorn_manager`, with one of the following arguments: start, stop, restart, status.
 
-You also need to manager async workers that listen for tasks on the redis server. Such workers are operated using the `_worker_manager` script.
+You also need to manage async workers that listen for tasks on the redis server. Such workers are operated using the `_worker_manager` script. These workers are daemonized using `pm2` production.
 
 ### GIT WORKFLOW
 
@@ -97,13 +99,3 @@ The following tools/conventions are used to promote codebase quality amidst mult
 
 - pytest
   - Unit-test capabilities are in place; just run `sh _run_tests` to execute them. Failed tests will cause merge requests to be rejected if attempted at origin. Tests are recommended mainly for functions that you expect to be established for the long haul.
-
-## DEVELOPER DOCUMENTATION
-
-### Task Messaging
-
-Tasks communicate to the user via the `stream` route. Redis requires strings for messsages. So, CATCH-APIs uses JSON-formatted data. See `tasks.message` for message format and a helper class.
-
-## TODOs
-
-- Fix and enable testing with Jenkins CI

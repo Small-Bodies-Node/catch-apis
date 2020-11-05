@@ -8,4 +8,5 @@ source .env
 
 # Run sshfs as a simple foreground process
 cmd="sshfs -f $CATCH_REMOTE_LINUX_USER@$CATCH_REMOTE_LINUX_HOST:/ $CATCH_LOCAL_ROOT_PATH"
+echo "Running $cmd"
 eval $cmd

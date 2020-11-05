@@ -4,6 +4,13 @@
   "editor.snippetSuggestions": "none",
   "python.linting.pylintEnabled": true,
   "python.linting.mypyEnabled": true,
-  "cSpell.ignoreWords": ["desg"],
-  "python.languageServer": "Microsoft"
+  "python.languageServer": "Pylance",
+  "python.analysis.extraPaths": [
+    "src",
+    "src/services",
+    "src/models",
+    "src/controllers",
+    "src/tasks",
+    "src/templates"
+  ]
 }

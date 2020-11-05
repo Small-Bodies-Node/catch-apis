@@ -24,7 +24,7 @@ else
   exit 1
 fi
 
-# Unpublished 2nd argument to prevent daemonization; used for debugging
+# Add unadvertised 2nd argument '0' to prevent daemonization; used for debugging
 is_daemon=TRUE
 is_daemon_flag='--daemon'
 if [[ $2 == 0 ]]; then
