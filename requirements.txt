@@ -90,6 +90,12 @@ wcwidth==0.1.7
 webencodings==0.5.1
 werkzeug<=0.16.0
 wrapt==1.11.1
+<<<<<<< HEAD
 sbpy==0.2.2
 -e git+git://github.com/Small-Bodies-Node/sbsearch.git@v1.1.4#egg=sbsearch
 -e git+git://github.com/Small-Bodies-Node/catch.git@v0.5.1#egg=catch
+=======
+sbpy==0.2
+-e git+git://github.com/Small-Bodies-Node/sbsearch.git@v1.1.2#egg=sbsearch
+-e git+git://github.com/Small-Bodies-Node/catch.git@v0.4.3#egg=catch
+>>>>>>> origin/master
