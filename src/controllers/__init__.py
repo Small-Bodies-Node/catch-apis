@@ -26,19 +26,8 @@ logger.info('"<><><> IMPORTING CONTROLLERS <><><>"')
 
 
 # Choose base root to run app locally based on deployment tier
-URL_PREFIX: str
+URL_PREFIX: str = '/api'
 TITLE_SUFFIX: str = f'[{ENV.DEPLOYMENT_TIER.name}]'
-if ENV.DEPLOYMENT_TIER == EDE.PROD:
-    URL_PREFIX = '/catch'
-    TITLE_SUFFIX = ''
-elif ENV.DEPLOYMENT_TIER == EDE.STAGE:
-    URL_PREFIX = '/catch-stage'
-elif ENV.DEPLOYMENT_TIER == EDE.SANDBOX:
-    URL_PREFIX = '/catch-sandbox'
-elif ENV.DEPLOYMENT_TIER == EDE.LOCAL:
-    URL_PREFIX = '/catch-local'
-else:
-    raise Exception('Unrecognized DEPLOYMENT_TIER!')
 
 # Define flask blueprint to apply prefix to whole api
 blueprint: Blueprint = Blueprint(

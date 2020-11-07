@@ -1,7 +1,9 @@
 """Entry file into the Flask-REST API server."""
 
 from flask import Flask, wrappers as FLW, jsonify
-from werkzeug.contrib.fixers import ProxyFix
+# from werkzeug.contrib.fixers import ProxyFix <-- deprecated
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 #import flask_monitoringdashboard as dashboard
 from logging_setup import logger    # Must come BEFORE controllers import

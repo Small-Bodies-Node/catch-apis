@@ -125,11 +125,11 @@ d_restart() {
 
 archive_logs() {
   if [ -e logging/production_logs.log ]; then
-    printf "\n\nArchiving previous logs..."
+    echo "Archiving previous logs..."
     sleep 1
     cp logging/production_logs.log logging/old-logs/productions_logs_last.log
     mv logging/production_logs.log $(x="logging/old-logs/production_logs_"$(date)"_.log" && echo ${x//" "/"_"})
-    printf " done.\n"
+    echo " done.\n"
   fi
 }
 
