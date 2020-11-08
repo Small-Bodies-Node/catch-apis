@@ -36,12 +36,29 @@ blueprint: Blueprint = Blueprint(
     url_prefix=URL_PREFIX
 )
 
+
+descriptionHtml = """
+<p>
+  This is a swagger interface to the APIs for SBN\'s CATCH Tool.
+</p>
+
+<p>
+  The frontend can be found <a href="https://catch.astro.umd.edu">here</a>.
+  See the <a href="https://catch.astro.umd.edu/apis">Apis</a> section for descriptions on how to use these api routes.
+</p>
+
+<p>
+  This interface is generated automatically by the <a href="https://flask-restplus.readthedocs.io/en/stable/">flask_restplus library</a>.
+</p>
+"""
+
 # Initiate RestPlusApi object and associate it with blueprint
 REST_PLUS_APIS = Api(
     blueprint,
-    title='CATCH APIS '+str(TITLE_SUFFIX),
+    # title='CATCH APIS '+str(TITLE_SUFFIX),
+    title='CATCH SWAGGER UI '+str(TITLE_SUFFIX),
     version='1.0',
-    description='Flask APIs for CATCH Tool',
+    description=descriptionHtml,
     doc='/docs'
 )
 

@@ -14,4 +14,4 @@ echo """
 
 sleep 2
 
-nodemon -w 'src/**' -e py,html --exec python src/app_entry.py
+nodemon -w 'src/**' -w '.venv/lib/python3.8/site-packages/flask_restplus/templates/swagger-ui.html' -e py,html --exec python src/app_entry.py

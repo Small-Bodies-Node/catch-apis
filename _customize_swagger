@@ -1,0 +1,26 @@
+#! /usr/bin/env python
+# Title: _customize_swagger
+# Descr: Script that injects html into flask-restplu (FRP) template
+
+from subprocess import run
+
+# Read text from frp-html-file to variable
+with open('swagger/swagger-ui.modified-original.html', 'r') as input_stream:
+    frp_original_html = input_stream.read()
+
+# Read custom html to variable
+with open('swagger/custom-swagger.html', 'r') as input_stream:
+    custom_swagger_html = input_stream.read()
+
+# Inject custom content into orginal html
+frp_new_html = frp_original_html.replace(
+    '<body>', '<body>'+custom_swagger_html)
+
+
+# Find FRP html-file location in .venv
+frp_html_file = run(['find', '.venv', '-name', "swagger-ui.html"],
+                    capture_output=True).stdout.decode('utf8').strip()
+
+# Overwrite html in .venv with injected content
+with open(frp_html_file, 'w') as output_stream:
+    output_stream.write(frp_new_html)

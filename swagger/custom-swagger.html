@@ -1,0 +1,229 @@
+<style>
+  html,
+  body {
+    background-color: white;
+    width: 100vw;
+  }
+  #swagger-ui {
+    z-index: 2;
+    position: relative;
+  }
+  .banner {
+    z-index: 2;
+    height: 120px;
+    overflow: hidden;
+  }
+  .backgroundImages,
+  .backgroundImagesWrapper {
+    z-index: 1;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .bannerImages {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100px;
+    height: 100px;
+    opacity: 0.7;
+    transition: opacity 300ms;
+  }
+  .bannerImages:hover {
+    opacity: 1;
+  }
+  .leftBannerImagesWrapper {
+    display: flex;
+    margin-left: 15px;
+    transform: translateX(-100%);
+    animation: slideFromLeft 1s ease-in-out 1s forwards;
+    /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+  }
+  .rightBannerImagesWrapper {
+    display: flex;
+    margin-right: 15px;
+    opacity: 0;
+    animation: slideFromRight 1s ease-in-out 1s forwards;
+    /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+  }
+  @keyframes slideFromLeft {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0px);
+      opacity: 1;
+    }
+  }
+  @keyframes slideFromRight {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0px);
+      opacity: 1;
+    }
+  }
+  @media only screen and (max-width: 600px) {
+    .banner {
+      height: 150px;
+    }
+  }
+</style>
+<div class="backgroundImagesWrapper" style="opacity: 0.1">
+  <div
+    class="backgroundImages"
+    style="
+      background-image: url('https://catch.astro.umd.edu/assets/images/pngs/light_sky_v1.png');
+    "
+  ></div>
+  <div
+    class="backgroundImages"
+    style="
+      background-image: url('https://catch.astro.umd.edu/assets/images/pngs/light_ground_v1.png');
+    "
+  ></div>
+  <div
+    class="backgroundImages"
+    style="
+      background-image: url('https://catch.astro.umd.edu/assets/images/pngs/light_mountains_v1.png');
+    "
+  ></div>
+  <div
+    class="backgroundImages"
+    style="
+      background-image: url('https://catch.astro.umd.edu/assets/images/pngs/light_telescope_v1.png');
+    "
+  ></div>
+</div>
+<div
+  id="banner-id"
+  class="banner"
+  style="
+    display: flex;
+    position: relative;
+    width: 100%;
+    background-color: #375a7f;
+    align-items: center;
+    justify-content: space-between;
+  "
+>
+  <div class="leftBannerImagesWrapper">
+    <a href="https://catch.astro.umd.edu">
+      <div
+        class="bannerImages"
+        style="
+          background-size: 60% 60%;
+          background-image: url('https://catch.astro.umd.edu/assets/images/pngs/observatory_dark.png');
+        "
+      ></div>
+    </a>
+  </div>
+  <h1 style="color: white">CATCH APIS</h1>
+  <div class="rightBannerImagesWrapper">
+    <a href="https://github.com/Small-Bodies-Node/catch-apis">
+      <div
+        class="bannerImages"
+        style="
+          background-size: 50% 50%;
+          background-image: url('https://catch.astro.umd.edu/assets/images/pngs/githubicon_white.png');
+        "
+      ></div>
+    </a>
+    <a href="https://pds-smallbodies.astro.umd.edu/">
+      <div
+        class="bannerImages"
+        style="
+          background-image: url('https://catch.astro.umd.edu/assets/images/pngs/sbn_logo5_v0.png');
+        "
+      ></div>
+    </a>
+  </div>
+
+  <script>
+    // Comet Animations Script
+    let cometCount = 0;
+    const bannerDiv = document.getElementById("banner-id");
+
+    function createComet() {
+      // Parameterize comet trajectory
+      let bannerWidth = bannerDiv.offsetWidth;
+      let bannerHeight = bannerDiv.offsetHeight;
+      const cometSidePxls = 30;
+      const dx = cometSidePxls;
+      let x1 = 0 - dx;
+      let x2 = bannerWidth + dx;
+      let y1 = Math.round(bannerHeight * 0.5 * Math.random());
+      let y2 = Math.round(bannerHeight * 0.5 * Math.random());
+      let angle = (1 / Math.PI) * 180 * Math.atan((y2 - y1) / (x2 - x1)) + 180;
+
+      // 50% chance of switching comet direction
+      if (Math.random() < 0.5) {
+        let temp = y1;
+        y1 = y2;
+        y2 = temp;
+        temp = x1;
+        x1 = x2;
+        x2 = temp;
+        angle += 180;
+      }
+
+      // Create new comet div
+      const cometDiv = document.createElement("div");
+      cometDiv.id = "comet-" + cometCount;
+      cometDiv.classList.add("comet");
+      cometDiv.style.position = "absolute";
+      cometDiv.style.top = "0px";
+      cometDiv.style.left = "0px";
+      cometDiv.style.width = `${cometSidePxls}px`;
+      cometDiv.style.height = `${cometSidePxls}px`;
+      cometDiv.style.backgroundImage =
+        "url('https://catch.astro.umd.edu/assets/images/pngs/comet_v1.png')";
+      cometDiv.style.backgroundSize = "contain";
+      cometDiv.style.backgroundPosition = "center";
+      cometDiv.style.backgroundRepeat = "no-repeat";
+      cometDiv.animate(
+        [
+          {
+            transform: `translateX(${x1}px) translateY(${y1}px) rotate(${angle}deg)`,
+          },
+          {
+            transform: `translateX(${x2}px) translateY(${y2}px) rotate(${angle}deg)`,
+          },
+        ],
+        { duration: 35000, fill: "forwards", easing: "linear" }
+      );
+      bannerDiv.appendChild(cometDiv);
+      cometCount++;
+
+      // Limit number of comet elements
+      const maxComets = 20;
+      if (cometCount >= maxComets) {
+        const cometDivToBeRemoved = document.getElementById(
+          "comet-" + (cometCount - maxComets)
+        );
+        if (!!cometDivToBeRemoved) cometDivToBeRemoved.remove();
+      }
+    }
+
+    // Begin comets
+    createComet();
+    setInterval(() => {
+      createComet();
+    }, 8000);
+
+    window.addEventListener("resize", () => {
+      // Reset comet animations
+      const cometDivs = document.querySelectorAll(".comet");
+      cometDivs.forEach((div) => div.remove());
+      cometCount = 0;
+    });
+  </script>
+</div>
