@@ -61,15 +61,24 @@ def caught(job_id: uuid.UUID) -> List[dict]:
 
             # preview image
             if row.Obs.source[:4] == 'neat':
+                found[-1]['preview_url'] = (
+                    cutout_url
+                    .replace(ENV.CATCH_CUTOUT_BASE_URL,
+                             ENV.CATCH_THUMBNAIL_BASE_URL)
+                    .replace('.fits', '.jpg')
+                )
+            elif row.Obs.source == 'skymapper':
+                found[-1]['preview_url'] = str(found[-1]['cutout_url']).replace(
+                    'fits', 'png')
+
+            # thumbnail image
+            if row.Obs.source[:4] == 'neat':
                 found[-1]['thumbnail_url'] = (
                     cutout_url
                     .replace(ENV.CATCH_CUTOUT_BASE_URL,
                              ENV.CATCH_THUMBNAIL_BASE_URL)
                     .replace('.fits', '_thumb.jpg')
                 )
-            elif row.Obs.source == 'skymapper':
-                found[-1]['thumbnail_url'] = str(found[-1]['cutout_url']).replace(
-                    'fits', 'png')
 
             # full-frame image
             found[-1]['archive_url'] = images.build_fullframe_url(row)

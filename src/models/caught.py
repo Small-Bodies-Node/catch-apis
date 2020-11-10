@@ -131,7 +131,7 @@ class App:
         ),
         "preview_url": fields.String(
             attribute='preview_url',
-            description='URL to cutout web preview image'
+            description='URL to preview cutout image in web format'
         ),
     })
 
@@ -284,6 +284,10 @@ COLUMN_LABELS: Dict[str, Dict[str, Dict[str, Union[str, int]]]] = {
         'cutout_url': {
             'label': 'Cutout URL',
             'description': 'Cutout image around target ephemeris'
+        },
+        'preview_url': {
+            'label': 'Preview URL',
+            'description': 'Preview cutout image around target ephemeris in a web image format'
         }
     }
 }
