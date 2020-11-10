@@ -24,3 +24,14 @@ frp_html_file = run(['find', '.venv', '-name', "swagger-ui.html"],
 # Overwrite html in .venv with injected content
 with open(frp_html_file, 'w') as output_stream:
     output_stream.write(frp_new_html)
+
+#
+# JS modification
+#
+
+# Overwrite .js in .venv with modified content
+frp_js_file = run(['find', '.venv', '-name', "swagger-ui-bundle.js"],
+                  capture_output=True).stdout.decode('utf8').strip()
+
+# Find FRP html-file location in .venv
+run(['cp', 'swagger/swagger-ui-bundle.modified-original.js', frp_js_file])
