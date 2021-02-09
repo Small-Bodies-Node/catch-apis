@@ -38,7 +38,6 @@ def caught(job_id: uuid.UUID) -> List[dict]:
             found.append({})
             for table in row:
                 fields: dict = {}
-                print(dir(type(table)))
                 for k in dir(type(table)):
                     if k.startswith('_'):
                         continue
