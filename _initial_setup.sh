@@ -33,24 +33,30 @@ fi
 ### 4. Activate VENV
 source ./.venv/bin/activate
 
-### 5. Install package dependencies for project
+### 5. libs2
+if [[ ! -e $VIRTUAL_ENV/lib/libs2.so ]]; then
+    echo -e """${BLU}
+    installing libs2
+${WHI}
+"""
+    bash _install_s2
+fi
+
+### 6. Install python package dependencies for project
+
+# Compiler settings
+# Set LDFLAGS to use libs2 in our virtual environment
+LDFLAGS="-L$VIRTUAL_ENV/lib -Wl,-rpath=$VIRTUAL_ENV/lib"
+
 pip install --upgrade -q -q -q setuptools wheel cython
 pip install -q -r requirements.vscode.txt
 pip install -q -r requirements.txt
 pip install -e .
 
-# if [[ ! -e $VIRTUAL_ENV/bin/fitscut ]]; then
-#     echo -e """${BLU}
-#     installing fitscut
-# ${WHI}
-# """
-#     ./_install_fitscut
-# fi
-
-### 6. Link git pre-commit-hook script
+### 7. Link git pre-commit-hook script
 ln -fs $PWD/_precommit_hook $PWD/.git/hooks/pre-commit
 
-### 7. Final Message
+### 8. Final Message
 echo -e """${BLU}
     Done. Bon courage!
 ${WHI}
