@@ -75,9 +75,9 @@ class Message:
 
     def __init__(self, job_id: Union[str, UUID], text: str = '',
                  status: Union[str, TaskStatus] = TaskStatus.NONE) -> None:
-        self.job_id: Union[str, UUID] = job_id
+        self.job_id = UUID(str(job_id), version=4)
         self.text: str = text
-        self.status: TaskStatus = status
+        self.status: TaskStatus = TaskStatus(status)
         self._redis: RedisConnection = RedisConnection()
 
     @property
@@ -130,7 +130,7 @@ class MessageHandler(logging.Handler):
     """
 
     def __init__(self, job_id: Union[str, UUID], level: int = logging.INFO) -> None:
-        self.job_id = job_id
+        self.job_id = UUID(str(job_id), version=4)
         self._redis: RedisConnection = RedisConnection()
         super().__init__(level)
 

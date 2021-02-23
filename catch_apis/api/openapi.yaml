@@ -18,15 +18,33 @@ paths:
           description: Moving target designation, resolvable by JPL Horizons.
           example: 65P
           required: true
+          allowReserved: true
           schema:
             type: string
         - name: source
           in: query
-          description: Limit search to this data source, otherwise search all sources.
+          description: Limit search to this data source, or sources if given multiple times, otherwise search all sources.
           required: false
           schema:
-            type: string
-            enum: [neat_palomar_tricam, neat_maui_geodss, skymapper]
+            type: array
+            items:
+              type: string
+              enum:
+                - neat_palomar_tricam
+                - neat_maui_geodss
+                - skymapper
+        - name: uncertainty_ellipse
+          in: query
+          description: Enable searches account for uncertainty ellipse using a polygonal approximation.
+          required: false
+          schema:
+            type: boolean
+        - name: padding
+          in: query
+          description: Increase the search area by padding the ephemeris by this amount, in units of arcmin.
+          required: false
+          schema:
+            type: number
         - name: cached
           in: query
           description: Allow cached results, otherwise force a new search.
@@ -57,9 +75,21 @@ paths:
                         type: string
                         description: The designation of the target.
                       source:
-                        type: string
                         nullable: true
-                        description: Search is limited to this source.
+                        description: Search is limited to these sources.
+                        type: array
+                        items:
+                          type: string
+                          enum:
+                            - neat_palomar_tricam
+                            - neat_maui_geodss
+                            - skymapper
+                      uncertainty_ellipse:
+                        description: Enable searches account for uncertainty ellipse using a polygonal approximation.
+                        type: boolean
+                      padding:
+                        description: Increase the search area by padding the ephemeris by this amount, in units of arcmin.
+                        type: number
                       cached:
                         type: boolean
                         description: true if a cached query was requested.

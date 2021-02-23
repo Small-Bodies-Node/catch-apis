@@ -4,14 +4,15 @@ import uuid
 import json
 import urllib.parse
 import logging
-from typing import Optional, Tuple
+from typing import Optional, List
 from connexion import request
 from .. import services
 from ..logging import get_logger
 
 
-def moving_target_query(target: str, source: Optional[str] = None,
-                        cached: bool = False) -> dict:
+def moving_target_query(target: str, source: Optional[List[str]] = None,
+                        uncertainty_ellipse: bool = False,
+                        padding: float = 0, cached: bool = False) -> dict:
     """Controller for target queries."""
 
     logger: logging.Logger = get_logger()
@@ -22,6 +23,8 @@ def moving_target_query(target: str, source: Optional[str] = None,
             'target': target,
             'source': source,
             'cached': cached,
+            'uncertainty_ellipse': uncertainty_ellipse,
+            'padding': padding
         },
         'job_id': job_id.hex,
         'version': '2.0.0'
