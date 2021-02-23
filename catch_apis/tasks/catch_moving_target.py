@@ -26,7 +26,8 @@ def catch_moving_target(job_id: uuid.UUID, target: str, source_keys: str,
         Target target.
 
     source_keys : string or None
-        Name of observation source to search ``None`` to search all sources.
+        Name of observation sources to search or ``None`` to search all
+        sources.
 
     uncertainty_ellipse : bool
         Search using the ephemeris uncertainty ellipse.

@@ -17,9 +17,9 @@ class QueryStatus(enum.Enum):
 
 
 def moving_target_query(job_id: UUID, target: str,
-                        source: Optional[List[str]] = None,
-                        uncertainty_ellipse: bool = False,
-                        padding: float = 0, cached: bool = False
+                        source: Optional[List[str]],
+                        uncertainty_ellipse: bool,
+                        padding: float, cached: bool
                         ) -> Tuple[QueryStatus, bool]:
     """Engueue a query or copy cached results.
 
@@ -29,17 +29,18 @@ def moving_target_query(job_id: UUID, target: str,
     target : string
         The target target.
 
-    source : str, optional
-        Search this source, or else all sources.
+    source : list of str
+        Search these sources, or, if ``None``, all sources.
 
-    uncertainty_ellipse : bool, optional
+    uncertainty_ellipse : bool
         Search using the ephemeris uncertainty ellipse.
 
-    padding : bool, optional
+    padding : bool
         Additional padding around the ephemeris search region, arcmin.
 
-    cached : bool, optional
+    cached : bool
         ``True`` if it is OK to return cached results.
+
 
     Returns
     -------
@@ -52,13 +53,14 @@ def moving_target_query(job_id: UUID, target: str,
 
     status: QueryStatus = QueryStatus.UNDEFINED
     queue: JobsQueue = JobsQueue()
-    source_keys: Union[None, List[str]] = None if source is None else source
 
     if cached:
         with catch_manager() as catch:
-            if catch.is_query_cached(target, source_keys=source_keys):
+            catch.uncertainty_ellipse = uncertainty_ellipse
+            catch.padding = padding
+            if catch.is_query_cached(target, source_keys=source):
                 # copy cached results to the new job ID
-                catch.query(target, job_id, source_keys=source_keys,
+                catch.query(target, job_id, source_keys=source,
                             cached=True)
                 status = QueryStatus.SUCCESS
 
@@ -67,7 +69,7 @@ def moving_target_query(job_id: UUID, target: str,
             status = QueryStatus.QUEUEFULL
         else:
             queue.enqueue(tasks.catch_moving_target, job_id, target,
-                          source_keys, uncertainty_ellipse, padding, False)
+                          source, uncertainty_ellipse, padding, False)
             status = QueryStatus.QUEUED
 
     return status, queue.full

@@ -13,7 +13,26 @@ from ..logging import get_logger
 def moving_target_query(target: str, source: Optional[List[str]] = None,
                         uncertainty_ellipse: bool = False,
                         padding: float = 0, cached: bool = False) -> dict:
-    """Controller for target queries."""
+    """Controller for target queries.
+
+    Parameters
+    ----------
+    target : string
+        The target target.
+
+    source : list of str, optional
+        Search these sources, or else all sources.
+
+    uncertainty_ellipse : bool, optional
+        Search using the ephemeris uncertainty ellipse.
+
+    padding : bool, optional
+        Additional padding around the ephemeris search region, arcmin.
+
+    cached : bool, optional
+        ``True`` if it is OK to return cached results.
+
+    """
 
     logger: logging.Logger = get_logger()
     job_id: uuid.UUID = uuid.uuid4()
@@ -32,7 +51,8 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
 
     status: services.QueryStatus
     status, result['queue_full'] = services.moving_target_query(
-        job_id, target, source, cached)
+        job_id, target, source=source, uncertainty_ellipse=uncertainty_ellipse,
+        padding=padding, cached=cached)
 
     parsed: tuple = urllib.parse.urlsplit(request.url_root)
     result['results'] = urllib.parse.urlunsplit((
