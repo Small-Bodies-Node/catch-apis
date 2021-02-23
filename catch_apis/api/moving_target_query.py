@@ -31,7 +31,7 @@ def moving_target_query(target: str, source: Optional[str] = None,
     status, result['queue_full'] = services.moving_target_query(
         job_id, target, source, cached)
 
-    parsed: Tuple[str] = urllib.parse.urlsplit(request.url_root)
+    parsed: tuple = urllib.parse.urlsplit(request.url_root)
     result['results'] = urllib.parse.urlunsplit((
         parsed[0], parsed[1], os.path.join(parsed[2], 'caught', job_id.hex),
         '', ''
@@ -42,12 +42,12 @@ def moving_target_query(target: str, source: Optional[str] = None,
         '', ''
     ))
 
-    if status == status.QUEUED:
+    if status == services.QueryStatus.QUEUED:
         result['queued'] = True
         result['message'] = ('Enqueued search.  Listen to task messaging stream until'
                              ' job completed, then retrieve data from results URL.')
 
-    elif status == status.QUEUEFULL:
+    elif status == services.QueryStatus.QUEUEFULL:
         result['queued'] = False
         result['message'] = 'Queue is full, please try again later.'
     else:

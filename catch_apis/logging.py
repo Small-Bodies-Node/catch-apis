@@ -21,7 +21,7 @@ def setup() -> logging.Logger:
 
     logger.handlers = []
 
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG if ENV.DEBUG else logging.INFO)
 
     # delete any previous handlers
     logger.handlers = []

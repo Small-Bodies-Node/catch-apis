@@ -17,7 +17,7 @@ astropy>=3.2,<4
 astroquery==0.4.1
 sbpy>=0.2.2
 pds4_tools==1.2
--e git+git://github.com/Small-Bodies-Node/sbsearch.git@5987bdde7ee26bbf4e90211943a9d288344f4a2a#egg=sbsearch
--e git+git://github.com/Small-Bodies-Node/catch.git@bafdaf59a9ffb29d3fcc1a9e7da69b496c36ca43#egg=catch
+-e git+git://github.com/Small-Bodies-Node/sbsearch.git@05cf758c0c42d45ad080e4c54f06a7826fce39ea#egg=sbsearch
+-e git+git://github.com/Small-Bodies-Node/catch.git@a37cd16b84ca140db915b93f449fffc9761c53cb#egg=catch
 ### Optional dependency for postgresql backed databases
 psycopg2-binary==2.8.6

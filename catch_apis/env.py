@@ -33,4 +33,6 @@ class ENV():
     STREAM_TIMEOUT: int = int(os.getenv("STREAM_TIMEOUT", 60))
 
     # Boolean Properties
-    IS_DAEMON: bool = os.getenv("IS_DAEMON") == 'TRUE'
+    IS_DAEMON: bool = (os.getenv("IS_DAEMON", "false").lower()
+                       not in ['false', '0'])
+    DEBUG: bool = os.getenv("DEBUG", "false").lower() not in ['false', '0']

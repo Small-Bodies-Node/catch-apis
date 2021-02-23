@@ -2,7 +2,7 @@
 
 import enum
 from uuid import UUID
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from .catch_manager import catch_manager
 from .queue import JobsQueue
@@ -18,7 +18,7 @@ class QueryStatus(enum.Enum):
 
 def moving_target_query(job_id: UUID, target: str,
                         source: Optional[str] = None,
-                        cached: bool = False) -> Dict[str, bool]:
+                        cached: bool = False) -> Tuple[QueryStatus, bool]:
     """Engueue a query or copy cached results.
 
 
@@ -55,7 +55,7 @@ def moving_target_query(job_id: UUID, target: str,
                             cached=True)
                 status = QueryStatus.SUCCESS
 
-    if status != status.SUCCESS:
+    if status != QueryStatus.SUCCESS:
         if queue.full:
             status = QueryStatus.QUEUEFULL
         else:

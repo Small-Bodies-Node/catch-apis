@@ -45,6 +45,7 @@ import logging
 import json
 
 from .queue import RedisConnection, RQueues
+from ..env import ENV
 
 
 class TaskStatus(Enum):
@@ -131,7 +132,7 @@ class MessageHandler(logging.Handler):
     def __init__(self, job_id: Union[str, UUID], level: int = logging.INFO) -> None:
         self.job_id = job_id
         self._redis: RedisConnection = RedisConnection()
-        logging.Handler.__init__(self, level)
+        super().__init__(level)
 
     @property
     def job_id(self) -> UUID:
@@ -163,8 +164,10 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
 
     job_id = UUID(str(job_id), version=4)
     logger: logging.Logger = logging.getLogger(f'CATCH-APIs {job_id.hex}')
-    logger.setLevel(logging.INFO)
-    logger.addHandler(MessageHandler(job_id))
+    # logger.setLevel not working for MessageHandler, so must pass log level
+    # directly to the handler
+    level: int = logging.DEBUG if ENV.DEBUG else logging.INFO
+    logger.addHandler(MessageHandler(job_id, level=level))
 
 
 def stop_listening_for_task_messages(job_id: Union[str, UUID]) -> None:
