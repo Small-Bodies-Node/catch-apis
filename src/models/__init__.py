@@ -1,1 +1,0 @@
-"""CATCH-APIs data models."""

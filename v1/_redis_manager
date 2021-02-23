@@ -26,7 +26,6 @@ calc_processes() {
 calc_processes
 
 d_install() {
-  mkdir -p .redis
   rm -rf .redis/$REDIS_DIST
   cd .redis
   wget 'http://download.redis.io/releases/'$REDIS_DIST'.tar.gz'

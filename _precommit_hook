@@ -8,6 +8,12 @@ echo '''
 
 '''
 
-# Auto-format all python scripts
-.venv/bin/autopep8 -ir src/**
-.venv/bin/autopep8 -ir tests/**
+if [ $DONT_FORMAT_ON_CODE_COMMIT ]; then
+    echo """
+        Skipping auto-format!!!
+    """
+else
+    # Auto-format all python scripts
+    .venv/bin/autopep8 -ir src/**
+    .venv/bin/autopep8 -ir tests/**
+fi
