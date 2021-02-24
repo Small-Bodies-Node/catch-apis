@@ -5,7 +5,7 @@
 """
 
 import multiprocessing
-from env import ENV
+from catch_apis.env import ENV
 
 workers: int = ENV.LIVE_GUNICORN_INSTANCES
 

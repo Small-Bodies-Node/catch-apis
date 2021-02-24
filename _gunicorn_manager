@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ============================================================================
 # This script is used to start/stop/restart the CATCH APIs in deployment
@@ -12,13 +12,13 @@ source .env
 
 # Determine port
 if [[ $DEPLOYMENT_TIER == 'PROD' ]]; then
-  PORT=5000
+  PORT=$API_PORT
 elif [[ $DEPLOYMENT_TIER == 'STAGE' ]]; then
-  PORT=5001
+  PORT=$(($API_PORT + 1))
 elif [[ $DEPLOYMENT_TIER == 'SANDBOX' ]]; then
-  PORT=5002
+  PORT=$(($API_PORT + 2))
 elif [[ $DEPLOYMENT_TIER == 'LOCAL' ]]; then
-  PORT=5003
+  PORT=$(($API_PORT + 3))
 else
   echo "DEPLOYMENT_TIER not found/recognized!"
   exit 1
@@ -56,15 +56,15 @@ d_start() {
     echo "Cancelling start!"
   else
     ### Enter src, start gunicorn, exit
-    cd src
     echo "-----------------------------------------------------"
     echo "This API is not running; begin workers in production!"
-    IS_DAEMON=$is_daemon gunicorn app_entry:flask_app \
-      --config ..\/.gunicorn.config.py \
-      --pid ..\/.pid.txt \
+    IS_DAEMON=$is_daemon gunicorn catch_apis.api.app \
+      --config .gunicorn.config.py \
+      --pid .pid.txt \
       --name $APP_NAME \
       --bind '127.0.0.1:'$PORT \
       $is_daemon_flag
+    echo "Running on port $PORT."
     echo "-----------------------------------------------------"
     cd ..
   fi

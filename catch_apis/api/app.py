@@ -64,4 +64,10 @@ def handle_other_error(error: Exception) -> Tuple[str, int]:
 
 
 if __name__ == '__main__':
-    app.run(port=ENV.API_PORT, use_reloader=False, threaded=True)
+    # these offsets are synced with .env-template and _gunicorn_manager
+    port: int = ENV.API_PORT + {
+        'STAGE': 1,
+        'SANDBOX': 2,
+        'LOCAL': 3
+    }.get(ENV.DEPLOYMENT_TIER, 0)
+    app.run(port=port, use_reloader=False, threaded=True)
