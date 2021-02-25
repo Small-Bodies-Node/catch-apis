@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ==============================================================================
 # This mananger script is used for status/start/stop/restart the app's workers
@@ -40,9 +40,9 @@ d_start() {
     echo "--------------"
     echo "PM2 is not running; beginning "$(echo $LIVE_WORKER_INSTANCES)" workers now!"
     pm2 \
-      -i $LIVE_WORKER_INSTANCES \
+      -i $LIVE_WORKER_INSTANCES   \
       -n $PROC_NAME \
-      start src/tasks/worker.py
+      start scripts/worker.py
     echo "--------------"
   fi
 }
