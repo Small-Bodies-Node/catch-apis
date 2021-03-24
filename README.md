@@ -4,7 +4,7 @@ An astronomical survey data search tool: catch comets and asteroids in wide-fiel
 
 ## Overview
 
-CATCH-APIs is a REST API service that enable a user to search for potential observations comets and asteroids in wide-field sky survey data.  This API is designed for use by the Planetary Data System Small Bodies Node (SBN) at the University of Maryland, but it is possible to deploy anywhere with other data sets.  SBN is the primary archive for the NEAT and ATLAS surveys, and CATCH-APIs is one of primary methods for users to discover scientifically interesting data in those data sets.
+CATCH-APIs provide a REST API service that enable a user to search for potential observations comets and asteroids in wide-field sky survey data.  This API is designed for use by the Planetary Data System Small Bodies Node (SBN) at the University of Maryland, but it is possible to deploy anywhere with other data sets.  SBN is the primary archive for the NEAT and ATLAS surveys, and CATCH-APIs is one of primary methods for users to discover scientifically interesting data in those data sets.
 
 The API is backed by:
 - The [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) Python libraries, which define how survey metadata is stored and execute the actual searches on the database.
@@ -20,4 +20,3 @@ The API is backed by:
 ## Requirements
 
 CATCH-APIs are developed for linux/macos systems.  In addition to the above tools, Python requirements are detailed in [requirements.txt](requirements.txt).
-
