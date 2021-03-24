@@ -56,7 +56,10 @@ pip install -e .
 ### 7. Link git pre-commit-hook script
 ln -fs $PWD/_precommit_hook $PWD/.git/hooks/pre-commit
 
-### 8. Final Message
+### 8. Create logging directories
+mkdir -p logging/old-logs
+
+### 9. Final Message
 echo -e """${BLU}
     Done. Bon courage!
 ${WHI}

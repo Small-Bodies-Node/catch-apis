@@ -56,7 +56,7 @@ d_start() {
     echo "Redis server is not running; beginning a daemon!"
     # NOTE: Options for redis-server are described in .redis/$REDIS_DIST/redis.conf
     .redis/$REDIS_DIST/src/redis-server \
-      --logfile .redis/logging-redis.log \
+      --logfile logging/logging-redis.log \
       --pidfile .redis.pid \
       --loglevel verbose \
       --daemonize yes \
@@ -74,8 +74,8 @@ d_stop() {
     kill -9 $(cat .redis/.redis.pid)
     rm .redis/.redis.pid
     # Archive previous logs:
-    cp .redis/logging-redis.log .redis/old-logs/logging-redis_last.log
-    mv .redis/logging-redis.log $(x=".redis/old-logs/logging-redis_last_"$(date)"_.log" && echo ${x//" "/"_"})
+    cp logging/logging-redis.log logging/old-logs/logging-redis_last.log
+    mv logging/logging-redis.log $(x="logging/old-logs/logging-redis_last_"$(date)"_.log" && echo ${x//" "/"_"})
     printf " done!\n"
   else
     d_status
