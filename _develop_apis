@@ -14,4 +14,4 @@ echo """
 
 sleep 2
 
-nodemon -w 'catch_apis/**' -e py,yaml --exec python3 -m catch_apis.api.app
+nodemon -w 'src/catch_apis/**' -e py,yaml --exec python3 -m catch_apis.api.app

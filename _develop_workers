@@ -19,4 +19,4 @@ echo """
 sleep 2
 
 echo $PYTHONPATH
-nodemon -w 'catch_apis/**' -e py,yaml --exec python3 scripts/worker.py
+nodemon -w 'src/**' -e py,yaml --exec python3 src/scripts/worker.py

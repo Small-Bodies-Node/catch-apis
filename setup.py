@@ -8,5 +8,10 @@ if __name__ == "__main__":
         version='2.0.0-dev',
         description=('CATCH APIs'),
         url="https://github.com/Small-Bodies-Node/catch-apis",
-        packages=find_packages()
+        packages=find_packages(
+            where='src',
+            include='catch-apis',
+            exclude='scripts'
+        ),
+        package_dir={"": "src"}
     )

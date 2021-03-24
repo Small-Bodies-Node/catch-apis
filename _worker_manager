@@ -42,7 +42,7 @@ d_start() {
     pm2 \
       -i $LIVE_WORKER_INSTANCES   \
       -n $PROC_NAME \
-      start scripts/worker.py
+      start src/scripts/worker.py
     echo "--------------"
   fi
 }
