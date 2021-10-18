@@ -37,8 +37,8 @@ def bare_root() -> FLW.Response:
             "message":
             """
                 This is the CATCH API's root route.
-                Not much here. Go to /docs for swagger documentation.
-            """
+                Not much here. Go to {}/docs for swagger documentation.
+            """.format(rest_plus_blueprint.url_prefix)
         }
     )
     res.status_code = 200
@@ -66,6 +66,8 @@ flask_app.jinja_env.lstrip_blocks = True
 
 # Opens swagger routes by default:
 flask_app.config.SWAGGER_UI_DOC_EXPANSION = 'list'  # type: ignore
+
+print(flask_app.url_map)
 
 # Start app
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 {
-  "python.pythonPath": ".venv/bin/python3",
+  "python.pythonPath": "/home/msk/.venv/bin/python",
   "python.envFile": "${workspaceRoot}/.env",
   "editor.snippetSuggestions": "none",
   "python.linting.pylintEnabled": true,
