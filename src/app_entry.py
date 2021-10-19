@@ -67,8 +67,6 @@ flask_app.jinja_env.lstrip_blocks = True
 # Opens swagger routes by default:
 flask_app.config.SWAGGER_UI_DOC_EXPANSION = 'list'  # type: ignore
 
-print(flask_app.url_map)
-
 # Start app
 if __name__ == "__main__":
     flask_app.run(port=PORT)
