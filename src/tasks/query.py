@@ -42,9 +42,13 @@ def catch_moving_target(desg: str, source: str, cached: bool,
     listen_to_task_messenger(job_id)
 
     try:
+        if source == 'any':
+            sources = None
+        else:
+            sources = [source]
         with catch_manager(save_log=True) as catch:
             # send catch logging to the task message stream
-            count: int = catch.query(desg, job_id, source=source,
+            count: int = catch.query(desg, job_id, sources=sources,
                                      cached=cached, eph_source='jpl')
 
         if count > 0:
