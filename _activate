@@ -1,0 +1,28 @@
+#!/usr/bin/env false
+
+### 0. Load vars defined in .env
+if [ ! -f $PWD/.env ]; then
+    echo -e "No .env file found!!!"
+    return 1
+fi
+source .env
+
+### 1. Message user
+clear
+echo -e """${GRE}
+===================================
+Entering Python Virtual Environment
+===================================
+${WHI}"""
+
+sleep 1
+
+### 2. Check for existence of `.venv` dir
+if [[ ! -d $PWD/.venv ]]; then
+    echo -e """${BLU}
+    virtual Environment Not Found -- Instead `source _initial_setup`
+"""
+fi
+
+### 3. Activate VENV
+source ./.venv/bin/activate
