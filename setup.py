@@ -1,17 +1,18 @@
-#!/usr/bin/env python3
-from setuptools import setup, find_packages
+#!/usr/bin/env python
+# based on astropy/package-template
+import os
+from setuptools import setup
 
+VERSION_TEMPLATE = """
+# Note that we need to fall back to the hard-coded version if either
+# setuptools_scm can't be imported or setuptools_scm can't determine the
+# version, so we catch the generic 'Exception'.
+try:
+    from setuptools_scm import get_version
+    version = get_version(root='..', relative_to=__file__)
+except Exception:
+    version = '{version}'
+""".lstrip()
 
-if __name__ == "__main__":
-    setup(
-        name='catch_apis',
-        version='2.0.0-dev',
-        description=('CATCH APIs'),
-        url="https://github.com/Small-Bodies-Node/catch-apis",
-        packages=find_packages(
-            where='src',
-            include='catch-apis',
-            exclude='scripts'
-        ),
-        package_dir={"": "src"}
-    )
+setup(use_scm_version={'write_to': os.path.join('src', 'catch_apis', 'version.py'),
+                       'write_to_template': VERSION_TEMPLATE})

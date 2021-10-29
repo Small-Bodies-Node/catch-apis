@@ -13,10 +13,10 @@ class ENV():
         os.getenv("TEST_DATA_PATH", "./data/test")))
     DEPLOYMENT_TIER: str = os.getenv("DEPLOYMENT_TIER", "LOCAL")
     DB_HOST: str = str(os.getenv("DB_HOST", ""))
-    DB_DIALECT: str = str(os.getenv("DB_DIALECT", "sqlite"))
+    DB_DIALECT: str = str(os.getenv("DB_DIALECT", "postgresql"))
     DB_USERNAME: str = str(os.getenv("DB_USERNAME", ""))
     DB_PASSWORD: str = str(os.getenv("DB_PASSWORD", ""))
-    DB_DATABASE: str = str(os.getenv("DB_DATABASE", "default.db"))
+    DB_DATABASE: str = str(os.getenv("DB_DATABASE", "catch"))
     BASE_HREF: str = str(os.getenv("BASE_HREF", "/"))
     CATCH_LOG_FILE: str = str(os.path.abspath(
         os.getenv('CATCH_LOG_FILE', './logging/catch.log')))

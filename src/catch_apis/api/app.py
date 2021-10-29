@@ -3,7 +3,6 @@
 Entry point to Flask-Connexion API
 """
 
-import uuid
 from typing import Tuple
 from connexion import FlaskApp
 from flask_cors import CORS

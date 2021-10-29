@@ -27,7 +27,7 @@ if [[ ! -d $PWD/.venv ]]; then
     echo -e """${BLU}
     virtual Environment Not Found -- Creating '.venv'
 """
-    $PYTHON_3_6_OR_HIGHER -m venv .venv --prompt=$APP_NAME
+    $PYTHON_3_7_OR_HIGHER -m venv .venv --prompt=$APP_NAME
 fi
 
 ### 4. Activate VENV
@@ -51,7 +51,6 @@ LDFLAGS="-L$VIRTUAL_ENV/lib -Wl,-rpath=$VIRTUAL_ENV/lib"
 pip install --upgrade -q -q -q setuptools wheel cython
 pip install -q -r requirements.vscode.txt
 pip install -q -r requirements.txt
-pip install -e .
 
 ### 7. Link git pre-commit-hook script
 ln -fs $PWD/_precommit_hook $PWD/.git/hooks/pre-commit

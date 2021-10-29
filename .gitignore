@@ -36,3 +36,5 @@ temp*
 
 # emacs backup files
 *~
+
+src/catch_apis/version.py
