@@ -17,17 +17,21 @@ The API is backed by:
 - [redis](https://redis.io/) for the job queue and user task messaging.
 - [rq](https://python-rq.org/) and [pm2](https://pm2.keymetrics.io/) execute the job queue.
 
-## Requirements
-
-CATCH-APIs are developed for linux/macos systems.  Python requirements are detailed in [setup.cfg](setup.cfg).
+## Features
+- A single observation table holds all observations from all surveys.  This feature allows for an approximate search that can ignore parallax and search all surveys in one go.  Fine for objects a few au a way or more.
+- The S2 library cells are set to a minimum size of 3e-4 radians (about 1 arcmin), and maximum size of 10 deg.
+- Ephemerides may create loops on the sky (e.g., during retrograde motion), this is correctly handled by S2, even when padding the ephemeris with some uncertainty.
+- Ephemeris segments are combined into groups 10 degrees or 30 days long (whichever limit is reached first; 10 deg / 30 days = 50" / hour), and the database is queried for the combined line all at once.  This improves performance because the segments are spatially correlated.
 
 ## Setup
+
+CATCH-APIs are developed for linux/macos systems.  Python requirements are detailed in [setup.cfg](setup.cfg).
 
 1. Create the database and setup user access:
    1. The user account that maintains the database (e.g., adds new observations), requires CREATE privileges on the database, and SELECT and INSERT privileges on all tables.
    2. The user account that owns the API instances will need SELECT privileges on all tables, and INSERT privileges on the obj, designation, catch_query, caught, and found tables.
 2. Copy `.env-template` to `.env` and edit according to the comments.
-3. The `_initial_setup.sh` script builds a virtual environment with all required libraries.  Using `bash`, source this file to run the script and load the new environment: `source _initial_setup.sh`.
+3. The `_initial_setup` script builds a virtual environment with all required libraries.  Using `bash`, source this file to run the script and load the new environment: `source _initial_setup`.
 4. Insert data into the database.  See the [catch README](https://github.com/Small-Bodies-Node/catch) for details.
 
 ## Usage
