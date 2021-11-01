@@ -25,14 +25,41 @@ The API is backed by:
 
 ## Setup
 
-CATCH-APIs are developed for linux/macos systems.  Python requirements are detailed in [setup.cfg](setup.cfg).
+CATCH-APIs are developed for linux/macos systems.
 
-1. Create the database and setup user access:
-   1. The user account that maintains the database (e.g., adds new observations), requires CREATE privileges on the database, and SELECT and INSERT privileges on all tables.
-   2. The user account that owns the API instances will need SELECT privileges on all tables, and INSERT privileges on the obj, designation, catch_query, caught, and found tables.
-2. Copy `.env-template` to `.env` and edit according to the comments.
-3. The `_initial_setup` script builds a virtual environment with all required libraries.  Using `bash`, source this file to run the script and load the new environment: `source _initial_setup`.
-4. Insert data into the database.  See the [catch README](https://github.com/Small-Bodies-Node/catch) for details.
+### Requirements
+
+- Python 3.7 or greater. Python module requirements are detailed in [setup.cfg](setup.cfg).
+- CMake 3.12 or greater and a work gcc tool chain to build the S2 library.
+- Postgresql 13
+
+### Steps
+
+1. Create the database, e.g., `createdb catch`.
+2. Setup user access:
+   1. The user account that maintains the database (e.g., adds new observations), requires CREATE privileges on the database, SELECT, INSERT, and UPDATE privileges on all tables, USAGE privileges on all sequences:
+
+      ```sql
+      GRANT CREATE ON DATABASE catch TO user;
+      GRANT SELECT ON ALL TABLES IN SCHEMA public TO user;
+      GRANT INSERT ON ALL TABLES IN SCHEMA public TO user;
+      GRANT UPDATE ON ALL TABLES IN SCHEMA public TO user;
+      GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO user;
+      ```
+
+   2. The user account that owns the API instances will need SELECT privileges on all tables, and INSERT and UPDATE privileges on select tables, and USAGE privileges on select sequences:
+
+      ```sql
+      GRANT SELECT ON ALL TABLES IN SCHEMA public TO user;
+      GRANT INSERT ON catch_query,designation,found,obj,orbit TO user;
+      GRANT UPDATE ON catch_query TO user;
+      GRANT USAGE ON catch_query_query_id_seq,designation_desg_id_seq,found_found_id_seq,obj_object_id_seq,orbit_orbit_id_seq TO user;
+      ```
+
+3. (Optional) Restore previous database snapshot: `pg_restore --clean --if-exists -d catch catch.backup`.
+4. Copy `.env-template` to `.env` and edit according to the comments.
+5. The `_initial_setup` script builds a virtual environment with all required libraries.  Using `bash`, source this file to run the script and load the new environment: `source _initial_setup`.
+6. If no data was restored in step 3, insert new survey metadata into the database.  See the [catch README](https://github.com/Small-Bodies-Node/catch) for details.
 
 ## Usage
 
