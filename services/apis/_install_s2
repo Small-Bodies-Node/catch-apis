@@ -1,0 +1,28 @@
+#!/bin/bash -eu
+
+# install s2geometry library
+
+S2HASH=a4dddf40647c68cd0104eafc31e9c8fb247a6308
+
+pushd .
+mkdir -p build
+cd build
+
+test ! -e ${S2HASH}.tar.gz && wget https://github.com/google/s2geometry/archive/${S2HASH}.tar.gz
+test ! -e s2geometry-${S2HASH} && tar xzf ${S2HASH}.tar.gz
+
+# apply patch so we can build without google's testing library
+test ! -e 78.patch && wget https://patch-diff.githubusercontent.com/raw/google/s2geometry/pull/78.patch
+cd s2geometry-${S2HASH}
+test ! -e CMakeLists.txt.orig && patch -i ../78.patch
+
+mkdir build
+cd build
+# cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lib ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+# cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV ..
+# cmake ..
+make
+make install
+
+popd

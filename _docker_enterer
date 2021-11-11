@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# Self-updatable bash gist to enable you to quickly jump into any running
+# docker container without having to copy/paste containerIds.
+# Only edit in github gist: https://gist.github.com/d-w-d/d6d0fcbca541472d2c1ddd0ca410da8b
+
+### Params
+# Get dir this script is in (from https://stackoverflow.com/a/246128/8620332)
+THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+VERSION=0.5.0
+
+#######################################
+# Crude helper printout
+# Arguments:
+#   None
+#######################################
+function help() {
+  clear
+  echo -e """
+    Usage:
+    _docker_enterer           -   Search/enter running docker containers
+    _docker_enterer --update  -   Update script from github gist
+    _docker_enterer --version -   Show version
+    _docker_enterer --help    -   Show usage
+  """
+}
+
+#######################################
+# Crude mechanism to update this script from SSOT github gist
+# Arguments:
+#   None
+#######################################
+function update() {
+
+  ### Create obscure location to download latest script
+  TMP_DIR="/tmp/docker_enterer_d6d0fcbca541472d2c1ddd0ca410da8b" && mkdir -p $TMP_DIR
+  LATEST_SCRIPT="$TMP_DIR/_latest"
+  RAW_GIST_URL="https://gist.githubusercontent.com/d-w-d/d6d0fcbca541472d2c1ddd0ca410da8b/raw/_docker_enterer"
+  if ! curl -L "$RAW_GIST_URL" -o $LATEST_SCRIPT; then
+    echo "Error on curl download of $RAW_GIST_URL"
+    exit 1
+  fi
+  chmod +x $LATEST_SCRIPT
+  sleep 1
+  echo -e """
+  This script will now be version $($LATEST_SCRIPT --version)
+  """
+
+  ### Perform final replacement
+  exec /bin/bash -c "cp $LATEST_SCRIPT $THIS_DIR/_docker_enterer && echo 'Done.'"
+  echo "If you read this then something is wrong!"
+}
+
+#######################################
+# Search for running docker containers and enter if found
+# Arguments:
+#   None
+#######################################
+function main() {
+
+  ### Test if there are any running docker containers by counting output lines
+  number_of_running_containers=$(docker container ls | wc -l)
+  if [[ $number_of_running_containers -eq 1 ]]; then
+    echo -e "${RED}No running docker containers found${WHI}"
+    exit 1
+  fi
+
+  ### Extract all running-container names and ids into bash arrays
+  containerIds=($(docker container ls | sed -n '2,$p' | tr -s " " | cut -f1 -d' '))
+  containerNames=($(docker container ls | rev | sed -n '2,$p' | tr -s " " | cut -f1 -d' ' | rev))
+  imageNames=($(docker container ls | sed -n '2,$p' | tr -s " " | cut -f2 -d' '))
+
+  ### If there's only one container, just jump straight into it
+  if [[ $number_of_running_containers -eq 2 ]]; then
+
+    echo -e "${GRE}1 container found named ${containerNames[0]}; starting in 3s ...${WHI}"
+    sleep 3
+    docker exec -it "${containerIds[0]}" sh
+
+  else
+
+    clear
+    echo -e "${WHI}Choose a number (0-$((${#containerIds[@]} - 1))) for the container you want to sh into:\n"
+    echo -e "${WHI}====== ${CYA}============ ${GRE}=========================================== ${WHI}"
+    echo -e "${WHI}Choice ${CYA}ContainerId  ${GRE}Container ${BLU}(Image)${GRE} Name ${WHI}"
+    echo -e "${WHI}====== ${CYA}============ ${GRE}=========================================== ${WHI}"
+    ### Perform C-like for loop over multiple containerIds
+    for ((i = 0; i < ${#containerIds[@]}; ++i)); do
+      # Print choices of container to screen
+      echo -e "${WHI}$i     ${CYA} ${containerIds[i]} ${GRE}${containerNames[i]}${BLU} (${imageNames[i]})${WHI}"
+    done
+    echo -e "${WHI}====== ${CYA}============ ${GRE}=========================================== ${WHI}\n"
+
+    ### Prompt use to choose container listed
+    read choice
+    ### Enter chosen container
+    echo -e "${GRE}Entering container ${containerNames[$choice]}${WHI}"
+    sleep 1
+    docker exec -it "${containerIds[$choice]}" sh
+
+  fi
+
+}
+
+### Main script switch
+if [[ -z $1 ]]; then
+  main
+elif [[ $1 == "--update" ]]; then
+  update
+elif [[ $1 == "--version" ]]; then
+  echo "$VERSION"
+else
+  help
+fi

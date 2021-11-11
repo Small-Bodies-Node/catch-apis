@@ -1,0 +1,55 @@
+### Pull official base image with Debian OS
+FROM python:3.8.12-slim-buster
+
+### set work directory
+WORKDIR /app
+
+### set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+### install system dependencies
+RUN apt-get update && apt-get install -y \
+  # Stuff for our flask app
+  netcat \
+  nodejs \
+  npm \
+  # Useful stuff
+  git \
+  wget \
+  vim \
+  # Stuff for S2 Geometry: https://s2geometry.io/about/platforms
+  libgflags-dev \
+  libgoogle-glog-dev \
+  libgtest-dev \
+  libssl-dev \
+  swig \
+  cmake
+
+### Add some tools to make trouble-shooting in container easier
+SHELL ["/bin/bash", "-c"]
+RUN source <(wget -qO- https://raw.githubusercontent.com/d-w-d/myconfig/master/quickstart.sh)  \
+  && myconfig install -y self
+
+### Install nodemon
+RUN npm i -g nodemon
+
+### Install S2; see: https://s2geometry.io/about/platforms
+COPY ./_install_s2 .
+RUN ./_install_s2
+
+### Install python dependencies
+RUN pip install --upgrade pip
+RUN pip install --upgrade -q -q -q setuptools wheel cython
+COPY ./requirements.txt .
+RUN mkdir /catchlibs
+RUN CFLAGS='-I/usr/local/lib/python3.8/site-packages/numpy/core/include/' \
+  pip install --src /catchlibs -r requirements.txt
+
+### Copy code base into docker
+COPY . .
+
+### Put init command in docker-compose file to allow woRQer and apis to share
+### this file
+# ENTRYPOINT ["SEE docker-compose.yml"]
+

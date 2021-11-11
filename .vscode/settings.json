@@ -1,16 +1,15 @@
 {
-  "python.pythonPath": ".venv/bin/python3",
-  "python.envFile": "${workspaceRoot}/.env",
+  // "python.pythonPath": ".venv/bin/python3",
+  // "python.envFile": "${workspaceRoot}/.env",
   "editor.snippetSuggestions": "none",
-  "python.linting.pylintEnabled": true,
+  "python.linting.pylintEnabled": false,
   "python.linting.mypyEnabled": true,
   "python.languageServer": "Pylance",
   "python.analysis.extraPaths": [
     "src",
     "src/services",
-    "src/models",
-    "src/controllers",
-    "src/tasks",
-    "src/templates"
+    ".catchlibs/catch",
+    ".catchlibs/sbsearch",
+    ".catchlibs/sbpy"
   ]
 }

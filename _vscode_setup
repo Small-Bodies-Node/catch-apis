@@ -1,0 +1,56 @@
+#!/usr/bin/env false
+#
+# Source this script in order to set up a virtual env on development machine
+# in order to get intellisense, etc. in VSCode
+
+### 0. Load vars defined in .env
+if [ ! -f $PWD/.env ]; then
+  echo -e "No .env file found!!!"
+  return 1
+fi
+source .env
+
+### 1. Message user
+clear
+echo -e """${GRE}
+=======================================
+Initializing Python Virtual Environment
+=======================================
+${WHI}"""
+
+sleep 1
+
+### 2. Get rid of caches NOT in .venv
+find . -type d ! -path './.venv/*' -name '__pycache__' -exec rm -rf {} +
+find . -type d ! -path './.venv/*' -name '.pytest_cache' -exec rm -rf {} +
+find . -type d ! -path './.venv/*' -name '.mypy_cache' -exec rm -rf {} +
+
+### 3. Check for existence of `.venv` dir
+if [[ ! -d $PWD/.venv ]]; then
+  echo -e """${BLU}
+    virtual Environment Not Found -- Creating '.venv'
+"""
+  $PYTHON_3_7_OR_HIGHER -m venv .venv --prompt=$APP_NAME
+fi
+
+### 4. Activate VENV
+source ./.venv/bin/activate
+
+### 5. Install python package dependencies for project
+# Set LDFLAGS to use libs2 in our virtual environment
+export LDFLAGS="-L$VIRTUAL_ENV/lib -Wl,-rpath=$VIRTUAL_ENV/lib"
+pip install --upgrade pip
+pip install --upgrade -q -q -q setuptools wheel cython
+pip install -q -r requirements.vscode.txt
+echo "----- $CATCH_LIBS_DIR"
+pip install -q --no-deps --src $CATCH_LIBS_DIR -r ./services/apis/requirements.txt
+# cat ./services/apis/requirements.txt | xargs -n 1 pip -q install --no-deps 2>/dev/null
+
+### 6. Link git pre-commit-hook script
+ln -fs $PWD/_precommit_hook $PWD/.git/hooks/pre-commit
+
+### 7. Final Message
+echo -e """${BLU}
+    Done. Bon courage!
+${WHI}
+"""

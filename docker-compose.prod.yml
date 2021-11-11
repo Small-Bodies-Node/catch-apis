@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  apis:
+    build:
+      context: ./services/apis
+      dockerfile: Dockerfile.prod
+    image: catch-apis-prod
+    container_name: catch-apis-prod
+    command: ./_entrypoint_flask_prod
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+  woRQer:
+    build:
+      context: ./services/apis
+      dockerfile: Dockerfile.prod
+    image: catch-apis-prod
+    container_name: woRQer-prod
+    command: ./_entrypoint_woRQer_prod
+    depends_on:
+      - db
+      - redis-server
+    env_file:
+      - ./.env
+  db:
+    image: postgres:13-alpine
+    container_name: catch-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./.pg-init-data/:/docker-entrypoint-initdb.d/
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+  redis-server:
+    image: redis:5
+
+volumes:
+  postgres_data:
