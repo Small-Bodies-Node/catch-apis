@@ -11,5 +11,6 @@
     ".catchlibs/catch",
     ".catchlibs/sbsearch",
     ".catchlibs/sbpy"
-  ]
+  ],
+  "restructuredtext.syntaxHighlighting.disabled": true
 }

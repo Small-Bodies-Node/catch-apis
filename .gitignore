@@ -39,5 +39,5 @@ temp*
 
 src/catch_apis/version.py
 .redundant
-.pg-init-data/**
+.pg-init-data/**/*.backup
 .catchlibs

@@ -27,6 +27,7 @@ services:
     env_file:
       - ./.env
   db:
+    shm_size: 1gb
     image: postgres:13-alpine
     container_name: catch-db
     volumes:
