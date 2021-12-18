@@ -9,7 +9,7 @@ services:
     volumes:
       - ./services/apis/:/app/
     ports:
-      - 5000:5000
+      - "127.0.0.1:5000:5000"
     depends_on:
       - db
       - redis-server
