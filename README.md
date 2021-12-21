@@ -15,7 +15,8 @@ The API is backed by:
   - Metadata ingestion uses the [pds3](https://github.com/mkelley/pds3) or [pds4_tools](https://github.com/Small-Bodies-Node/pds4_tools) Python libraries.
 - [flask](https://flask.palletsprojects.com/), [connexion](https://connexion.readthedocs.io/), [openapi](https://swagger.io/specification/), and [gunicorn](https://gunicorn.org/) for the API experience and documentation.
 - [redis](https://redis.io/) for the job queue and user task messaging.
-- [rq](https://python-rq.org/) and [pm2](https://pm2.keymetrics.io/) execute the job queue.
+- [rq](https://python-rq.org/) and [pm2](https://pm2.keymetrics.io/) execute the job queue
+- [docker](https://www.docker.com/) is used for cross-platform development and deployment
 
 ## Features
 
@@ -24,62 +25,68 @@ The API is backed by:
 - Ephemerides may create loops on the sky (e.g., during retrograde motion), this is correctly handled by S2, even when padding the ephemeris with some uncertainty.
 - Ephemeris segments are combined into groups 10 degrees or 30 days long (whichever limit is reached first; 10 deg / 30 days = 50" / hour), and the database is queried for the combined line all at once.  This improves performance because the segments are spatially correlated.
 
-## Code Terminology
+## Data-Flow Overview
 
-- worker vs woRQer
-  - There are two kinds of worker in this code: gunicorn production workers and redis 'rq' workers. TO distinguish between the two, we call the latter "woRQer" wherever possible
-- Service vs Service
-  - There are two kinds of service: flask-business logic services and docker services; hopefully it's clear from context which is which
+- These APIs are essentially a convenience wrapper around the CATCH and [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries
+- A user submits a query for a comet or asteroid, e.g. '65P', to the `/catch` route; e.g. `/catch?target=65P&source=neat_palomar_tricam&uncertainty_ellipse=true&padding=0&cached=true`
+- If the object has been found previously, and if the query option 'cached' is set to true, then the response will indicate that you can immediately access the scientific data by passing the stated jobid to the `/caught/:jobid` route; e.g.
+
+```json
+{
+  "job_id": "6b9499cf8dd34e94a4e5bc26ccbf45de",
+  "message": "Found cached data.  Retrieve from results URL.",
+  "message_stream": "http://catch-v2.astro-prod-it.aws.umd.edu/stream",
+  "query": {
+    "cached": true,
+    "padding": 0,
+    "source": ["neat_palomar_tricam"],
+    "target": "65P",
+    "uncertainty_ellipse": true
+  },
+  "queue_full": false,
+  "queued": false,
+  "results": "http://catch-v2.astro-prod-it.aws.umd.edu/caught/6b9499cf8dd34e94a4e5bc26ccbf45de",
+  "version": "2.0.0"
+}
+```
+
+- If the object has not been found, or has 'cached' set to false, then a new job will be posted to the redis queue, and a separate worker process will claim that job and execute various queries/calculations that call upon the underlying [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries to generate the scientific data for that comet or asteroid. During this job, the worker will post status messages back to the redis queue with that job's jobid. Once complete, the worker will save the results to the db and publish a "status":"success" message. Because this will take an unknown amount of time to complete, you can subscribe to a server-sent-event route at `/stream` that listens in on this status queue and sends a stream of events that look like the following when opened in a browser like Chrome:
+
+```
+data: {"job_prefix": "4ed052ff", "text": "Starting moving target query.", "status": "running"}
+data: {"job_prefix": "4ed052ff", "text": "Query NEAT from 2001-11-20 to 2003-03-11.", "status": "running"}
+data: {"job_prefix": "4ed052ff", "text": "Obtained ephemeris from JPL Horizons.", "status": "running"}
+data: {"job_prefix": "4ed052ff", "text": "Caught 5 observations.", "status": "running"}
+...
+data: {"job_prefix": "4ed052ff", "text": "Task complete.", "status": "success"}
+```
+
+- In summary, there are two types of "worker" to think about in this code base. There are the gunicorn workers that handle the http requests within the "apis" service, and there are the workers that accept tasks from the redis queue and carry out the computationally expensive workload. We try wherever possible to label this latter kind of redis-queue 'RQ' workers as "woRQer".
 
 ## Setup
 
 CATCH-APIs are developed and run using docker. To develop locally:
 
-- Install `docker` and `docker-compose` on your unix machine
+- Install `docker` and `docker-compose` on your machine
 - Clone this repo
 - Copy .env-template to .env and edit
 - If you are developing in VSCode, then `source _vscode_setup` to install packages on your machine, etc. in order to get intellisense, etc.; the repo comes with a .vscode dir for settings
-- Before you start running the docker containers, you will need to obtain a file generated by the `pg_dump` program. Please contact [MKelly](https://github.com/mkelley) or [D-W-D](https://github.com/d-w-d) for such a file. Copy that file within your clone of this repo to `pg-ini-data/some-name.backup`
-
+- CATCH requires a postgres DB with pre-gathered data. Before you start running the docker containers, you will need to obtain a file generated by the `pg_dump` program. Please contact [MKelly](https://github.com/mkelley) or [D-W-D](https://github.com/d-w-d) for such a file. Copy that file within your clone of this repo to `.pg-init-data/some-name.backup`
 - Run docker-compose:
 
-  - There are two ways to start all of the relevant containers: dev mode and prod mode. In development mode, the code base for the apis will be "bind-mounted" into the container so that changes made to the code get reflected instantly in the running application (the API and woRQer processes are run via nodemon in dev mode). In prod mode, the code-base is simply copied over into the image, so it will not be picked up dynamically at run-time
-    - To run everything in development mode, run `docker-compose -f docker-compose.yml up --build`
-      - To stop everything, enter CTRL+C once to stop processes gracefully; sometimes this might fail to properly shutdown everything, in which case you can swap `up --build` with `down` to re-try shutting everything down
-      - Also, when you bring docker-compose systems up/down, it's sometimes helpful to also remove the stopped containers with `docker container prune`
-    - To run everything in prod mode, run `docker-compose -f docker-compose.prod.yml up --build`
+  - There are two ways to start all of the relevant containers: dev mode and prod mode. In development mode, the code base for the apis will be "bind-mounted" into the container so that changes made to the code on your machine get reflected instantly in the running application (the API and woRQer processes are run via nodemon in dev mode). In prod mode, the code-base is simply copied over into the image, so it will not be picked up dynamically at run-time
+  - To run everything in development mode, run `docker-compose -f docker-compose.yml up --build`
+    - To stop everything, enter CTRL+C once to stop processes gracefully; sometimes this might fail to properly shutdown everything, in which case you can swap `... up --build` with `... down` to re-try shutting everything down
+    - Also, when you bring docker-compose systems up/down, it's sometimes helpful to also remove the stopped containers with `docker container prune`
+  - To run everything in prod mode, run `docker-compose -f docker-compose.prod.yml up --build`
 
 - DB setup:
-  - The CATCH tool requires a postgresDB populated with initial data. This repo runs a postgres container. Before you can run any catch queries through the apis, you need to initialize the postgres db by jumping into the db container (the `_docker_enterer` script makes this easy), and going to `/docker-entrypoint-initdb.d`. Now you can source the script `_restore.sh` and provide the name of the backup file; this script will run `pg_restore` on that file.
-  - The restoration of the pgdb can take a while; on a high-end Mac it took ~10 mins to restore a backup file of 250MB, with a resultant db of size 3.4gb.
 
-## Setup (Deprecated)
+  - The CATCH tool requires a postgresDB populated with initial data. After you've started up your docker-compose command for the first time, and before you can run any catch queries through the apis, you need to initialize the postgres db by jumping into the running db container (running the `_docker_enterer` script makes this easy), and going to `/docker-entrypoint-initdb.d`. Now you can source the script `_restore.sh` and provide the name of the backup file that you downloaded to `.pg_init_data/`; this script will run the postgres tool `pg_restore` on that file.
+    - The restoration of the postgresdb can take a while;
+      - On a Macbook Pro it took ~10 mins to restore a backup file of 250MB, with a resultant db of size 3.4GB.
+      - On a 2-CPU AWS EC2 instance it took ~60 minutes to restore a backup file of 775MB, with a resultant db of ~20GB.
 
-CATCH-APIs are developed for linux/macos systems. Python requirements are detailed in [setup.cfg](setup.cfg).
+- Once everything is running in dev mode, visit http://localhost:5000/ui to see the swagger interface, and in a separate tab open to http://localhost:5000/stream
 
-1. Create the database and setup user access:
-   1. The user account that maintains the database (e.g., adds new observations), requires CREATE privileges on the database, and SELECT and INSERT privileges on all tables.
-   2. The user account that owns the API instances will need SELECT privileges on all tables, and INSERT privileges on the obj, designation, catch_query, caught, and found tables.
-2. Copy `.env-template` to `.env` and edit according to the comments.
-3. The `_initial_setup` script builds a virtual environment with all required libraries. Using `bash`, source this file to run the script and load the new environment: `source _initial_setup`.
-4. Insert data into the database. See the [catch README](https://github.com/Small-Bodies-Node/catch) for details.
-
-## Usage
-
-### Local instances for testing
-
-1. Set the `DEPLOYMENT_TIER` in `.env` to `LOCAL`.
-2. Open two terminal instances. For each instance, enter the CATCH-APIs virtual environment: `source _activate`.
-3. In the first terminal:
-   1. Is redis running? `bash _redis_manager status`. If not, start up the redis queuing system: `bash _redis_manager start`.
-   2. Start up worker processes: `bash _develop_workers`.
-4. In the second terminal, start up the API server: `bash _develop_apis`.
-5. Open the swagger documentation. If the `BASE_URL` in `.env` is empty: http://localhost:5003/ui .
-
-### Production
-
-TBD
-
-### Misc Notes
-
-- @MSK: I am not satisfied with the way sbsearch, catch and sbpy are being dockerized right now; need to discuss how they work; why do they always get installed to `src`? I tried simplifying the way/location for their installation but that seemed to break the S2 stuff with sbsearch
+## TODO: migrate CATCH frontend to separate docker service
