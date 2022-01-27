@@ -10,4 +10,4 @@ echo '''
 
 # Auto-format all python scripts
 .venv/bin/autopep8 -ir src/**
-.venv/bin/autopep8 -ir tests/**
+.venv/bin/autopep8 -ir tests/** --exclude='*.txt'
