@@ -4,6 +4,13 @@ from numpy import full
 import pytest
 from services.query import TargetTypePatterns
 
+# Test target names / designations (packed and unpacked) with the
+# catch-apis target type patterns.  The target type patterns identify
+# the target type (asteroid, comet, or interstellar object) so that
+# an appropriate API call to JPL Horizons may be made.
+
+
+# Add specific asteroids to this list
 ASTEROIDS = set([
     '2019 DQ123',
     '(1234)',
@@ -17,6 +24,7 @@ ASTEROIDS = set([
     '2021 HS',
 ])
 
+# Add specific comets to this list
 COMETS = set([
     '1P/Halley',
     '3D/Biela',
@@ -44,6 +52,7 @@ COMETS = set([
     'K88AA30',
 ])
 
+# Add specific interstellar objects to this list
 INTERSTELLAR_OBJECTS = set([
     '0001I',
     '1I/`Oumuamua',
@@ -51,7 +60,7 @@ INTERSTELLAR_OBJECTS = set([
     '2I/Borisov'
 ])
 
-
+# Also add all numbered asteroids from this list
 path = os.path.dirname(__file__)
 with open(f'{path}/asteroid_names.txt', 'r') as inf:
     for line in inf:
@@ -59,6 +68,7 @@ with open(f'{path}/asteroid_names.txt', 'r') as inf:
             continue
         ASTEROIDS.add(line[:40].strip())
 
+# Add asteroids, mostly temporary designations, from this list
 path = os.path.dirname(__file__)
 with open(f'{path}/asteroid_closest.txt', 'r') as inf:
     for line in inf:
@@ -66,6 +76,9 @@ with open(f'{path}/asteroid_closest.txt', 'r') as inf:
             continue
         ASTEROIDS.add(line[54:67].strip())
 
+# add objects from the cometary orbital elements list
+# this list has comets (C/, P/, and D/), but also asteroids
+# (A/ objects), and interstellar objects (I/ objects)
 with open(f'{path}/CometEls.txt', 'r') as inf:
     for line in inf:
         if line[0] == '#':
@@ -85,6 +98,7 @@ with open(f'{path}/CometEls.txt', 'r') as inf:
 
 @pytest.mark.parametrize('target', ASTEROIDS)
 def test_asteroid(target):
+    "Verify that the asteroid string parses as an asteroid and not something else."
     assert re.match(TargetTypePatterns.asteroidal, target)
     assert re.match(TargetTypePatterns.cometary, target) is None
     assert re.match(TargetTypePatterns.interstellar_object, target) is None
@@ -92,6 +106,7 @@ def test_asteroid(target):
 
 @pytest.mark.parametrize('target', COMETS)
 def test_comet(target):
+    "Verify that the comet string parses as an comet and not something else."
     assert re.match(TargetTypePatterns.asteroidal, target) is None
     assert re.match(TargetTypePatterns.cometary, target)
     assert re.match(TargetTypePatterns.interstellar_object, target) is None
@@ -99,6 +114,7 @@ def test_comet(target):
 
 @pytest.mark.parametrize('target', INTERSTELLAR_OBJECTS)
 def test_comet(target):
+    "Verify that the interstellar object string parses as an ISO and not something else."
     assert re.match(TargetTypePatterns.asteroidal, target) is None
     assert re.match(TargetTypePatterns.cometary, target) is None
     assert re.match(TargetTypePatterns.interstellar_object, target)
