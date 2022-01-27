@@ -31,6 +31,8 @@ zchecker.db
 catch.log
 dwd_notes
 temp*
+build/
+*.egg-info
 
 # emacs backup files
 *~
