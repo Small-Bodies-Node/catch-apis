@@ -57,7 +57,13 @@ class Query(FRP.Resource):
 
         # Test target name, if valid, proceed
         target_type: str
-        target_type = service.parse_target_name(query['target'])[0]
+        target: str
+        target_type, target = service.parse_target_name(query['target'])
+
+        # Sanitize target name based on parsing, this ensures that 65P and
+        # 65P/Gunn resolve to the same object within CATCH's database, and
+        # avoids a crash at JPL Horizons.
+        query['target'] = target
 
         print("----------------------")
         print(target_type)
@@ -113,7 +119,7 @@ class Query(FRP.Resource):
             strict_redis.publish(RQueues.TASK_MESSAGES, str(msg))
 
             if cached:
-                # Make sure cutouts are avilable.  Spin out task to worker.
+                # Make sure cutouts are available.  Spin out task to worker.
                 queue.enqueue(cutout_moving_targets, job_id)
 
                 response['message'] = (
