@@ -1,4 +1,3 @@
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
 """
 Entry point to Flask-Connexion API
 """
@@ -25,13 +24,16 @@ application = app.app
 def stream() -> Response:
     """Shared task messaging stream."""
 
-    return Response(messages(), mimetype='text/event-stream',
-                    headers={'Content-Type': 'text/event-stream',
-                             'Cache-Control': 'no-cache',
-                             'Connection': 'keep-alive',
-                             'Keep-Alive': 'timeout=55'
-                             }
-                    )
+    return Response(
+        messages(),
+        mimetype='text/event-stream',
+        headers={
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Keep-Alive': 'timeout=55'
+        }
+    )
 
 
 @application.teardown_appcontext

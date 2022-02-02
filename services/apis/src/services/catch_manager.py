@@ -5,7 +5,7 @@ from contextlib import contextmanager
 
 from catch import Catch, Config
 
-from .database_provider import data_provider_session
+from .database_provider import data_provider_session, db_engine
 from ..config.env import ENV
 
 
