@@ -28,13 +28,21 @@ COMPARE_KEYS = ['airmass', 'ddec', 'dec', 'delta', 'dra', 'exposure', 'filter',
                 'vmag']
 
 
-# number of matches updated 2022 Jan 31
+# Number of matches updated 2022 Feb 1.  One target for each regex in
+# src/services/query.py, except for the packed designations.
 TARGET_MATCHES = [
     ('65P', 15),
+    ('73P', 18),
+    ('73P-E', 12),
     ('C/1995 O1', 30),
+    ('C/1996 J1-A', 9),
+    ('P/2001 YX127', 30),
     ('2019 XS', 14),
+    ('2003 EL61', 9),
+    ('A/2017 U1', 2),
     ('1', 26),
-    ('2I/Borisov', 0)
+    ('(2) Juno', 23),
+    ('1I/`Oumuamua', 2)
 ]
 
 
@@ -68,6 +76,8 @@ def _query(target: str, cached: bool) -> Tuple[Any, bool]:
 
             if message_data['status'] == 'success':
                 break
+
+        del messages
 
     # 'results' is the URL to the search results
     res = requests.get(data['results'])
