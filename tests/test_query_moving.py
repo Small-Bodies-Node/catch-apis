@@ -34,6 +34,7 @@ TARGET_MATCHES = [
     ('C/1995 O1', 30),
     ('2019 XS', 14),
     ('1', 26),
+    ('2I/Borisov', 0)
 ]
 
 
@@ -95,7 +96,7 @@ def test_cached_queries(target: str, number: int) -> None:
 
     q, queued = _query(target, False)
     assert queued
-    assert q['count'] == number  # this one fails every time
+    assert q['count'] == number
 
     q, queued = _query(target, True)
     assert not queued
