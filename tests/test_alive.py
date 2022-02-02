@@ -24,8 +24,7 @@ def query(args: argparse.Namespace) -> Tuple[str, float, Any]:
                                'cached': args.cached})
     data = res.json()
 
-    queued = data['queued']
-    if queued:
+    if data['queued']:
         messages = SSEClient(f'{args.url}/stream')
         for message in messages:
             message_data = json.loads(message.data)
@@ -42,8 +41,14 @@ def query(args: argparse.Namespace) -> Tuple[str, float, Any]:
             print(message_data['text'], file=sys.stderr)
 
             # Message status may be 'success', 'error', 'running', 'queued'.
-            if message_data['status'] in ['error', 'success']:
+            if message_data['status'] == 'error':
+                raise Exception(message_data['text'])
+
+            if message_data['status'] == 'success':
                 break
+
+    elif data['results'] is None:
+        raise Exception(data['message'])
 
     # 'results' is the URL to the search results
     res = requests.get(data['results'])
