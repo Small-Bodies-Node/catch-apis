@@ -35,16 +35,19 @@ class TargetTypePatterns:
             r'(^{perm}(?=/{name})?)'
 
             # P/2001 YX127, allows trailing (name), e.g.,
-            # C/2013 US10 (Catalina)re
+            # C/2013 US10 (Catalina)
             r'|(^[PDCX]/{temp}({frag})?(?=\s+\({name}\))?)'
 
+            # 7-character comets not working with catch->sbsearch->horizons
             # J95A010, 7-character packed
-            r'|(^[IJK][0-9]{{2,2}}[A-Z][0-9A-z]{{2,2}}[0a-z]$)'
+            # r'|(^[IJK][0-9]{{2,2}}[A-Z][0-9A-z]{{2,2}}[0a-z]$)'
+
+            # 12-character packed designations not supported by Horizons
             # 12-character packed, temporary comet
-            r'|(^[CPDX][IJK][0-9]{{2,2}}[A-Z][0-9A-z]{{2,2}}[0a-z]$)'
+            # r'|(^[CPDX][IJK][0-9]{{2,2}}[A-Z][0-9A-z]{{2,2}}[0a-z]$)'
             # 12-character packed, temporary comet originally an asteroid
-            r'|(^[CPDX][IJK][0-9]{{2,2}}[A-Z][0-9A-Za-z][0-9][A-Z]$)'
-            # 12-character packed, permanent comet (not supported by Horizons)
+            # r'|(^[CPDX][IJK][0-9]{{2,2}}[A-Z][0-9A-Za-z][0-9][A-Z]$)'
+            # 12-character packed, permanent comet
             # r'|(^[0-9]{{4,4}}[CPDX]$(\s+[a-z])?)'
         ).format(perm=permanent_cometary_designation,
                  frag=cometary_fragment,
@@ -177,4 +180,5 @@ def parse_target_name(name: str) -> Tuple[str, str]:
             target_type = EBodyType.unknown.name
             match = ''
 
-    return target_type, match.strip()
+    # remove parentheses from queries like (123)
+    return target_type, match.strip().lstrip('(').rstrip(')')

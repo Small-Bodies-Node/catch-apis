@@ -116,11 +116,15 @@ with open(f'{path}/CometEls.txt', 'r') as inf:
         else:
             COMETS.add(full_name)
 
-            # permanent designation with a fragment, does not work at Horizons
-            if packed[0].isdigit() and len(packed) == 12:
+            # packed cometary designations not working in CATCH->sbsearch->Horizons
+            if len(packed) > 7:
                 continue
 
-            # we left-strip 0s because Horizons fails for queries like '0001P'
+            # # permanent designation with a fragment, does not work at Horizons
+            # if packed[0].isdigit() and len(packed) == 12:
+            #     continue
+
+            # # we left-strip 0s because Horizons fails for queries like '0001P'
             COMETS.add(packed.lstrip('0'))
 
 
