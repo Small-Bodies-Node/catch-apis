@@ -24,10 +24,10 @@ def messages() -> Iterator[str]:
         if len(message) == 0:
             count += 1
             if count > (ENV.STREAM_TIMEOUT // wait):
-                yield ': timeout\n'
+                yield ': timeout\n\n'
                 return
             else:
-                yield ': stayin\' alive\n'
+                yield ': stayin\' alive\n\n'
                 continue
 
         content: bytes
@@ -35,4 +35,4 @@ def messages() -> Iterator[str]:
         data: str = content.get(b'data', b'').decode()
         if data != '':
             count = 0
-            yield f'data: {data}\n'
+            yield f'data: {data}\n\n'
