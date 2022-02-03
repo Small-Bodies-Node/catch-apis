@@ -1,6 +1,6 @@
 # CATCH-APIs v2.0.0
 
-The Planetary Data System Small Bodies Node survey data search tool: catch comets and asteroids in wide-field sky survey data.
+An API for the Planetary Data System Small Bodies Node survey data search tool: catch comets and asteroids in wide-field sky survey data.
 
 ## Overview
 
@@ -21,15 +21,15 @@ The API is backed by:
 ## Features
 
 - A single observation table holds all observations from all surveys. This feature allows for an approximate search that can ignore parallax and search all surveys in one go.  Fine for objects a few au a way or more.
-- The S2 library cells are set to a minimum size of 3e-4 radians (about 1 arcmin), and maximum size of 10 deg.
+- The S2 library cells range from 3 arcmin to 1 deg.
 - Ephemerides may create loops on the sky (e.g., during retrograde motion), this is correctly handled by S2, even when padding the ephemeris with some uncertainty.
-- Ephemeris segments are combined into groups 10 degrees or 30 days long (whichever limit is reached first; 10 deg / 30 days = 50" / hour), and the database is queried for the combined line all at once.  This improves performance because the segments are spatially correlated.
+- Ephemeris segments are combined into 10-deg long segments, and the database is queried for the combined line all at once.  This improves performance because the segments are spatially correlated.
 
 ## Data-Flow Overview
 
-- These APIs are essentially a convenience wrapper around the CATCH and [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries
-- A user submits a query for a comet or asteroid, e.g. '65P', to the `/catch` route; e.g. `/catch?target=65P&source=neat_palomar_tricam&uncertainty_ellipse=true&padding=0&cached=true`
-- If the object has been found previously, and if the query option 'cached' is set to true, then the response will indicate that you can immediately access the scientific data by passing the stated jobid to the `/caught/:jobid` route; e.g.
+These APIs wrap the functionality given by the [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries.
+1. A user submits a query for a comet or asteroid, e.g. '65P', to the `/catch` route; e.g. `/catch?target=65P&source=neat_palomar_tricam&uncertainty_ellipse=true&padding=0&cached=true`.
+2. If the object has been found previously, and if the query option `'cached'` is set to true, then the response will indicate that you can immediately access the scientific data by passing the stated `'job_id'` to the `/caught/:job_id` route; e.g., the URL in the `'results'` field:
 
 ```json
 {
@@ -50,7 +50,18 @@ The API is backed by:
 }
 ```
 
-- If the object has not been found, or has 'cached' set to false, then a new job will be posted to the redis queue, and a separate worker process will claim that job and execute various queries/calculations that call upon the underlying [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries to generate the scientific data for that comet or asteroid. During this job, the worker will post status messages back to the redis queue with that job's jobid. Once complete, the worker will save the results to the db and publish a "status":"success" message. Because this will take an unknown amount of time to complete, you can subscribe to a server-sent-event route at `/stream` that listens in on this status queue and sends a stream of events that look like the following when opened in a browser like Chrome:
+3. If the object has not been previously found, or had the user set `'cached'` to false, then a new job will be posted to the CATCH APIs queue (implemented with redis).  The response to the user will have `queued = true`.
+   1. A separate worker process will claim that job and execute the query with the underlying [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries to generate the scientific data for that comet or asteroid.
+   2. During this job, the worker will post status messages back to the redis queue.  These messages are available to the user via the `/stream` route (see `'message_stream'` field in the above JSON response).  See the second on the [user messaging stream](#user-messaging-stream) below for more details.
+   3. Once complete, the worker will save the results to the database and publish a `"status": "success"` message to the message stream.  Because this will take an unknown amount of time to complete, one can subscribe to the server-sent-event route at `/stream`, and monitor the status messages labeled with their job prefix.
+
+As a side note, there are two types of "worker" to think about in this code base. There are the gunicorn workers that handle the http requests within the "apis" service, and there are the workers that accept tasks from the redis queue and carry out the computationally expensive workload. We try wherever possible to label this latter kind of redis-queue ('RQ') workers as "woRQer".
+
+### User messaging stream
+
+CATCH searches generally take more than a few seconds to complete.  After a search is enqueued, the user is notified of the progress via the `/stream` route.
+
+The `/stream` route implements messaging using server sent events ([SSE][1]).  The messages sent by CATCH APIs are JSON-formatted text, e.g.,:
 
 ```
 data: {"job_prefix": "4ed052ff", "text": "Starting moving target query.", "status": "running"}
@@ -61,19 +72,30 @@ data: {"job_prefix": "4ed052ff", "text": "Caught 5 observations.", "status": "ru
 data: {"job_prefix": "4ed052ff", "text": "Task complete.", "status": "success"}
 ```
 
-- In summary, there are two types of "worker" to think about in this code base. There are the gunicorn workers that handle the http requests within the "apis" service, and there are the workers that accept tasks from the redis queue and carry out the computationally expensive workload. We try wherever possible to label this latter kind of redis-queue 'RQ' workers as "woRQer".
+Each message is labeled with the first eight characters of the user's `job_id` to prevent data piracy.  A user would monitor the stream for their own messages to track the status of their query via the `'status'` field, which can take the values:
+  * `'queued'`: the query has been received and is waiting for a woRQer to execute it.
+  * `'running'`: a woRQer is executing the query.
+  * `'success'`: the query terminated without error.
+  * `'error'`: the query terminated with an error.
+In all cases, the `'text'` field explains the status in a human-readable format.
+
+Internally, messages are passed from the woRQers to the main thread running the `/stream` route with a redis stream using XADD/XREAD.  The redis stream preserves a limited message history so that a user's connection can be interrupted without the status of the query being immediately lost.
+
+[1]: https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
+
 
 ## Setup
 
 CATCH-APIs are developed and run using docker. To develop locally:
 
-- Install `docker` and `docker-compose` on your machine
-- Clone this repo
-- Copy .env-template to .env and edit
-- If you are developing in VSCode, then `source _vscode_setup` to install packages on your machine, etc. in order to get intellisense, etc.; the repo comes with a .vscode dir for settings
-- CATCH requires a postgres DB with pre-gathered data. Before you start running the docker containers, you will need to obtain a file generated by the `pg_dump` program. Please contact [MKelly](https://github.com/mkelley) or [D-W-D](https://github.com/d-w-d) for such a file. Copy that file within your clone of this repo to `.pg-init-data/some-name.backup`
+- Install `docker` and `docker-compose` on your machine.
+- Clone this repo.
+- Copy .env-template to .env and edit.
+- If you are developing in VSCode, then `source _vscode_setup` to install packages on your machine, etc. in order to get intellisense, etc.; the repo comes with a .vscode dir for settings.
+- CATCH requires a Postgres database populated with survey image metadata.  This data can be harvested from the original source files, or simply a copy of a prior database.
+  - If starting from a blank database, see [Adding New Data](#adding-new-data).
+  - If starting from a copy of a prior database, we recommend using a file generated by the `pg_dump` program. Please contact [MKelley](https://github.com/mkelley) or [D-W-D](https://github.com/d-w-d) for the data. Copy that file within your clone of this repo to `.pg-init-data/some-name.backup`.
 - Run docker-compose:
-
   - There are two ways to start all of the relevant containers: dev mode and prod mode. In development mode, the code base for the apis will be "bind-mounted" into the container so that changes made to the code on your machine get reflected instantly in the running application (the API and woRQer processes are run via nodemon in dev mode). In prod mode, the code-base is simply copied over into the image, so it will not be picked up dynamically at run-time
   - To run everything in development mode, run `docker-compose -f docker-compose.yml up --build`
     - To stop everything, enter CTRL+C once to stop processes gracefully; sometimes this might fail to properly shutdown everything, in which case you can swap `... up --build` with `... down` to re-try shutting everything down
@@ -88,5 +110,10 @@ CATCH-APIs are developed and run using docker. To develop locally:
       - On a 2-CPU AWS EC2 instance it took ~60 minutes to restore a backup file of 775MB, with a resultant db of ~20GB.
 
 - Once everything is running in dev mode, visit http://localhost:5000/ui to see the swagger interface, and in a separate tab open to http://localhost:5000/stream
+
+## Adding New Data
+Whether starting from a blank database, or a working copy, you will probably want to add some new data.
+
+[Instructions TBD]
 
 ## TODO: migrate CATCH frontend to separate docker service
