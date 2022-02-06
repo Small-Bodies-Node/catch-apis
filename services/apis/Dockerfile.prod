@@ -48,6 +48,7 @@ RUN CFLAGS='-I/usr/local/lib/python3.8/site-packages/numpy/core/include/' \
 
 ### Copy code base into docker
 COPY . .
+RUN pip install --no-deps -e .
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME

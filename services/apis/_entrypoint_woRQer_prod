@@ -12,7 +12,7 @@ fi
 
 # for i in {1..5}; do
 #   # rq worker
-#   python -m src.woRQers.woRQer &
+#   python -m catch_apis.woRQers.woRQer &
 # done
 
-python -m src.woRQers.woRQer
+python -m catch_apis.woRQers.woRQer

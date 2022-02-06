@@ -46,8 +46,9 @@ RUN mkdir /catchlibs
 RUN CFLAGS='-I/usr/local/lib/python3.8/site-packages/numpy/core/include/' \
   pip install --src /catchlibs -r requirements.txt
 
-### Copy code base into docker
+### Copy and install CATCH APIs code base into docker
 COPY . .
+RUN pip install --no-deps -e .
 
 ### Put init command in docker-compose file to allow woRQer and apis to share
 ### this file

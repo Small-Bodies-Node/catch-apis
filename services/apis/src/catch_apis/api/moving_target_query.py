@@ -8,6 +8,7 @@ from typing import Optional, List
 from connexion import request
 from .. import services
 from ..config.logging import get_logger
+from .. import __version__
 
 
 def moving_target_query(target: str, source: Optional[List[str]] = None,
@@ -46,7 +47,7 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
             'padding': padding
         },
         'job_id': job_id.hex,
-        'version': '2.0.0'
+        'version': __version__
     }
 
     status: services.QueryStatus

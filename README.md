@@ -116,4 +116,21 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
 [Instructions TBD]
 
+## Testing
+Partial tests are available, both unit tests and tests of a fully working API.
+
+### Unit tests
+
+Python unit tests require tox.  `pip install tox` to install this package.
+
+Several testing environments are available.  View a list of environments with `tox -l`.  To run a single environment, use the `-e` optional parameter, e.g., for the Python 3.9 testing environment:
+```
+tox -e py39-test
+```
+
+Enable tests that require a network connection with:
+```
+tox -e py39-test -- --remote-data
+```
+
 ## TODO: migrate CATCH frontend to separate docker service

@@ -11,7 +11,7 @@ paths:
       tags:
         - Moving Target Query
       summary: Query PDS SBN the survey database for data covering the requested target's ephemeris position.
-      operationId: src.api.moving_target_query
+      operationId: catch_apis.api.moving_target_query
       parameters:
         - name: target
           in: query
@@ -108,7 +108,7 @@ paths:
       tags:
         - Moving Target Query
       summary: Get moving target query results.
-      operationId: src.api.caught
+      operationId: catch_apis.api.caught
       parameters:
         - name: job_id
           in: path
