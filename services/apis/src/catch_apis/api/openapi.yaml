@@ -71,9 +71,12 @@ paths:
                   query:
                     type: object
                     properties:
-                      designation:
+                      target:
                         type: string
-                        description: The designation of the target.
+                        description: The search target.
+                      type:
+                        type: string
+                        description: "Target type, e.g., asteroid, comet, or interstellar object."
                       source:
                         nullable: true
                         description: Search is limited to these sources.

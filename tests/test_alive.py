@@ -32,6 +32,9 @@ def query(args: argparse.Namespace) -> Tuple[str, float, Any]:
     if data['queued']:
         messages = SSEClient(data['message_stream'], chunk_size=128)
         for message in messages:
+            if len(message.data) == 0:
+                continue
+
             if args.verbose:
                 print(message.data)
 

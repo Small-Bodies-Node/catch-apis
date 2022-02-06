@@ -133,4 +133,13 @@ Enable tests that require a network connection with:
 tox -e py39-test -- --remote-data
 ```
 
+### API tests
+
+Code in the `tests/` directory is used to run "end-to-end" tests.  Testing requirements are listed in `requirements.testing.txt`.
+
+* `python3 tests/test_alive.py` to execute moving target queries and summarize
+  results (use `--help` for options).
+
+* With pytest installed, use `pytest tests` to run some simple tests on the API.
+
 ## TODO: migrate CATCH frontend to separate docker service

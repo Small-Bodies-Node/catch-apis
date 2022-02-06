@@ -8,7 +8,7 @@ To see messages returned from the API, e.g., to debug failing tests:
 These tests are currently hard-coded for DEPLOYMENT_TIER=LOCAL in .env.
 
 """
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Optional
 import sys
 import json
 import requests
@@ -22,40 +22,53 @@ TARGET_EQUIVALENCIES = [
     ('2019 XS', 'K19X00S'),
     ('1', '(1) Ceres'),
 ]
-COMPARE_KEYS = ['airmass', 'ddec', 'dec', 'delta', 'dra', 'exposure', 'filter',
-                'jd', 'phase', 'ra', 'rdot', 'rh', 'sangle', 'selong', 'source',
-                'tmtp', 'trueanomaly', 'unc_a', 'unc_b', 'unc_theta', 'vangle',
-                'vmag']
+
+# limit to keys in the common data model (i.e., avoid survey-specific keys)
+COMPARE_KEYS = ['airmass', 'date', 'ddec', 'dec', 'delta', 'dra', 'drh',
+                'elong', 'exposure', 'filter', 'mjd_start', 'mjd_stop',
+                'phase', 'ra', 'rh', 'sangle', 'seeing', 'source',
+                'source_name', 'true_anomaly', 'unc_a', 'unc_b', 'unc_theta',
+                'vangle', 'vmag']
 
 
-# Number of matches updated 2022 Feb 1.  One target for each regex in
+# Number of matches updated 2022 Feb 6.  One target for each regex in
 # src/services/query.py, except for the packed designations.
 TARGET_MATCHES = [
-    ('65P', 15),
-    ('73P', 18),
-    ('73P-E', 12),
-    ('C/1995 O1', 30),
-    ('C/1996 J1-A', 9),
-    ('P/2001 YX127', 30),
-    ('2019 XS', 14),
-    ('2003 EL61', 9),
-    ('A/2017 U1', 2),
-    ('1', 26),
-    ('(2) Juno', 23),
-    ('1I/`Oumuamua', 2)
+    ('neat_maui_geodss', '65P', 9),
+    ('neat_maui_geodss', '73P', 3),
+    ('neat_maui_geodss', '73P-E', 9),
+    ('neat_maui_geodss', 'C/1995 O1', 23),
+    ('neat_maui_geodss', 'C/1996 J1-A', 9),
+    ('neat_maui_geodss', 'P/2002 JN16', 6),
+    ('neat_maui_geodss', '2019 XS', 9),
+    ('neat_maui_geodss', '1995 BT1', 6),
+    ('skymapper', 'A/2017 U1', 2),
+    ('neat_maui_geodss', '1', 12),
+    ('neat_palomar_tricam', '(2) Juno', 9),
+    ('skymapper', '1I/`Oumuamua', 2)
 ]
 
 
-def _query(target: str, cached: bool) -> Tuple[Any, bool]:
-    res = requests.get('http://127.0.0.1:5003/api/query/moving',
-                       params={'target': target,
-                               'cached': cached})
+def _query(target: str, cached: bool, source: Optional[str] = None
+           ) -> Tuple[Any, bool]:
+
+    parameters = {
+        'target': target,
+        'cached': cached
+    }
+    if source:
+        parameters['source'] = source
+    res = requests.get('http://127.0.0.1:5000/catch',
+                       params=parameters)
     data = res.json()
 
     queued = data['queued']
     if queued:
-        messages = SSEClient('http://127.0.0.1:5003/api/stream')
+        messages = SSEClient('http://127.0.0.1:5000/stream')
         for message in messages:
+            if len(message.data) == 0:
+                continue
+
             message_data = json.loads(message.data)
 
             # print all messages for debugging
@@ -99,12 +112,12 @@ def test_equivalencies(targets: List[str]) -> None:
                 assert a[k] == b[k]
 
 
-@pytest.mark.parametrize('target,number', TARGET_MATCHES)
-def test_cached_queries(target: str, number: int) -> None:
+@pytest.mark.parametrize('source,target,number', TARGET_MATCHES)
+def test_cached_queries(source: str, target: str, number: int) -> None:
     # run twice, once to search in case of no previous search,
     # the other to retrieve the cached data
 
-    q, queued = _query(target, False)
+    q, queued = _query(target, False, source=source)
     assert queued
     assert q['count'] == number
 
