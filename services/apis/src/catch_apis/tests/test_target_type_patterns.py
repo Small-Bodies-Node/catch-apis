@@ -119,6 +119,7 @@ def test_asteroid(target):
     assert re.match(TargetTypePatterns.cometary, target) is None
     assert re.match(TargetTypePatterns.interstellar_object, target) is None
 
+
 @pytest.mark.remote_data
 def test_numbered_asteroids():
     url = 'https://minorplanetcenter.net/iau/lists/MPNames.html'
@@ -138,7 +139,9 @@ def test_numbered_asteroids():
                 target = re.sub('<.*?>', '', line)[:39].strip()
                 assert re.match(TargetTypePatterns.asteroidal, target)
                 assert re.match(TargetTypePatterns.cometary, target) is None
-                assert re.match(TargetTypePatterns.interstellar_object, target) is None
+                assert re.match(
+                    TargetTypePatterns.interstellar_object, target) is None
+
 
 @pytest.mark.parametrize('target', COMETS)
 def test_comet(target):
@@ -162,7 +165,7 @@ def test_via_name_resolution_tool(target):
     "Verify that the SBN name resolution tool types match regexp parsing."
 
     r = requests.get('https://name-resolution-tool.astro.umd.edu/name',
-                    params={'name': target})
+                     params={'name': target})
     matches = r.json()['matches']
     assert len(matches) > 0
 
