@@ -65,7 +65,7 @@ def catch_moving_target(job_id: uuid.UUID, target: str, source_keys: str,
         logger.exception("catch error.")
         msg.status = TaskStatus.ERROR
         msg.text = str(exc)
-    except:
+    except Exception:
         logger.exception("An unexpected error occurred.")
         msg.status = TaskStatus.ERROR
         msg.text = 'An unexpected error occurred.  Contact us if this problem persists.'
