@@ -21,9 +21,9 @@ paths:
           allowReserved: true
           schema:
             type: string
-        - name: source
+        - name: sources
           in: query
-          description: Limit search to this data source, or sources if given multiple times, otherwise search all sources.
+          description: Limit search to these data sources, otherwise search all sources.
           required: false
           schema:
             type: array
@@ -33,6 +33,7 @@ paths:
                 - neat_palomar_tricam
                 - neat_maui_geodss
                 - skymapper
+                - ps1dr2
         - name: uncertainty_ellipse
           in: query
           description: Enable searches account for uncertainty ellipse using a polygonal approximation.
@@ -77,7 +78,7 @@ paths:
                       type:
                         type: string
                         description: "Target type, e.g., asteroid, comet, or interstellar object."
-                      source:
+                      sources:
                         nullable: true
                         description: Search is limited to these sources.
                         type: array
@@ -87,6 +88,7 @@ paths:
                             - neat_palomar_tricam
                             - neat_maui_geodss
                             - skymapper
+                            - ps1dr2
                       uncertainty_ellipse:
                         description: Enable searches account for uncertainty ellipse using a polygonal approximation.
                         type: boolean

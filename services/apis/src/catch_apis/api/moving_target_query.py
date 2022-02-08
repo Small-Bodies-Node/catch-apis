@@ -11,7 +11,7 @@ from ..config.logging import get_logger
 from .. import __version__
 
 
-def moving_target_query(target: str, source: Optional[List[str]] = None,
+def moving_target_query(target: str, sources: Optional[List[str]] = None,
                         uncertainty_ellipse: bool = False,
                         padding: float = 0, cached: bool = False) -> dict:
     """Controller for target queries.
@@ -21,7 +21,7 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
     target : string
         The target target.
 
-    source : list of str, optional
+    sources : list of str, optional
         Search these sources, or else all sources.
 
     uncertainty_ellipse : bool, optional
@@ -46,7 +46,7 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
         'query': {
             'target': sanitized_target,
             'type': target_type,
-            'source': source,
+            'sources': sources,
             'cached': cached,
             'uncertainty_ellipse': uncertainty_ellipse,
             'padding': padding
@@ -57,7 +57,8 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
 
     status: services.QueryStatus
     status, result['queue_full'] = services.moving_target_query(
-        job_id, sanitized_target, source=source, uncertainty_ellipse=uncertainty_ellipse,
+        job_id, sanitized_target, sources=sources,
+        uncertainty_ellipse=uncertainty_ellipse,
         padding=padding, cached=cached)
 
     parsed: tuple = urllib.parse.urlsplit(request.url_root)
@@ -73,8 +74,10 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
 
     if status == services.QueryStatus.QUEUED:
         result['queued'] = True
-        result['message'] = ('Enqueued search.  Listen to task messaging stream until'
-                             ' job completed, then retrieve data from results URL.')
+        result['message'] = (
+            'Enqueued search.  Listen to task messaging stream until job '
+            'completed, then retrieve data from results URL.'
+        )
 
     elif status == services.QueryStatus.QUEUEFULL:
         result['queued'] = False

@@ -35,8 +35,8 @@ COMPARE_KEYS = ['airmass', 'date', 'ddec', 'dec', 'delta', 'dra', 'drh',
 # src/services/query.py, except for the packed designations.
 TARGET_MATCHES = [
     ('neat_maui_geodss', '65P', 9),
-    ('neat_maui_geodss', '73P', 3),
-    ('neat_maui_geodss', '73P-E', 9),
+    ('neat_palomar_tricam', '73P', 15),
+    ('neat_palomar_tricam', '73P-E', 9),
     ('neat_maui_geodss', 'C/1995 O1', 23),
     ('neat_maui_geodss', 'C/1996 J1-A', 9),
     ('neat_maui_geodss', 'P/2002 JN16', 6),
@@ -56,10 +56,12 @@ def _query(target: str, cached: bool, source: Optional[str] = None
         'target': target,
         'cached': cached
     }
-    if source:
-        parameters['source'] = source
+    if source is not None:
+        parameters['sources'] = [source]
+
     res = requests.get('http://127.0.0.1:5000/catch',
                        params=parameters)
+    print(res.url)
     data = res.json()
 
     queued = data['queued']
@@ -121,6 +123,6 @@ def test_cached_queries(source: str, target: str, number: int) -> None:
     assert queued
     assert q['count'] == number
 
-    q, queued = _query(target, True)
+    q, queued = _query(target, True, source=source)
     assert not queued
     assert q['count'] == number

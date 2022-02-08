@@ -1,3 +1,4 @@
+from typing import Union
 import uuid
 import logging
 
@@ -11,7 +12,8 @@ from ..services.message import (Message, listen_for_task_messages,
 from ..config.logging import get_logger
 
 
-def catch_moving_target(job_id: uuid.UUID, target: str, source_keys: str,
+def catch_moving_target(job_id: uuid.UUID, target: str,
+                        sources: Union[str, None],
                         uncertainty_ellipse: bool, padding: float,
                         cached: bool) -> None:
     """Search for target in CATCH surveys.
@@ -25,7 +27,7 @@ def catch_moving_target(job_id: uuid.UUID, target: str, source_keys: str,
     target : string
         Target target.
 
-    source_keys : string or None
+    sources : string or None
         Name of observation sources to search or ``None`` to search all
         sources.
 
@@ -56,7 +58,7 @@ def catch_moving_target(job_id: uuid.UUID, target: str, source_keys: str,
         with catch_manager() as catch:
             catch.uncertainty_ellipse = uncertainty_ellipse
             catch.padding = padding
-            catch.query(target, job_id, source_keys=source_keys,
+            catch.query(target, job_id, sources=sources,
                         cached=cached)
 
         msg.status = TaskStatus.SUCCESS
