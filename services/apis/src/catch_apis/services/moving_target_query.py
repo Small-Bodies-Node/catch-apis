@@ -17,7 +17,7 @@ class QueryStatus(enum.Enum):
 
 
 def moving_target_query(job_id: UUID, target: str,
-                        source: Optional[List[str]],
+                        sources: Optional[List[str]],
                         uncertainty_ellipse: bool,
                         padding: float, cached: bool
                         ) -> Tuple[QueryStatus, bool]:
@@ -29,7 +29,7 @@ def moving_target_query(job_id: UUID, target: str,
     target : string
         The target target.
 
-    source : list of str
+    sources : list of str
         Search these sources, or, if ``None``, all sources.
 
     uncertainty_ellipse : bool
@@ -59,12 +59,12 @@ def moving_target_query(job_id: UUID, target: str,
             catch.uncertainty_ellipse = uncertainty_ellipse
             catch.padding = padding
             print(target)
-            print(source)
+            print(sources)
             # if catch.is_query_cached(target, source_keys=source):
-            if catch.is_query_cached(target, sources=source):
+            if catch.is_query_cached(target, sources=sources):
                 # copy cached results to the new job ID
                 # catch.query(target, job_id, source_keys=source, cached=True)
-                catch.query(target, job_id, sources=source, cached=True)
+                catch.query(target, job_id, sources=sources, cached=True)
                 status = QueryStatus.SUCCESS
 
     if status != QueryStatus.SUCCESS:
@@ -73,7 +73,7 @@ def moving_target_query(job_id: UUID, target: str,
         else:
             queue.enqueue(f=tasks.catch_moving_target,
                           args=[job_id, target,
-                                source, uncertainty_ellipse, padding, False],
+                                sources, uncertainty_ellipse, padding, False],
                           job_timeout=1200
                           )
             status = QueryStatus.QUEUED

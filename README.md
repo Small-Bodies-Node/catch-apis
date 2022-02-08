@@ -28,7 +28,7 @@ The API is backed by:
 ## Data-Flow Overview
 
 These APIs wrap the functionality given by the [catch](https://github.com/Small-Bodies-Node/catch) and [sbsearch](https://github.com/Small-Bodies-Node/sbsearch) libraries.
-1. A user submits a query for a comet or asteroid, e.g. '65P', to the `/catch` route; e.g. `/catch?target=65P&source=neat_palomar_tricam&uncertainty_ellipse=true&padding=0&cached=true`.
+1. A user submits a query for a comet or asteroid, e.g. '65P', to the `/catch` route; e.g. `/catch?target=65P&sources=neat_palomar_tricam&uncertainty_ellipse=true&padding=0&cached=true`.
 2. If the object has been found previously, and if the query option `'cached'` is set to true, then the response will indicate that you can immediately access the scientific data by passing the stated `'job_id'` to the `/caught/:job_id` route; e.g., the URL in the `'results'` field:
 
 ```json
@@ -39,7 +39,7 @@ These APIs wrap the functionality given by the [catch](https://github.com/Small-
   "query": {
     "cached": true,
     "padding": 0,
-    "source": ["neat_palomar_tricam"],
+    "sources": ["neat_palomar_tricam"],
     "target": "65P",
     "uncertainty_ellipse": true
   },

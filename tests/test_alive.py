@@ -12,6 +12,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument('--url', default='http://127.0.0.1:5000')
     parser.add_argument('--target', default='65P')
+    parser.add_argument('--source', '-s', default=None, action='append')
     parser.add_argument('--no-cached', '--force', '-f',
                         action='store_false', dest='cached')
     parser.add_argument('-v', dest='verbose', action='store_true',
@@ -21,9 +22,15 @@ def parse_args() -> argparse.Namespace:
 
 def query(args: argparse.Namespace) -> Tuple[str, float, Any]:
     start = time.monotonic()
-    res = requests.get(f'{args.url}/catch',
-                       params={'target': args.target,
-                               'cached': args.cached})
+
+    params = {
+        'target': args.target,
+        'cached': args.cached
+    }
+    if args.source is not None:
+        params['sources'] = args.source
+
+    res = requests.get(f'{args.url}/catch', params=params)
     data = res.json()
     if args.verbose:
         print(data)
