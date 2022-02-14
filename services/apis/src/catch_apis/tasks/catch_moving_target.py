@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 import uuid
 import logging
 
@@ -11,9 +11,23 @@ from ..services.message import (Message, listen_for_task_messages,
                                 TaskStatus)
 from ..config.logging import get_logger
 
+# List of surveys to search by default.  The `catch` library will search all
+# survey sources by default, but we force `catch-apis` to be specific.  This
+# avoids the `catch` library searching data sources that may be in development
+# or otherwise not yet released to the public.
+QUERY_SOURCES: List[str] = [
+    'neat_palomar_tricam',
+    'neat_maui_geodss',
+    'skymapper',
+    'ps1dr2',
+    'catalina_bigelow',
+    'catalina_lemmon',
+    'catalina_kittpeak'
+]
+
 
 def catch_moving_target(job_id: uuid.UUID, target: str,
-                        sources: Union[str, None],
+                        sources: Union[List[str], None],
                         uncertainty_ellipse: bool, padding: float,
                         cached: bool) -> None:
     """Search for target in CATCH surveys.
@@ -27,8 +41,8 @@ def catch_moving_target(job_id: uuid.UUID, target: str,
     target : string
         Target target.
 
-    sources : string or None
-        Name of observation sources to search or ``None`` to search all
+    sources : list of strings or None
+        Names of observation sources to search or ``None`` to search all
         sources.
 
     uncertainty_ellipse : bool
@@ -53,12 +67,14 @@ def catch_moving_target(job_id: uuid.UUID, target: str,
     )
     msg.publish()
 
+    _sources: List[str] = QUERY_SOURCES if sources is None else sources
+
     exc: Exception
     try:
         with catch_manager() as catch:
             catch.uncertainty_ellipse = uncertainty_ellipse
             catch.padding = padding
-            catch.query(target, job_id, sources=sources,
+            catch.query(target, job_id, sources=_sources,
                         cached=cached)
 
         msg.status = TaskStatus.SUCCESS
