@@ -34,6 +34,9 @@ paths:
                 - neat_maui_geodss
                 - skymapper
                 - ps1dr2
+                - catalina_bigelow
+                - catalina_lemmon
+                - catalina_kittpeak
         - name: uncertainty_ellipse
           in: query
           description: Enable searches account for uncertainty ellipse using a polygonal approximation.
@@ -89,6 +92,9 @@ paths:
                             - neat_maui_geodss
                             - skymapper
                             - ps1dr2
+                            - catalina_bigelow
+                            - catalina_lemmon
+                            - catalina_kittpeak
                       uncertainty_ellipse:
                         description: Enable searches account for uncertainty ellipse using a polygonal approximation.
                         type: boolean
