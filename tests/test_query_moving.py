@@ -30,7 +30,6 @@ COMPARE_KEYS = ['airmass', 'date', 'ddec', 'dec', 'delta', 'dra', 'drh',
                 'source_name', 'true_anomaly', 'unc_a', 'unc_b', 'unc_theta',
                 'vangle', 'vmag']
 
-
 # Number of matches updated 2022 Feb 6.  One target for each regex in
 # src/services/query.py, except for the packed designations.
 TARGET_MATCHES = [
