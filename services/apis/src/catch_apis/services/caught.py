@@ -1,16 +1,33 @@
 import uuid
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 from astropy.time import Time
-from catch.model import Found, Observation, SkyMapper
+from catch.model import Found, Observation, SkyMapper, PS1DR2
 
 from .catch_manager import Catch, catch_manager
 
 
-SKYMAPPER_IMAGE_TYPES = {
-    'fs': 'Faint Survey',
+SKYMAPPER_IMAGE_TYPES: Dict[str, str] = {
+    'fs': 'Shallow Survey',
     'ms': 'Main Survey',
     'std': 'Standard Field'
+}
+
+# attributes to serialize from all survey-specific data objects, keyed by field
+# prefix (__field_prefix__ attribute on survey objects).
+SURVEY_SPECIFIC_FIELDS: Dict[str, List[str]] = {
+    'css': ['telescope'],
+    'ps1': [
+        "frame_id",
+        "projection_id",
+        "skycell_id",
+    ],
+    'skymapper': [
+        'field_id',
+        'image_type',
+        'sb_mag',
+        'zpapprox',
+    ]
 }
 
 
@@ -41,7 +58,7 @@ def caught(job_id: uuid.UUID) -> List[Dict[str, Any]]:
         found: Found
         obs: Observation
         for (found, obs) in data:
-            caught_observations.append({
+            caught_obs: Dict[str, Union[str, float, int, None]] = {
                 'product_id': obs.product_id,
                 'source': obs.source,
                 'source_name': obs.__data_source_name__,
@@ -52,7 +69,6 @@ def caught(job_id: uuid.UUID) -> List[Dict[str, Any]]:
                 "seeing": obs.seeing,
                 "airmass": obs.airmass,
                 "maglimit": obs.maglimit,
-                "skymapper_image_type": skymapper_image_type(obs),
                 'date': Time(found.mjd, format='mjd').iso,
                 "rh": found.rh,
                 "delta": found.delta,
@@ -73,7 +89,20 @@ def caught(job_id: uuid.UUID) -> List[Dict[str, Any]]:
                 "archive_url": obs.archive_url,
                 "cutout_url": obs.cutout_url(found.ra, found.dec),
                 "preview_url": obs.preview_url(found.ra, found.dec),
-            })
+            }
+
+            # survey-specific fields
+            prefix: str = getattr(obs, '__field_prefix__')
+            for field in SURVEY_SPECIFIC_FIELDS.get(prefix, []):
+                key = f"{prefix}:{field}"
+                if key == 'skymapper:image_type':
+                    value = skymapper_image_type(obs)
+                else:
+                    value = getattr(obs, field)
+
+                caught_obs[key] = value
+
+            caught_observations.append(caught_obs)
 
     return caught_observations
 
