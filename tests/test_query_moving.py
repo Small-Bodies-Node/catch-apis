@@ -16,6 +16,7 @@ import pytest
 from sseclient import SSEClient
 
 
+# Only NEAT GEODSS will be searched
 TARGET_EQUIVALENCIES = [
     ('65P', '65P/Gunn'),
     ('C/1995 O1', 'C/1995 O1 (Hale-Bopp)'),
@@ -29,7 +30,6 @@ COMPARE_KEYS = ['airmass', 'date', 'ddec', 'dec', 'delta', 'dra', 'drh',
                 'phase', 'ra', 'rh', 'sangle', 'seeing', 'source',
                 'source_name', 'true_anomaly', 'unc_a', 'unc_b', 'unc_theta',
                 'vangle', 'vmag']
-
 
 # Number of matches updated 2022 Feb 6.  One target for each regex in
 # src/services/query.py, except for the packed designations.
@@ -105,10 +105,11 @@ def _query(target: str, cached: bool, source: Optional[str] = None
 
 @pytest.mark.parametrize('targets', TARGET_EQUIVALENCIES)
 def test_equivalencies(targets: List[str]) -> None:
-    q0 = _query(targets[0], True)[0]['data']
+    source = 'neat_maui_geodss'
+    q0 = _query(targets[0], True, source=source)[0]['data']
     assert len(q0) > 0
     for target in targets[1:]:
-        q = _query(target, True)[0]['data']
+        q = _query(target, True, source=source)[0]['data']
         for a, b in zip(q0, q):
             for k in COMPARE_KEYS:
                 assert a[k] == b[k]

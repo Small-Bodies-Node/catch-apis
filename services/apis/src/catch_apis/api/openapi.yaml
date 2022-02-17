@@ -34,6 +34,9 @@ paths:
                 - neat_maui_geodss
                 - skymapper
                 - ps1dr2
+                - catalina_bigelow
+                - catalina_lemmon
+                - catalina_kittpeak
         - name: uncertainty_ellipse
           in: query
           description: Enable searches account for uncertainty ellipse using a polygonal approximation.
@@ -89,6 +92,9 @@ paths:
                             - neat_maui_geodss
                             - skymapper
                             - ps1dr2
+                            - catalina_bigelow
+                            - catalina_lemmon
+                            - catalina_kittpeak
                       uncertainty_ellipse:
                         description: Enable searches account for uncertainty ellipse using a polygonal approximation.
                         type: boolean
@@ -177,9 +183,41 @@ paths:
                           type: number
                           description: Detection limit, mag.
                           nullable: true
-                        skymapper_image_type:
+                        "css:telescope":
                           type: string
-                          description: "Type of image: Fast Survey, Main Survey, Standard Field."
+                          description: Catalina Sky Survey telescope name.
+                          nullable: true
+                        "ps1:frame_id":
+                          type: integer
+                          description: PanSTARRS 1 survey frame/exposure identifier of the frame associated with this warp.
+                          nullable: true
+                        "ps1:projection_id":
+                          type: integer
+                          description: PanSTARRS 1 projection cell identifier.
+                          nullable: true
+                        "ps1:skycell_id":
+                          type: integer
+                          description: PanSTARRS 1 survey skycell region identifier.
+                          nullable: true
+                        "skymapper:field_id":
+                          type: integer
+                          description: SkyMapper survey field identifier.
+                          nullable: true
+                        "skymapper:image_type":
+                          type: string
+                          description: SkyMapper image type.
+                          enum:
+                            - Shallow Survey
+                            - Main Survey
+                            - Standard Field
+                          nullable: true
+                        "skymapper:sb_mag":
+                          type: number
+                          description: SkyMapper image surface brightness estimate (ABmag).
+                          nullable: true
+                        "skymapper:zpapprox":
+                          type: number
+                          description: SkyMapper approximate photometric zeropoint for the exposure.
                           nullable: true
                         date:
                           type: string
