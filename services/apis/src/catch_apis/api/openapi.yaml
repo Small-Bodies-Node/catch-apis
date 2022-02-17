@@ -11,7 +11,7 @@ paths:
       tags:
         - Moving Target Query
       summary: Query PDS SBN the survey database for data covering the requested target's ephemeris position.
-      operationId: src.api.moving_target_query
+      operationId: catch_apis.api.moving_target_query
       parameters:
         - name: target
           in: query
@@ -71,9 +71,12 @@ paths:
                   query:
                     type: object
                     properties:
-                      designation:
+                      target:
                         type: string
-                        description: The designation of the target.
+                        description: The search target.
+                      type:
+                        type: string
+                        description: "Target type, e.g., asteroid, comet, or interstellar object."
                       source:
                         nullable: true
                         description: Search is limited to these sources.
@@ -108,7 +111,7 @@ paths:
       tags:
         - Moving Target Query
       summary: Get moving target query results.
-      operationId: src.api.caught
+      operationId: catch_apis.api.caught
       parameters:
         - name: job_id
           in: path

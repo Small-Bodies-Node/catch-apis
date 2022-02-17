@@ -8,6 +8,7 @@ from typing import Optional, List
 from connexion import request
 from .. import services
 from ..config.logging import get_logger
+from .. import __version__
 
 
 def moving_target_query(target: str, source: Optional[List[str]] = None,
@@ -37,21 +38,26 @@ def moving_target_query(target: str, source: Optional[List[str]] = None,
     logger: logging.Logger = get_logger()
     job_id: uuid.UUID = uuid.uuid4()
 
+    target_type: str
+    sanitized_target: str
+    target_type, sanitized_target = services.parse_target_name(target)
+
     result: dict = {
         'query': {
-            'target': target,
+            'target': sanitized_target,
+            'type': target_type,
             'source': source,
             'cached': cached,
             'uncertainty_ellipse': uncertainty_ellipse,
             'padding': padding
         },
         'job_id': job_id.hex,
-        'version': '2.0.0'
+        'version': __version__
     }
 
     status: services.QueryStatus
     status, result['queue_full'] = services.moving_target_query(
-        job_id, target, source=source, uncertainty_ellipse=uncertainty_ellipse,
+        job_id, sanitized_target, source=source, uncertainty_ellipse=uncertainty_ellipse,
         padding=padding, cached=cached)
 
     parsed: tuple = urllib.parse.urlsplit(request.url_root)

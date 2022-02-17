@@ -15,6 +15,7 @@ node_modules
 catch-images
 **/mpcdata/*
 build/**
+.tox
 
 # Flask_MonitorDasboard
 .dashboard.db
