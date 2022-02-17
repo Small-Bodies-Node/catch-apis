@@ -288,7 +288,7 @@ paths:
       tags:
         - CATCH Status
       summary: Summary of data sources in CATCH's database.
-      operationId: catch_apis.api.sources
+      operationId: catch_apis.api.status.sources
       responses:
         "200":
           description: Data source summaries.
@@ -318,3 +318,6 @@ paths:
                       type: string
                       description: Latest image stop time, UTC.
                       nullable: true
+                    updated:
+                      type: string
+                      description: Time of last update, UTC.

@@ -18,6 +18,7 @@ def sources() -> List[Dict[str, Union[str, int, None]]]:
                 'source_name': summary.name,
                 'count': summary.count,
                 'start_date': summary.start_date,
-                'stop_date': summary.stop_date
+                'stop_date': summary.stop_date,
+                'updated': summary.updated,
             })
     return data

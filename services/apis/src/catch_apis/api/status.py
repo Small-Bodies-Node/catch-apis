@@ -11,4 +11,4 @@ from .. import services
 def sources() -> List[Dict[str, Union[str, int, None]]]:
     """Controller for returning caught data."""
 
-    return services.sources()
+    return services.status.sources()
