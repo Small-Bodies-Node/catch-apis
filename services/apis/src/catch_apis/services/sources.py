@@ -4,6 +4,7 @@ from catch.model import SurveyStats
 
 from .catch_manager import Catch, catch_manager
 
+
 def sources() -> List[Dict[str, Union[str, int, None]]]:
     """Get source summary statistics from CATCH database."""
 
