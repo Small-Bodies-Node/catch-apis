@@ -20,8 +20,8 @@ def moving_target_query(job_id: UUID, target: str,
                         sources: Optional[List[str]],
                         uncertainty_ellipse: bool,
                         padding: float, cached: bool
-                        ) -> Tuple[QueryStatus, bool]:
-    """Engueue a query or copy cached results.
+                        ) -> QueryStatus:
+    """Enqueue a query or copy cached results.
 
 
     Parameters
@@ -45,9 +45,6 @@ def moving_target_query(job_id: UUID, target: str,
     Returns
     -------
     status : QueryStatus
-
-    queue_full : bool
-        ``True`` if the query queue is full.
 
     """
 
@@ -78,4 +75,4 @@ def moving_target_query(job_id: UUID, target: str,
                           )
             status = QueryStatus.QUEUED
 
-    return status, queue.full
+    return status
