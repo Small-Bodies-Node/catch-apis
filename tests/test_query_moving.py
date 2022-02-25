@@ -127,3 +127,37 @@ def test_cached_queries(source: str, target: str, number: int) -> None:
     q, queued = _query(target, True, source=source)
     assert not queued
     assert q['count'] == number
+
+
+def test_status_sources():
+    res = requests.get('http://127.0.0.1:5000/status/sources')
+    data = res.json()
+    neat_palomar_tricam, = [row for row in data
+                            if row['source'] == 'neat_palomar_tricam']
+    assert neat_palomar_tricam['count'] == 131389
+    assert neat_palomar_tricam['start_date'].startswith('2001-11-20')
+    assert neat_palomar_tricam['stop_date'].startswith('2003-03-11')
+
+
+def test_status_job_id():
+    q, queued = _query(TARGET_MATCHES[0][1],
+                       False, source=TARGET_MATCHES[0][0])
+
+    res = requests.get(f'http://127.0.0.1:5000/status/{q["job_id"]}')
+    data = res.json()
+    assert data['job_id'] == q['job_id']
+    assert data['parameters']['target'] == '65P'
+    assert not data['parameters']['uncertainty_ellipse']
+    assert data['parameters']['padding'] == 0
+    assert data['status'][0]['source'] == 'neat_maui_geodss'
+    assert data['status'][0]['source_name'] == 'NEAT Maui GEODSS'
+    assert len(data['status'][0]['date']) > 10
+    assert data['status'][0]['status'] == 'finished'
+    assert data['status'][0]['execution_time'] > 0
+    assert data['status'][0]['count'] == TARGET_MATCHES[0][2]
+
+    q, queued = _query(TARGET_MATCHES[0][1], True, source=TARGET_MATCHES[0][0])
+    res = requests.get(f'http://127.0.0.1:5000/status/{q["job_id"]}')
+    data = res.json()
+    assert data['job_id'] == q['job_id']
+    assert data['status'][0]['execution_time'] is None

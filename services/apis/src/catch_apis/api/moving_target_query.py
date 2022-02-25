@@ -52,11 +52,13 @@ def moving_target_query(target: str, sources: Optional[List[str]] = None,
             'padding': padding
         },
         'job_id': job_id.hex,
+        'queued': None,
+        'message': None,
         'version': __version__
     }
 
     status: services.QueryStatus
-    status, result['queue_full'] = services.moving_target_query(
+    status = services.moving_target_query(
         job_id, sanitized_target, sources=sources,
         uncertainty_ellipse=uncertainty_ellipse,
         padding=padding, cached=cached)

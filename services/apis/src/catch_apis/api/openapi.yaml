@@ -140,7 +140,7 @@ paths:
                     description: Number of observations that caught the target's ephemeris position.
                   job_id:
                     type: string
-                    description: Query job ID
+                    description: Query job ID.
                   data:
                     type: array
                     description: List of observations matching the target query.
@@ -181,7 +181,7 @@ paths:
                           nullable: true
                         maglimit:
                           type: number
-                          description: Detection limit, mag.
+                          description: Detection limit, mag.  Definition varies by survey.
                           nullable: true
                         "css:telescope":
                           type: string
@@ -321,3 +321,65 @@ paths:
                     updated:
                       type: string
                       description: Time of last update, UTC.
+  /status/{job_id}:
+    get:
+      tags:
+        - CATCH Status
+      summary: Query status by job_id
+      operationId: catch_apis.api.status.job_id
+      parameters:
+        - name: job_id
+          in: path
+          description: Query job ID (from /catch result).
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: CATCH query status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    description: Query job ID.
+                  parameters:
+                    type: object
+                    description: Query parameters.
+                    properties:
+                      target:
+                        description: Target query string.
+                        type: string
+                      uncertainty_ellipse:
+                        description: Was the ephemeris uncertainty ellipse used in the search?
+                        type: boolean
+                      padding:
+                        description: Ephemeris search area was increased by this amount, units of arcmin.
+                        type: number
+                  status:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source:
+                          type: string
+                          description: Observational data source key.
+                        source_name:
+                          type: string
+                          description: Observational data source name.
+                        date:
+                          type: string
+                          description: Date the query was executed.
+                        status:
+                          type: string
+                          description: Query status, e.g., in progress, errored, finished.
+                        execution_time:
+                          type: number
+                          description: Query execution time in seconds, null for queries returning cached data.
+                          nullable: true
+                        count:
+                          type: integer
+                          description: Number of observations that caught the target.
+

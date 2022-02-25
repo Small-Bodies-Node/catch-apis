@@ -1,12 +1,13 @@
 -e git+https://git@github.com/NASA-Planetary-Science/sbpy.git#egg=sbpy
--e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@v2#egg=sbsearch
--e git+https://git@github.com/Small-Bodies-Node/catch.git@v1#egg=catch
+-e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@v2.0.3#egg=sbsearch
+-e git+https://git@github.com/Small-Bodies-Node/catch.git@v1.2.0#egg=catch
 astropy==4.3.1
 astroquery==0.4.4.dev7007
 connexion==2.9.0
 Flask==1.1.4
 Flask-Cors==3.0.10
 gunicorn==20.0.4
+markupsafe==2.0.1
 numpy==1.19.*
 pds4-tools==1.3
 Pillow==8.4.0
