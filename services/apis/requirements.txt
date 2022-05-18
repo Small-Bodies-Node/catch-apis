@@ -2,7 +2,7 @@
 -e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@v2.0.3#egg=sbsearch
 -e git+https://git@github.com/Small-Bodies-Node/catch.git@v1.2.0#egg=catch
 astropy==4.3.1
-astroquery==0.4.4.dev7007
+astroquery>=0.4.5
 connexion==2.9.0
 Flask==1.1.4
 Flask-Cors==3.0.10

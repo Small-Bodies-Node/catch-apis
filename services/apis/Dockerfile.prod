@@ -1,32 +1,28 @@
 ### Pull official base image with Debian OS
 FROM python:3.8.12-slim-buster
 
-# create directory for the app user
+# Create the app user
 RUN mkdir -p /home/app
-
-# create the app user
 RUN addgroup --system app && adduser --system --group app
 
-# create the appropriate directories
+# Create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-### set environment variables
+### Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+### Install system dependencies
 RUN apt-get update && apt-get install -y \
   # Stuff for our flask app
   netcat \
-  nodejs \
-  npm \
-  # Useful stuff
+  # Stuff for S2 Geometry: https://s2geometry.io/about/platforms
   git \
   wget \
-  vim \
-  # Stuff for S2 Geometry: https://s2geometry.io/about/platforms
+  build-essential \
   libgflags-dev \
   libgoogle-glog-dev \
   libgtest-dev \
@@ -34,35 +30,23 @@ RUN apt-get update && apt-get install -y \
   swig \
   cmake
 
+COPY . .
+
+
 ### Install S2; see: https://s2geometry.io/about/platforms
-COPY ./_install_s2 .
+RUN rm -rf build
 RUN ./_install_s2
 
-### Install python dependencies
+## Install python dependencies
 RUN pip install --upgrade pip
 RUN pip install --upgrade -q -q -q setuptools wheel cython
-COPY ./requirements.txt .
 RUN mkdir /catchlibs
 RUN CFLAGS='-I/usr/local/lib/python3.8/site-packages/numpy/core/include/' \
   pip install --src /catchlibs -r requirements.txt
 
-### Copy code base into docker
-COPY . .
-RUN pip install --no-deps -e .
-
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
 RUN chown -R app:app $APP_HOME/.*
-
 USER app
 
-### Add some scripts to make trouble-shooting in container easier
-SHELL ["/bin/bash", "-c"]
-RUN source <(wget -qO- https://raw.githubusercontent.com/d-w-d/myconfig/master/quickstart.sh)  \
-  && myconfig install -y self
-
-
-### Run script that wraps nodemon on our flask app as default run action
-### override this command with 'docker run --override "/bin/bash" ...' for trouble shooting
-# ENTRYPOINT ["./_entrypoint"]
-
+# Start up command issued in docker-compose files

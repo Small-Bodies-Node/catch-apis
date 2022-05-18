@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  apis:
+    build:
+      context: ./services/apis
+      dockerfile: Dockerfile.dev
+    image: catch-dev
+    container_name: catch-apis-dev
+    command: ./_entrypoint_flask
+    volumes:
+      - ./services/apis/:/app/
+    ports:
+      - "127.0.0.1:5000:5000"
+    depends_on:
+      - redis-server
+    env_file:
+      - ./.env
+  woRQer:
+    build:
+      context: ./services/apis
+      dockerfile: Dockerfile.dev
+    image: catch-dev
+    container_name: catch-woRQer-dev
+    command: ./_entrypoint_woRQer
+    volumes:
+      - ./services/apis/:/app/
+    depends_on:
+      - redis-server
+    env_file:
+      - ./.env
+  redis-server:
+    image: redis:5
+

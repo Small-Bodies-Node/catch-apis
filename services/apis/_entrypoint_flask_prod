@@ -10,7 +10,7 @@ if [ "$DATABASE" = "postgres" ]; then
   echo "PostgreSQL started"
 fi
 
-gunicorn catch_apis.api.app \
+gunicorn src.api.app \
   --config src/config/gunicorn-flask.py \
   --name $GUNICORN_APP_NAME \
   --timeout 600 \

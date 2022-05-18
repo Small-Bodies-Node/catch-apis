@@ -15,4 +15,8 @@ fi
 #   python -m catch_apis.woRQers.woRQer &
 # done
 
-python -m catch_apis.woRQers.woRQer
+echo "PWD>>>>    $PWD"
+echo "ls >>>>    $(ls)"
+echo "src >>>>    $(ls src)"
+
+python -m src.woRQers.woRQer

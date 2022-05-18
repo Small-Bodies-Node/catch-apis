@@ -1,6 +1,6 @@
 #!/bin/bash -eu
-
-# install s2geometry library
+#
+# Script to install s2geometry library; see: https://s2geometry.io/about/platforms
 
 S2HASH=a4dddf40647c68cd0104eafc31e9c8fb247a6308
 
@@ -18,10 +18,7 @@ test ! -e CMakeLists.txt.orig && patch -i ../78.patch
 
 mkdir build
 cd build
-# cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lib ..
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
-# cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV ..
-# cmake ..
 make
 make install
 

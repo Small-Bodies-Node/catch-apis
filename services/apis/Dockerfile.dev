@@ -1,24 +1,24 @@
 ### Pull official base image with Debian OS
 FROM python:3.8.12-slim-buster
 
-### set work directory
+### Set work directory
 WORKDIR /app
 
-### set environment variables
+### Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-### install system dependencies
+### Install system dependencies
 RUN apt-get update && apt-get install -y \
   # Stuff for our flask app
   netcat \
   nodejs \
   npm \
   # Useful stuff
-  git \
-  wget \
   vim \
   # Stuff for S2 Geometry: https://s2geometry.io/about/platforms
+  git \
+  wget \
   libgflags-dev \
   libgoogle-glog-dev \
   libgtest-dev \
@@ -46,11 +46,4 @@ RUN mkdir /catchlibs
 RUN CFLAGS='-I/usr/local/lib/python3.8/site-packages/numpy/core/include/' \
   pip install --src /catchlibs -r requirements.txt
 
-### Copy and install CATCH APIs code base into docker
-COPY . .
-RUN pip install --no-deps -e .
-
-### Put init command in docker-compose file to allow woRQer and apis to share
-### this file
-# ENTRYPOINT ["SEE docker-compose.yml"]
-
+# Start up command issued in docker-compose files
