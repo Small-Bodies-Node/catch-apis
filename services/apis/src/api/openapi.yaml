@@ -37,6 +37,7 @@ paths:
                 - catalina_bigelow
                 - catalina_lemmon
                 - catalina_kittpeak
+                - spacewatch
         - name: uncertainty_ellipse
           in: query
           description: Enable searches account for uncertainty ellipse using a polygonal approximation.
@@ -95,6 +96,7 @@ paths:
                             - catalina_bigelow
                             - catalina_lemmon
                             - catalina_kittpeak
+                            - spacewatch
                       uncertainty_ellipse:
                         description: Enable searches account for uncertainty ellipse using a polygonal approximation.
                         type: boolean
