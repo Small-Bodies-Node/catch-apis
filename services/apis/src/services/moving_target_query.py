@@ -70,7 +70,7 @@ def moving_target_query(job_id: UUID, target: str,
         else:
             queue.enqueue(f=tasks.catch_moving_target,
                           args=[job_id, target,
-                                sources, uncertainty_ellipse, padding, False],
+                                sources, uncertainty_ellipse, padding, cached],
                           job_timeout=1200
                           )
             status = QueryStatus.QUEUED
