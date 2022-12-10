@@ -1,4 +1,4 @@
-# CATCH-APIs v2.1.0
+# CATCH-APIs v2.1.1
 
 An API for the Planetary Data System Small Bodies Node survey data search tool: catch comets and asteroids in wide-field sky survey data.
 
@@ -104,7 +104,7 @@ CATCH-APIs are developed and run using docker. To develop locally:
   - To run everything in prod mode, run `docker-compose -f docker-compose.prod.yml up --build`
 - DB setup:
   - The CATCH tool requires a postgresDB populated with initial data. In previous implementations, this DB was provided as a separate docker container. Now, however, we have separated the DB into its own postgres service on AWS RDS. If you want to develop this code, you therefore need to connect to the development db on our group's AWS instance (contact DWD or MSK for access), or you need to set up your own postgres instance and populate with data (see above).
-- Once everything is running in dev mode, visit http://localhost:5000/ui to see the swagger interface, and in a separate tab open to http://localhost:5000/stream
+- Once everything is running in dev mode, visit <http://localhost:5000/ui> to see the swagger interface, and in a separate tab open to <http://localhost:5000/stream>
 
 ## Adding New Data
 
