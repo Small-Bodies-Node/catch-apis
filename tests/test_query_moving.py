@@ -164,7 +164,7 @@ def test_status_job_id():
 
 
 def test_ephemeris_uncertainties_are_null():
-    # regression test for PR#xxxx
+    # regression test for #33
 
     # must be a target with undefined ephemeris uncertainties:
     q, queued = _query('108P', True, 'neat_palomar_tricam')
