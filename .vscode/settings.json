@@ -12,5 +12,6 @@
     ".catchlibs/sbsearch",
     ".catchlibs/sbpy"
   ],
-  "restructuredtext.syntaxHighlighting.disabled": true
+  "restructuredtext.syntaxHighlighting.disabled": true,
+  "python.formatting.provider": "autopep8"
 }

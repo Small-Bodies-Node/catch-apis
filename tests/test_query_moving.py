@@ -45,7 +45,7 @@ TARGET_MATCHES = [
     ('skymapper', 'A/2017 U1', 2),
     ('neat_maui_geodss', '1', 12),
     ('neat_palomar_tricam', '(2) Juno', 9),
-    ('skymapper', '1I/`Oumuamua', 2)
+    ('skymapper', '1I/`Oumuamua', 2),
 ]
 
 
@@ -161,3 +161,15 @@ def test_status_job_id():
     data = res.json()
     assert data['job_id'] == q['job_id']
     assert data['status'][0]['execution_time'] is None
+
+
+def test_ephemeris_uncertainties_are_null():
+    # regression test for #33
+
+    # must be a target with undefined ephemeris uncertainties:
+    q, queued = _query('108P', True, 'neat_palomar_tricam')
+
+    for caught in q["data"]:
+        assert caught["unc_a"] is None
+        assert caught["unc_b"] is None
+        assert caught["unc_theta"] is None

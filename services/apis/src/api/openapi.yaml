@@ -253,12 +253,15 @@ paths:
                           description: Declination rate of change, arcsec/hr.
                         unc_a:
                           type: number
+                          nullable: true
                           description: Error ellipse semi-major axis, arcsec.
                         unc_b:
                           type: number
+                          nullable: true
                           description: Error ellipse semi-minor axis, arcsec.
                         unc_theta:
                           type: number
+                          nullable: true
                           description: Error ellipse position angle (E of N), deg.
                         elong:
                           type: number
