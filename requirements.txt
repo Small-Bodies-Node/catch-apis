@@ -70,7 +70,7 @@ wcwidth==0.1.7
 webencodings==0.5.1
 werkzeug<=0.16.0
 wrapt==1.11.1
-wheel==0.35.1
+wheel==0.38.1
 -e git+git://github.com/NASA-Planetary-Science/sbpy@master#egg=sbpy
 -e git+git://github.com/Small-Bodies-Node/sbsearch.git@v1.1.8#egg=sbsearch
 -e git+git://github.com/Small-Bodies-Node/catch.git@v0.5.3#egg=catch
