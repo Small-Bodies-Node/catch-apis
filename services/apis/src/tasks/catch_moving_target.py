@@ -11,18 +11,29 @@ from ..services.message import (Message, listen_for_task_messages,
                                 TaskStatus)
 from ..config.logging import get_logger
 
-# List of surveys to search by default.  The `catch` library will search all
-# survey sources by default, but we force `catch-apis` to be specific.  This
-# avoids the `catch` library searching data sources that may be in development
-# or otherwise not yet released to the public.
-QUERY_SOURCES: List[str] = [
+# List of surveys to search, and those to search by default.  The `catch`
+# library default is to search all survey sources, but we force `catch-apis` to
+# be specific.  This avoids the `catch` library searching data sources that may
+# be in development or otherwise not yet released to the public.
+QUERY_SOURCES_ALLOWED: List[str] = [
     'neat_palomar_tricam',
     'neat_maui_geodss',
     'skymapper',
     'ps1dr2',
     'catalina_bigelow',
     'catalina_lemmon',
-    'catalina_kittpeak'
+    'catalina_bokneosurvey',
+]
+
+# As of Jan 2023, there is no data in the Bok NEO Survey, so no need to list it
+# here:
+QUERY_SOURCES_DEFAULT: List[str] = [
+    'neat_palomar_tricam',
+    'neat_maui_geodss',
+    'skymapper',
+    'ps1dr2',
+    'catalina_bigelow',
+    'catalina_lemmon',
 ]
 
 
@@ -67,7 +78,7 @@ def catch_moving_target(job_id: uuid.UUID, target: str,
     )
     msg.publish()
 
-    _sources: List[str] = QUERY_SOURCES if sources is None else sources
+    _sources: List[str] = QUERY_SOURCES_DEFAULT if sources is None else sources
 
     exc: Exception
     try:

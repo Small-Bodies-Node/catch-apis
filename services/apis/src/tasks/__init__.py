@@ -1,1 +1,1 @@
-from .catch_moving_target import catch_moving_target, QUERY_SOURCES
+from .catch_moving_target import catch_moving_target, QUERY_SOURCES_ALLOWED, QUERY_SOURCES_DEFAULT

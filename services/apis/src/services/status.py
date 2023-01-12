@@ -17,7 +17,7 @@ def sources() -> List[Dict[str, Union[str, int, None]]]:
     catch: Catch
     with catch_manager() as catch:
         for summary in catch.db.session.query(SurveyStats).all():
-            if summary.source in tasks.QUERY_SOURCES:
+            if summary.source in tasks.QUERY_SOURCES_ALLOWED:
                 data.append({
                     'source': summary.source,
                     'source_name': summary.name,

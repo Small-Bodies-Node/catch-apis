@@ -110,7 +110,15 @@ CATCH-APIs are developed and run using docker. To develop locally:
 
 Whether starting from a blank database, or a working copy, you will probably want to add some new data.
 
-[Instructions TBD]
+1. Follow `catch` library documentation for adding a new data source.
+
+2. Add the source table name to the API's list of allowed sources:
+
+   - `services/apis/src/api/openapi.yaml` at `paths./catch.get.parameters[name=sources].schema.items.enum`.
+
+   - `services/apis/src/tasks/catch_moving_target.py` at `QUERY_SOURCES_ALLOWED`, and optionally `QUERY_SOURCES_DEFAULT`.
+
+3. Optionally update tests, e.g., `tests/test_query_moving.py`.
 
 ## Testing
 

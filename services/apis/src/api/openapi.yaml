@@ -23,7 +23,7 @@ paths:
             type: string
         - name: sources
           in: query
-          description: Limit search to these data sources, otherwise search all sources.
+          description: Limit search to these data sources.
           required: false
           schema:
             type: array
@@ -36,7 +36,7 @@ paths:
                 - ps1dr2
                 - catalina_bigelow
                 - catalina_lemmon
-                - catalina_kittpeak
+                - catalina_bokneosurvey
                 - spacewatch
         - name: uncertainty_ellipse
           in: query
@@ -95,7 +95,7 @@ paths:
                             - ps1dr2
                             - catalina_bigelow
                             - catalina_lemmon
-                            - catalina_kittpeak
+                            - catalina_bokneosurvey
                             - spacewatch
                       uncertainty_ellipse:
                         description: Enable searches account for uncertainty ellipse using a polygonal approximation.
