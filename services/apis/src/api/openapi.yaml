@@ -276,6 +276,9 @@ paths:
                           type: number
                           description: Predicted visual brightness, mag.  For comet ephemerides from JPL Horizons, this value is T-mag, if available, otherwise N-mag.
                           nullable: true
+                        retrieved:
+                          type: string
+                          description: Date when the ephemeris was retrieved from the ephemeris generator, UTC.
                         archive_url:
                           type: string
                           description: URL to original archive image.
