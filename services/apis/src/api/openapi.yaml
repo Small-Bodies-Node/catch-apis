@@ -46,10 +46,12 @@ paths:
             type: boolean
         - name: padding
           in: query
-          description: Increase the search area by padding the ephemeris by this amount, in units of arcmin.
+          description: Increase the search area by padding the ephemeris by this amount, in units of arcmin (0.01 to 120).
           required: false
           schema:
             type: number
+            minimum: 0.01
+            maximum: 120
         - name: cached
           in: query
           description: Allow cached results, otherwise force a new search.
