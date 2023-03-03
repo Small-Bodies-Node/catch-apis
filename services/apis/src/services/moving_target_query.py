@@ -2,7 +2,7 @@
 
 import enum
 from uuid import UUID
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from .catch_manager import catch_manager
 from .queue import JobsQueue
@@ -55,8 +55,6 @@ def moving_target_query(job_id: UUID, target: str,
         with catch_manager() as catch:
             catch.uncertainty_ellipse = uncertainty_ellipse
             catch.padding = padding
-            print(target)
-            print(sources)
             # if catch.is_query_cached(target, source_keys=source):
             if catch.is_query_cached(target, sources=sources):
                 # copy cached results to the new job ID

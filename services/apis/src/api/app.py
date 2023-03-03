@@ -13,13 +13,11 @@ from ..config.logging import get_logger
 from ..config.exceptions import CatchException, CatchApisException
 
 app = FlaskApp(__name__, options={})
-app.add_api('openapi.yaml', base_path=ENV.BASE_HREF, validate_responses=True)
+api = app.add_api('openapi.yaml', base_path=ENV.BASE_HREF, validate_responses=True)
 CORS(app.app)
 application = app.app
 
 # openapi does not support SSE; define /stream here
-
-
 @application.route('/stream')
 def stream() -> Response:
     """Shared task messaging stream."""

@@ -35,6 +35,8 @@ def moving_target_query(target: str, sources: Optional[List[str]] = None,
 
     """
 
+    from ..api.app import api  # avoid circular import
+
     logger: logging.Logger = get_logger()
     job_id: uuid.UUID = uuid.uuid4()
 
@@ -42,11 +44,23 @@ def moving_target_query(target: str, sources: Optional[List[str]] = None,
     sanitized_target: str
     target_type, sanitized_target = services.parse_target_name(target)
 
+    # default: search all sources allowed in the API spec
+    catch_parameters: list = api.specification.raw['paths']['/catch']['get']['parameters']
+    _sources: List[str] = [
+        parameter["schema"]["items"]["enum"]
+        for parameter in catch_parameters
+        if parameter["name"] == "sources"
+    ][0]
+
+    # but, the user may have requested specific sources
+    if sources is not None:
+        _sources = sources
+
     result: dict = {
         'query': {
             'target': sanitized_target,
             'type': target_type,
-            'sources': sources,
+            'sources': _sources,
             'cached': cached,
             'uncertainty_ellipse': uncertainty_ellipse,
             'padding': padding
@@ -59,7 +73,7 @@ def moving_target_query(target: str, sources: Optional[List[str]] = None,
 
     status: services.QueryStatus
     status = services.moving_target_query(
-        job_id, sanitized_target, sources=sources,
+        job_id, sanitized_target, sources=_sources,
         uncertainty_ellipse=uncertainty_ellipse,
         padding=padding, cached=cached)
 
