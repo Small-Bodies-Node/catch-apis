@@ -35,7 +35,7 @@ def moving_target_query(target: str, sources: Optional[List[str]] = None,
 
     """
 
-    from ..api.app import api  # avoid circular import
+    from ..api.app import allowed_sources  # avoid circular import
 
     logger: logging.Logger = get_logger()
     job_id: uuid.UUID = uuid.uuid4()
@@ -45,12 +45,7 @@ def moving_target_query(target: str, sources: Optional[List[str]] = None,
     target_type, sanitized_target = services.parse_target_name(target)
 
     # default: search all sources allowed in the API spec
-    catch_parameters: list = api.specification.raw['paths']['/catch']['get']['parameters']
-    _sources: List[str] = [
-        parameter["schema"]["items"]["enum"]
-        for parameter in catch_parameters
-        if parameter["name"] == "sources"
-    ][0]
+    _sources = allowed_sources
 
     # but, the user may have requested specific sources
     if sources is not None:

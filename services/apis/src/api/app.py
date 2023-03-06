@@ -18,6 +18,13 @@ api = app.add_api('openapi.yaml', base_path=ENV.BASE_HREF,
 CORS(app.app)
 application = app.app
 
+# extract the allowed sources from the API spec.
+allowed_sources = [
+    parameter["schema"]["items"]["enum"]
+    for parameter in api.specification.raw['paths']['/catch']['get']['parameters']
+    if parameter["name"] == "sources"
+][0]
+
 # openapi does not support SSE; define /stream here
 
 

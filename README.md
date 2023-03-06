@@ -116,8 +116,6 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
    - `services/apis/src/api/openapi.yaml` at `paths./catch.get.parameters[name=sources].schema.items.enum`.
 
-   - `services/apis/src/tasks/catch_moving_target.py` at `QUERY_SOURCES_ALLOWED`, and optionally `QUERY_SOURCES_DEFAULT`.
-
 3. Optionally update tests, e.g., `tests/test_query_moving.py`.
 
 ## Testing
