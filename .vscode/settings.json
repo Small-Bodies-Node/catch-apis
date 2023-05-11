@@ -13,5 +13,8 @@
     ".catchlibs/sbpy"
   ],
   "restructuredtext.syntaxHighlighting.disabled": true,
-  "python.formatting.provider": "autopep8"
+  "python.formatting.provider": "none",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  }
 }
