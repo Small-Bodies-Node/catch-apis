@@ -12,12 +12,14 @@ from .. import tasks
 def sources() -> List[Dict[str, Union[str, int, None]]]:
     """Get source summary statistics from CATCH database."""
 
+    from ..api.app import allowed_sources  # avoid circular import
+
     data: List[Dict[str, Union[str, int, None]]] = []
 
     catch: Catch
     with catch_manager() as catch:
         for summary in catch.db.session.query(SurveyStats).all():
-            if summary.source in tasks.QUERY_SOURCES_ALLOWED:
+            if summary.source in allowed_sources:
                 data.append({
                     'source': summary.source,
                     'source_name': summary.name,

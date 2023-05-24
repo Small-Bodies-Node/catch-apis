@@ -49,13 +49,15 @@ TARGET_MATCHES = [
 ]
 
 
-def _query(target: str, cached: bool, source: Optional[str] = None
+def _query(target: str, cached: bool, source: Optional[str] = None, **kwargs
            ) -> Tuple[Any, bool]:
 
     parameters = {
         'target': target,
         'cached': cached
     }
+    parameters.update(kwargs)
+
     if source is not None:
         parameters['sources'] = [source]
 
@@ -128,6 +130,27 @@ def test_cached_queries(source: str, target: str, number: int) -> None:
     assert not queued
     assert q['count'] == number
 
+
+def test_padding_caching():
+    source = "neat_maui_geodss"
+    target = "65P"
+    number = 9
+
+    q, queued = _query(target, False, source=source, padding=0)
+    assert queued
+    assert q['count'] == number
+
+    q, queued = _query(target, True, source=source, padding=0)
+    assert not queued
+    assert q['count'] == number
+
+    q, queued = _query(target, False, source=source, padding=0.001)
+    assert queued
+    assert q['count'] == number
+
+    q, queued = _query(target, True, source=source, padding=0.001)
+    assert not queued
+    assert q['count'] == number
 
 def test_status_sources():
     res = requests.get('http://127.0.0.1:5000/status/sources')

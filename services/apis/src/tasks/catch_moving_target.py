@@ -43,7 +43,6 @@ def catch_moving_target(job_id: uuid.UUID, target: str,
     """
 
     from ..api.app import allowed_sources  # avoid circular import
-    
 
     logger: logging.Logger = get_logger()
 
