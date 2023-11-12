@@ -2,7 +2,7 @@
 Entry point to Flask-Connexion API
 """
 
-from typing import Tuple
+from typing import Tuple, List
 from connexion import FlaskApp
 from flask_cors import CORS
 from flask import Response
@@ -18,8 +18,10 @@ api = app.add_api('openapi.yaml', base_path=ENV.BASE_HREF,
 CORS(app.app)
 application = app.app
 
+version: str = api.specification.raw["info"]["version"]
+
 # extract the allowed sources from the API spec.
-allowed_sources = [
+allowed_sources: List[str] = [
     parameter["schema"]["items"]["enum"]
     for parameter in api.specification.raw['paths']['/catch']['get']['parameters']
     if parameter["name"] == "sources"

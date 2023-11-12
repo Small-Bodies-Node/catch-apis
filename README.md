@@ -1,4 +1,4 @@
-# CATCH-APIs v2.1.1
+# CATCH-APIs v2.2.0dev
 
 An API for the Planetary Data System Small Bodies Node survey data search tool: catch comets and asteroids in wide-field sky survey data.
 

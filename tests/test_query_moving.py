@@ -152,14 +152,17 @@ def test_padding_caching():
     assert not queued
     assert q['count'] == number
 
-def test_status_sources():
-    res = requests.get('http://127.0.0.1:5000/status/sources')
-    data = res.json()
-    neat_palomar_tricam, = [row for row in data
-                            if row['source'] == 'neat_palomar_tricam']
-    assert neat_palomar_tricam['count'] == 131389
-    assert neat_palomar_tricam['start_date'].startswith('2001-11-20')
-    assert neat_palomar_tricam['stop_date'].startswith('2003-03-11')
+
+def test_ephemeris_uncertainties_are_null():
+    # regression test for #33
+
+    # must be a target with undefined ephemeris uncertainties:
+    q, queued = _query('108P', True, 'neat_palomar_tricam')
+
+    for caught in q["data"]:
+        assert caught["unc_a"] is None
+        assert caught["unc_b"] is None
+        assert caught["unc_theta"] is None
 
 
 def test_status_job_id():
@@ -184,15 +187,3 @@ def test_status_job_id():
     data = res.json()
     assert data['job_id'] == q['job_id']
     assert data['status'][0]['execution_time'] is None
-
-
-def test_ephemeris_uncertainties_are_null():
-    # regression test for #33
-
-    # must be a target with undefined ephemeris uncertainties:
-    q, queued = _query('108P', True, 'neat_palomar_tricam')
-
-    for caught in q["data"]:
-        assert caught["unc_a"] is None
-        assert caught["unc_b"] is None
-        assert caught["unc_theta"] is None

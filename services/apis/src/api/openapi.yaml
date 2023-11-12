@@ -3,8 +3,8 @@ servers:
   - url: https://catch.astro.umd.edu/
 info:
   title: CATCH APIs
-  version: "2.0.0"
-  description: API for finding comets and asteroids in wide-field sky survey data.
+  version: "2.1.0"
+  description: API for finding comets, asteroids, and fixed targets in wide-field sky survey data.
 paths:
   /catch:
     get:
@@ -69,6 +69,9 @@ paths:
                   message:
                     type: string
                     description: Text message for the user.
+                  version:
+                    type: string
+                    description: API version
                   queued:
                     type: boolean
                     description: true if a search has been queued, false if the results are ready/
@@ -145,6 +148,9 @@ paths:
                   job_id:
                     type: string
                     description: Query job ID.
+                  version:
+                    type: string
+                    description: API version
                   data:
                     type: array
                     description: List of observations matching the target query.
@@ -331,6 +337,169 @@ paths:
                     updated:
                       type: string
                       description: Time of last update, UTC.
+  /fixed/point:
+    get:
+      tags:
+        - Fixed target query
+      summary: Single point fixed target searches.
+      operationId: src.api.fixed_target_query.point
+      parameters:
+        - name: ra
+          in: query
+          description: Right ascension.
+          example: "05:34:32.0"
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+        - name: dec
+          in: query
+          description: Declination.
+          example: "+22 00 48"
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+        - name: sources
+          in: query
+          description: Limit search to these data sources.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - neat_palomar_tricam
+                - neat_maui_geodss
+                - skymapper
+                - ps1dr2
+                - catalina_bigelow
+                - catalina_lemmon
+                - catalina_bokneosurvey
+                - spacewatch
+      responses:
+        "200":
+          description: Query results.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message for the user.
+                  version:
+                    type: string
+                    description: API version
+                  query:
+                    type: object
+                    description: Query parameters used.
+                    properties:
+                      ra:
+                        type: string
+                        description: Right ascension.
+                      dec:
+                        type: string
+                        description: Declination.
+                      sources:
+                        description: Search was limited to these sources.
+                        type: array
+                        nullable: true
+                        items:
+                          type: string
+                  data:
+                    type: array
+                    description: List of observations matching the query.
+                    items:
+                      type: object
+                      description: Observation and found object metadata.
+                      properties:
+                        product_id:
+                          type: string
+                          description: Unique data product identifier, format varies by data source.
+                        source:
+                          type: string
+                          description: Observational data source key.
+                        source_name:
+                          type: string
+                          description: Observational data source name.
+                        mjd_start:
+                          type: number
+                          description: Shutter open, modified Julian date, UTC.
+                        mjd_stop:
+                          type: number
+                          description: Shutter close, modified Julian date, UTC.
+                        filter:
+                          type: string
+                          description: Filter/bandpass.
+                          nullable: true
+                        exposure:
+                          type: number
+                          description: Exposure time, s.
+                          nullable: true
+                        seeing:
+                          type: number
+                          description: Point source FWHM, arcsec.
+                          nullable: true
+                        airmass:
+                          type: number
+                          description: Airmass of observation.
+                          nullable: true
+                        maglimit:
+                          type: number
+                          description: Detection limit, mag.  Definition varies by survey.
+                          nullable: true
+                        "css:telescope":
+                          type: string
+                          description: Catalina Sky Survey telescope name.
+                          nullable: true
+                        "ps1:frame_id":
+                          type: integer
+                          description: PanSTARRS 1 survey frame/exposure identifier of the frame associated with this warp.
+                          nullable: true
+                        "ps1:projection_id":
+                          type: integer
+                          description: PanSTARRS 1 projection cell identifier.
+                          nullable: true
+                        "ps1:skycell_id":
+                          type: integer
+                          description: PanSTARRS 1 survey skycell region identifier.
+                          nullable: true
+                        "skymapper:field_id":
+                          type: integer
+                          description: SkyMapper survey field identifier.
+                          nullable: true
+                        "skymapper:image_type":
+                          type: string
+                          description: SkyMapper image type.
+                          enum:
+                            - Shallow Survey
+                            - Main Survey
+                            - Standard Field
+                          nullable: true
+                        "skymapper:sb_mag":
+                          type: number
+                          description: SkyMapper image surface brightness estimate (ABmag).
+                          nullable: true
+                        "skymapper:zpapprox":
+                          type: number
+                          description: SkyMapper approximate photometric zeropoint for the exposure.
+                          nullable: true
+                        date:
+                          type: string
+                          description: Mid-time of the observation, UTC.
+                        archive_url:
+                          type: string
+                          description: URL to original archive image.
+                          nullable: true
+                        cutout_url:
+                          type: string
+                          description: URL to cutout around target ephemeris.
+                          nullable: true
+                        preview_url:
+                          type: string
+                          description: URL to preview cutout image in web format.
+                          nullable: true
   /status/{job_id}:
     get:
       tags:
@@ -355,6 +524,9 @@ paths:
                   job_id:
                     type: string
                     description: Query job ID.
+                  version:
+                    type: string
+                    description: API version
                   parameters:
                     type: object
                     description: Query parameters.
