@@ -18,15 +18,18 @@ def sources() -> List[Dict[str, Union[str, int, None]]]:
 def job_id(job_id: str) -> Union[dict, Tuple[str, int]]:
     """Controller for returning job ID status."""
 
+    from ..api.app import version  # avoid circular import
+
     try:
         _job_id: uuid.UUID = uuid.UUID(job_id, version=4)
     except ValueError:
-        return 'Invalid job ID', 400
+        return "Invalid job ID", 400
 
     parameters, status = services.status.job_id(_job_id)
 
     return {
-        'job_id': job_id,
-        'parameters': parameters,
-        'status': status
+        "job_id": job_id,
+        "version": version,
+        "parameters": parameters,
+        "status": status,
     }

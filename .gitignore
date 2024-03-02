@@ -16,6 +16,7 @@ catch-images
 **/mpcdata/*
 build/**
 .tox
+.hypothesis
 
 # Flask_MonitorDasboard
 .dashboard.db

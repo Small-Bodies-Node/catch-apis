@@ -1,5 +1,5 @@
--e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@v2.0.4#egg=sbsearch
--e git+https://git@github.com/Small-Bodies-Node/catch.git@v1.2.6#egg=catch
+-e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@fixedtargetsearches-2023.11#egg=sbsearch
+-e git+https://git@github.com/Small-Bodies-Node/catch.git@fixed-target-searches-2023.11#egg=catch
 astropy==5.1.1
 astroquery>=0.4.5
 connexion==2.9.0

@@ -1,19 +1,12 @@
 """Service provider for moving target queries."""
 
-import enum
 from uuid import UUID
 from typing import List, Optional
 
 from .catch_manager import catch_manager
 from .queue import JobsQueue
 from .. import tasks
-
-
-class QueryStatus(enum.Enum):
-    UNDEFINED = 'undefined'
-    SUCCESS = 'success'
-    QUEUED = 'queued'
-    QUEUEFULL = 'queue full'
+from ..config.query_status import QueryStatus
 
 
 def moving_target_query(job_id: UUID, target: str,
@@ -26,6 +19,9 @@ def moving_target_query(job_id: UUID, target: str,
 
     Parameters
     ----------
+    job_id : `UUID`
+        Unique job identifier.
+
     target : string
         The target target.
 
