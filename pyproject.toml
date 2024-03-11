@@ -1,0 +1,39 @@
+[project]
+name = "catch_apis"
+description = "API for the CATCH program, used to search astronomical survey data."
+readme = "README.md"
+authors = [
+    { name = "Michael S. P. Kelley", email = "msk@astro.umd.edu" },
+    { name = "Dan Darg", email = "ddarg@umd.edu" }
+]
+license = { text = "BSD 3-Clause License" }
+dependencies = [
+    "catch~=1.3",
+    "psycopg2-binary~=2.8",
+    "connexion[flask,swagger-ui,uvicorn]~=3.0",
+    "gunicorn~=21.2",
+    "redis~=4.1",
+    "requests~=2.27.0",
+    "rq~=1.1",
+    "python-dotenv~=1.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+homepage = "https://github.com/Small-Bodies-Node/catch-apis"
+
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = 'setuptools.build_meta'
+
+[tool.setuptools_scm]
+write_to = "src/catch_apis/_version.py"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+catch-apis-webapp = "catch_apis.app:__main__"

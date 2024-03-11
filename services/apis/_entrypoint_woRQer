@@ -1,3 +1,0 @@
-#!/bin/sh
-
-nodemon -w './**' -e py,yaml --exec python3 -m src.woRQers.woRQer

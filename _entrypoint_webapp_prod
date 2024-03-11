@@ -1,0 +1,7 @@
+#!/bin/sh
+
+gunicorn catch_apis.app \
+  --config src/catch_apis/config/gunicorn_flask.py \
+  --name $GUNICORN_APP_NAME \
+  --timeout 600 \
+  --bind '0.0.0.0:'$API_PORT
