@@ -196,7 +196,7 @@ CATCH-APIs may be developed and run using docker. To develop locally:
 ### Without Docker
 
 - `cp .env-template .env` and edit to suit your needs.
-- Build a virtual environment for development: `bash _build_venv`
+- Build a virtual environment for development: `_build_venv`
 - `deactivate` if already running a virtual environment
 - `source _activate`
 - Follow `catch` database setup instructions, or start from a previous database
