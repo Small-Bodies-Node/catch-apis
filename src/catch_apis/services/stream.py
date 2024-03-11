@@ -1,25 +1,39 @@
 """Message stream data."""
+
 from typing import Iterator
+import time
 
 from ..config import ENV
 from .queue import RedisConnection
 
 
-def messages() -> Iterator[str]:
+def messages(timeout: int = 0) -> Iterator[str]:
     """Iterator for all CATCH-APIs task messages.
 
     Listens to redis task messaging stream, prints the messages.
+
+
+    Parameters
+    ----------
+    timeout : int, optional
+        Number of seconds to loop before timing out.  If 0, then only time out
+        after ENV.STREAM_TIMEOUT seconds of continuous keep alive messages.
 
     """
 
     redis: RedisConnection = RedisConnection()
 
     last: bytes = b'0'
+    start_time: float = time.monotonic()
     wait: int = 3  # seconds between keep alive messages
     count: int = 0  # number of consecutive keep alive messages
     while True:
         message = redis.xread({ENV.REDIS_TASK_MESSAGES: last},
                               count=1, block=wait * 1000)
+
+        if timeout > 0 and (time.monotonic() - start_time) > timeout:
+            break
+
         if len(message) == 0:
             count += 1
             if count > (ENV.STREAM_TIMEOUT // wait):
