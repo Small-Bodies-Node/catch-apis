@@ -1,3 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 pip freeze
-nodemon -w './**' -e py,yaml --exec python3 -m catch_apis.woRQer
+
+function start_woRQer()
+{
+    python3 -m catch_apis.woRQer &
+    WORQER_PID=$!
+}
+
+WORQER_PID=
+start_woRQer
+while inotifywait -e close_write -r src --include='(yaml|py)$'; do
+    echo "Restarting woRQer after current task..."
+    kill -SIGINT $WORQER_PID
+    sleep 1
+    start_woRQer
+done

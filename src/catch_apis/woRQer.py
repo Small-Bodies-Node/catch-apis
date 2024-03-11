@@ -7,7 +7,6 @@ from rq import Worker as WoRQer, Queue, Connection
 from .config import ENV
 from .services.queue import RedisConnection
 
-
 if __name__ == "__main__":
     with Connection(RedisConnection()):
         queue_name = ENV.REDIS_JOBS
