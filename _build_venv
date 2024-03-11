@@ -12,40 +12,7 @@ $PYTHON_3_9_OR_HIGHER -m venv .venv --prompt=$APP_NAME
 source .venv/bin/activate
 pip install -q -U pip setuptools wheel
 
-pushd .
-test ! -e build && mkdir build
-cd build
-
-if [ ! -e $VIRTUAL_ENV/lib/libabsl_base.a ]; then
-    ABSEIL_TAG=20220623.1
-    test ! -e ${ABSEIL_TAG}.tar.gz && wget https://github.com/abseil/abseil-cpp/archive/refs/tags/${ABSEIL_TAG}.tar.gz
-    test ! -e abseil-cpp-${ABSEIL_TAG} && tar xzf ${ABSEIL_TAG}.tar.gz
-
-    cd abseil-cpp-${ABSEIL_TAG}
-    mkdir -p build
-    cd build
-    cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DABSL_ENABLE_INSTALL=ON -DABSL_PROPAGATE_CXX_STD=ON ..
-    make -j $(nproc)
-    make install
-    cd ../..
-fi
-
-if [ ! -e $VIRTUAL_ENV/lib/libs2.so ]; then
-    S2_TAG=v0.10.0
-    test ! -e ${S2_TAG}.tar.gz && wget https://github.com/google/s2geometry/archive/refs/tags/${S2_TAG}.tar.gz
-    test ! -e s2geometry-${S2_TAG} && tar xzf ${S2_TAG}.tar.gz
-
-    export LDFLAGS="-L$VIRTUAL_ENV/lib -Wl,-rpath=$VIRTUAL_ENV/lib"
-    export CXXFLAGS="-I$VIRTUAL_ENV/include"
-    cd s2geometry-${S2_TAG:1}
-    mkdir -p build
-    cd build
-    cmake -DWITH_PYTHON=ON -DCMAKE_PREFIX_PATH=$VIRTUAL_ENV -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -Wno-dev ..
-    make -j $(nproc)
-    make install
-fi
-
-popd
+./_build_s2
 
 pip install -e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@main#egg=sbsearch
 pip install -e git+https://git@github.com/Small-Bodies-Node/catch.git@main#egg=catch
