@@ -39,7 +39,7 @@ temp*
 # emacs backup files
 *~
 
-src/catch_apis/version.py
+src/catch_apis/_version.py
 .redundant
 .pg-init-data
 .catchlibs
