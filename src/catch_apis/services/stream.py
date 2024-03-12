@@ -23,13 +23,14 @@ def messages(timeout: int = 0) -> Iterator[str]:
 
     redis: RedisConnection = RedisConnection()
 
-    last: bytes = b'0'
+    last: bytes = b"0"
     start_time: float = time.monotonic()
     wait: int = 3  # seconds between keep alive messages
     count: int = 0  # number of consecutive keep alive messages
     while True:
-        message = redis.xread({ENV.REDIS_TASK_MESSAGES: last},
-                              count=1, block=wait * 1000)
+        message = redis.xread(
+            {ENV.REDIS_TASK_MESSAGES: last}, count=1, block=wait * 1000
+        )
 
         if timeout > 0 and (time.monotonic() - start_time) > timeout:
             break
@@ -37,15 +38,15 @@ def messages(timeout: int = 0) -> Iterator[str]:
         if len(message) == 0:
             count += 1
             if count > (ENV.STREAM_TIMEOUT // wait):
-                yield ': timeout\n\n'
+                yield ": timeout\n\n"
                 return
             else:
-                yield ': stayin\' alive\n\n'
+                yield ": stayin' alive\n\n"
                 continue
 
         content: bytes
         last, content = message[0][1][0]
-        data: str = content.get(b'data', b'').decode()
-        if data != '':
+        data: str = content.get(b"data", b"").decode()
+        if data != "":
             count = 0
-            yield f'data: {data}\n\n'
+            yield f"data: {data}\n\n"

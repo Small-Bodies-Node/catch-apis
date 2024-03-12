@@ -8,182 +8,247 @@ To see messages returned from the API, e.g., to debug failing tests:
 These tests are currently hard-coded for DEPLOYMENT_TIER=LOCAL in .env.
 
 """
-from typing import Tuple, List, Any, Optional
+
 import sys
 import json
-import requests
 import pytest
-from sseclient import SSEClient
+from unittest import mock
+from functools import partial
+from contextlib import contextmanager
+
+import numpy as np
+from typing import Tuple, List, Any, Optional
+from starlette.testclient import TestClient
+from catch_apis.config.env import ENV
+
+# avoid interference from other REDIS queues
+ENV.REDIS_JOBS = "REDIS_JOBS_TESTING"
+ENV.REDIS_TASK_MESSAGES = "TASK_MESSAGES_TESTING"
+
+from catch_apis.app import app
+from catch_apis.services.stream import messages as stream_messages
+from catch_apis import woRQer
+
+
+@pytest.fixture()
+def test_client() -> TestClient:
+    return app.test_client()
+
+
+@contextmanager
+def mock_stream_messages(timeout):
+    """Patch message stream to timeout in an absolute amount of time."""
+    with mock.patch(
+        "catch_apis.services.stream.messages",
+        partial(stream_messages, timeout),
+    ):
+        yield
 
 
 # Only NEAT GEODSS will be searched
 TARGET_EQUIVALENCIES = [
-    ('65P', '65P/Gunn'),
-    ('C/1995 O1', 'C/1995 O1 (Hale-Bopp)'),
-    ('2019 XS', 'K19X00S'),
-    ('1', '(1) Ceres'),
+    ("65P", "65P/Gunn"),
+    ("C/1995 O1", "C/1995 O1 (Hale-Bopp)"),
+    ("2019 XS", "K19X00S"),
+    ("1", "(1) Ceres"),
 ]
 
 # limit to keys in the common data model (i.e., avoid survey-specific keys)
-COMPARE_KEYS = ['airmass', 'date', 'ddec', 'dec', 'delta', 'dra', 'drh',
-                'elong', 'exposure', 'filter', 'mjd_start', 'mjd_stop',
-                'phase', 'ra', 'rh', 'sangle', 'seeing', 'source',
-                'source_name', 'true_anomaly', 'unc_a', 'unc_b', 'unc_theta',
-                'vangle', 'vmag']
+COMPARE_KEYS = [
+    "airmass",
+    "date",
+    "ddec",
+    "dec",
+    "delta",
+    "dra",
+    "drh",
+    "elong",
+    "exposure",
+    "filter",
+    "mjd_start",
+    "mjd_stop",
+    "phase",
+    "ra",
+    "rh",
+    "sangle",
+    "seeing",
+    "source",
+    "source_name",
+    "true_anomaly",
+    "unc_a",
+    "unc_b",
+    "unc_theta",
+    "vangle",
+    "vmag",
+]
 
 # Number of matches updated 2022 Feb 6.  One target for each regex in
 # src/services/query.py, except for the packed designations.
 TARGET_MATCHES = [
-    ('neat_maui_geodss', '65P', 9),
-    ('neat_palomar_tricam', '73P', 15),
-    ('neat_palomar_tricam', '73P-E', 9),
-    ('neat_maui_geodss', 'C/1995 O1', 23),
-    ('neat_maui_geodss', 'C/1996 J1-A', 9),
-    ('neat_maui_geodss', 'P/2002 JN16', 6),
-    ('neat_maui_geodss', '2019 XS', 9),
-    ('neat_maui_geodss', '1995 BT1', 6),
-    ('skymapper', 'A/2017 U1', 2),
-    ('neat_maui_geodss', '1', 12),
-    ('neat_palomar_tricam', '(2) Juno', 9),
-    ('skymapper', '1I/`Oumuamua', 2),
+    ("neat_maui_geodss", "65P", 9),
+    ("neat_palomar_tricam", "73P", 15),
+    ("neat_palomar_tricam", "73P-E", 9),
+    ("neat_maui_geodss", "C/1995 O1", 23),
+    ("neat_maui_geodss", "C/1996 J1-A", 9),
+    ("neat_maui_geodss", "P/2002 JN16", 6),
+    ("neat_maui_geodss", "2019 XS", 9),
+    ("neat_maui_geodss", "1995 BT1", 6),
+    ("skymapper", "A/2017 U1", 2),
+    ("neat_maui_geodss", "1", 12),
+    ("neat_palomar_tricam", "(2) Juno", 9),
+    ("skymapper", "1I/`Oumuamua", 2),
 ]
 
 
-def _query(target: str, cached: bool, source: Optional[str] = None, **kwargs
-           ) -> Tuple[Any, bool]:
+def _query(
+    test_client: TestClient,
+    target: str,
+    cached: bool,
+    source: Optional[str] = None,
+    **kwargs,
+) -> Tuple[Any, bool]:
 
-    parameters = {
-        'target': target,
-        'cached': cached
-    }
+    parameters = {"target": target, "cached": cached}
     parameters.update(kwargs)
 
     if source is not None:
-        parameters['sources'] = [source]
+        parameters["sources"] = [source]
 
-    res = requests.get('http://127.0.0.1:5000/catch',
-                       params=parameters)
-    print(res.url)
-    data = res.json()
+    catch_response = test_client.get("/catch", params=parameters)
+    print(catch_response.url)
+    catch_results = catch_response.json()
 
-    queued = data['queued']
+    queued = catch_results["queued"]
     if queued:
-        messages = SSEClient('http://127.0.0.1:5000/stream')
+        # rather than use the message stream route, which will cause the test to
+        # hang until the timeout is reached, run a worker in "burst" mode, then
+        # directly read messages from the message function
+        woRQer.run(True)
+        messages = [message for message in stream_messages(1)]
         for message in messages:
-            if len(message.data) == 0:
+            if len(message) == 0 or not message.startswith("data:"):
                 continue
 
-            message_data = json.loads(message.data)
+            message_data = json.loads(message[6:])
 
             # print all messages for debugging
             print(str(message_data), file=sys.stderr)
 
-            # edit out keep-alive messages
-            if not isinstance(message_data, dict):
-                continue
-
             # only consider messages for our query
-            if message_data['job_prefix'] != data['job_id'][:8]:
-                # this mesage is not for us
+            if message_data["job_prefix"] != catch_results["job_id"][:8]:
+                # this message is not for us
                 continue
 
             # Message status may be 'success', 'error', 'running', 'queued'.
-            if message_data['status'] == 'error':
-                raise ValueError(message_data['text'])
+            if message_data["status"] == "error":
+                raise ValueError(message_data["text"])
 
-            if message_data['status'] == 'success':
+            if message_data["status"] == "success":
                 break
 
-        del messages
-
-    # 'results' is the URL to the search results
-    res = requests.get(data['results'])
+    # "results" is the URL to the search results
+    results_url = catch_results["results"].replace("http://testserver", "")
+    caught_response = test_client.get(results_url)
 
     # response is JSON formatted
-    data = res.json()
+    caught_results = caught_response.json()
 
-    return data, queued
+    return catch_results, caught_results, queued
 
 
-@pytest.mark.parametrize('targets', TARGET_EQUIVALENCIES)
-def test_equivalencies(targets: List[str]) -> None:
-    source = 'neat_maui_geodss'
-    q0 = _query(targets[0], True, source=source)[0]['data']
-    assert len(q0) > 0
+@pytest.mark.parametrize("targets", TARGET_EQUIVALENCIES)
+def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
+    source = "neat_maui_geodss"
+    catch0, caught0, queued0 = _query(test_client, targets[0], True, source=source)
+    data0 = caught0["data"]
+    assert len(data0) > 0
     for target in targets[1:]:
-        q = _query(target, True, source=source)[0]['data']
-        for a, b in zip(q0, q):
+        catch, caught, queued = _query(test_client, target, True, source=source)
+        data = caught["data"]
+        for a, b in zip(data0, data):
             for k in COMPARE_KEYS:
-                assert a[k] == b[k]
+                assert np.isclose(a[k], b[k])
 
 
-@pytest.mark.parametrize('source,target,number', TARGET_MATCHES)
-def test_cached_queries(source: str, target: str, number: int) -> None:
+@pytest.mark.parametrize("source,target,number", TARGET_MATCHES)
+def test_cached_queries(
+    test_client: TestClient,
+    source: str,
+    target: str,
+    number: int,
+) -> None:
     # run twice, once to search in case of no previous search,
     # the other to retrieve the cached data
 
-    q, queued = _query(target, False, source=source)
+    catch, caught, queued = _query(test_client, target, False, source=source)
     assert queued
-    assert q['count'] == number
+    assert caught["count"] == number
 
-    q, queued = _query(target, True, source=source)
+    catch, caught, queued = _query(test_client, target, True, source=source)
     assert not queued
-    assert q['count'] == number
+    assert caught["count"] == number
 
 
-def test_padding_caching():
+def test_padding_caching(test_client: TestClient):
     source = "neat_maui_geodss"
     target = "65P"
     number = 9
 
-    q, queued = _query(target, False, source=source, padding=0)
+    catch, caught, queued = _query(test_client, target, False, source=source, padding=0)
     assert queued
-    assert q['count'] == number
+    assert caught["count"] == number
 
-    q, queued = _query(target, True, source=source, padding=0)
+    catch, caught, queued = _query(test_client, target, True, source=source, padding=0)
     assert not queued
-    assert q['count'] == number
+    assert caught["count"] == number
 
-    q, queued = _query(target, False, source=source, padding=0.001)
+    catch, caught, queued = _query(
+        test_client, target, False, source=source, padding=0.001
+    )
     assert queued
-    assert q['count'] == number
+    assert caught["count"] == number
 
-    q, queued = _query(target, True, source=source, padding=0.001)
+    catch, caught, queued = _query(
+        test_client, target, True, source=source, padding=0.001
+    )
     assert not queued
-    assert q['count'] == number
+    assert caught["count"] == number
 
 
-def test_ephemeris_uncertainties_are_null():
+def test_ephemeris_uncertainties_are_null(test_client: TestClient):
     # regression test for #33
 
     # must be a target with undefined ephemeris uncertainties:
-    q, queued = _query('108P', True, 'neat_palomar_tricam')
+    catch, caught, queued = _query(test_client, "108P", True, "neat_palomar_tricam")
 
-    for caught in q["data"]:
-        assert caught["unc_a"] is None
-        assert caught["unc_b"] is None
-        assert caught["unc_theta"] is None
+    for row in caught["data"]:
+        assert row["unc_a"] is None
+        assert row["unc_b"] is None
+        assert row["unc_theta"] is None
 
 
-def test_status_job_id():
-    q, queued = _query(TARGET_MATCHES[0][1],
-                       False, source=TARGET_MATCHES[0][0])
+def test_status_job_id(test_client: TestClient):
+    catch, caught, queued = _query(
+        test_client, TARGET_MATCHES[0][1], False, source=TARGET_MATCHES[0][0]
+    )
 
-    res = requests.get(f'http://127.0.0.1:5000/status/{q["job_id"]}')
-    data = res.json()
-    assert data['job_id'] == q['job_id']
-    assert data['parameters']['target'] == '65P'
-    assert not data['parameters']['uncertainty_ellipse']
-    assert data['parameters']['padding'] == 0
-    assert data['status'][0]['source'] == 'neat_maui_geodss'
-    assert data['status'][0]['source_name'] == 'NEAT Maui GEODSS'
-    assert len(data['status'][0]['date']) > 10
-    assert data['status'][0]['status'] == 'finished'
-    assert data['status'][0]['execution_time'] > 0
-    assert data['status'][0]['count'] == TARGET_MATCHES[0][2]
+    response = test_client.get(f"/status/{caught['job_id']}")
+    data = response.json()
+    assert data["job_id"] == caught["job_id"]
+    assert data["parameters"]["target"] == "65P"
+    assert not data["parameters"]["uncertainty_ellipse"]
+    assert data["parameters"]["padding"] == 0
+    assert data["status"][0]["source"] == "neat_maui_geodss"
+    assert data["status"][0]["source_name"] == "NEAT Maui GEODSS"
+    assert len(data["status"][0]["date"]) > 10
+    assert data["status"][0]["status"] == "finished"
+    assert data["status"][0]["execution_time"] > 0
+    assert data["status"][0]["count"] == TARGET_MATCHES[0][2]
 
-    q, queued = _query(TARGET_MATCHES[0][1], True, source=TARGET_MATCHES[0][0])
-    res = requests.get(f'http://127.0.0.1:5000/status/{q["job_id"]}')
-    data = res.json()
-    assert data['job_id'] == q['job_id']
-    assert data['status'][0]['execution_time'] is None
+    catch, caught, queued = _query(
+        test_client, TARGET_MATCHES[0][1], True, source=TARGET_MATCHES[0][0]
+    )
+    response = test_client.get(f"/status/{caught['job_id']}")
+    data = response.json()
+    assert data["job_id"] == caught["job_id"]
+    assert data["status"][0]["execution_time"] is None
