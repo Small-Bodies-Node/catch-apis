@@ -52,6 +52,8 @@ def stream() -> Response:
         },
     )
 
+
 if __name__ == "__main__":
+    # for development
     logger.info("Running " + ENV.APP_NAME)
-    app.run("catch_apis.app:app", port=ENV.API_PORT)
+    app.run("catch_apis.app:app", host=ENV.API_HOST, port=ENV.API_PORT)

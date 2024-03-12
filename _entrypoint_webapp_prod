@@ -2,8 +2,9 @@
 
 WORKERS=`test $GUNICORN_FLASK_INSTANCES -lt 0 && nproc || echo $GUNICORN_FLASK_INSTANCES`
 
-gunicorn catch_apis.app \
+gunicorn catch_apis.app:app \
   --name $GUNICORN_APP_NAME \
   --workers $WORKERS \
+  --worker-class uvicorn.workers.UvicornWorker \
   --timeout 600 \
-  --bind '0.0.0.0:'$API_PORT
+  --bind "0.0.0.0:$API_PORT"

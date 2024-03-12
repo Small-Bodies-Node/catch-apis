@@ -21,6 +21,7 @@ class ENV:
     DB_PASSWORD: str = str(os.getenv("DB_PASSWORD", ""))
     DB_DATABASE: str = str(os.getenv("DB_DATABASE", "catch"))
     BASE_HREF: str = str(os.getenv("BASE_HREF", "/"))
+    API_HOST: str = str(os.getenv("API_HOST", "0.0.0.0"))
     REDIS_HOST: str = str(os.getenv("REDIS_HOST", "localhost"))
     REDIS_TASK_MESSAGES: str = str(os.getenv("REDIS_TASK_MESSAGES", ""))
     REDIS_JOBS: str = str(os.getenv("REDIS_JOBS", ""))

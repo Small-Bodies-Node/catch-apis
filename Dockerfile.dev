@@ -54,6 +54,6 @@ RUN pip install --src=/catchlibs -r requirements.dev.txt
 
 ### Setup app directory
 WORKDIR /app/src
-RUN mkdir log
+RUN mkdir -p log
 
 # Start up command issued in docker-compose files
