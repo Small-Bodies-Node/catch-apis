@@ -12,11 +12,12 @@ $PYTHON_3_9_OR_HIGHER -m venv .venv --prompt=$APP_NAME
 source .venv/bin/activate
 pip install -q -U pip setuptools wheel
 
+# set S2PREFIX for _build_s2 and complier flags for sbsearch
 export S2PREFIX=$VIRTUAL_ENV
-./_build_s2
-
 export LDFLAGS="-L$S2PREFIX/lib -Wl,-rpath=$S2PREFIX/lib"
 export CXXFLAGS="-I$S2PREFIX/include"
+
+./_build_s2
 
 pip install -e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@main#egg=sbsearch
 pip install -e git+https://git@github.com/Small-Bodies-Node/catch.git@main#egg=catch
