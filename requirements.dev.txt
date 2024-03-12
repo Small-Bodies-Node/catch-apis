@@ -1,0 +1,3 @@
+git+https://git@github.com/Small-Bodies-Node/sbsearch.git@main#egg=sbsearch
+git+https://git@github.com/Small-Bodies-Node/catch.git@main#egg=catch
+-e .[test]

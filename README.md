@@ -162,7 +162,7 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     [MKelley](https://github.com/mkelley) or [D-W-D](https://github.com/d-w-d)
     for the data. Copy that file within your clone of this repo to
     `.pg-init-data/some-name.backup`.
-- Run docker-compose:
+- Run docker compose:
   - There are two ways to start all of the relevant containers: dev mode and
     prod mode. In development mode, the code base for the apis will be
     "bind-mounted" into the container so that changes made to the code on your
@@ -170,13 +170,13 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     woRQer processes are run via nodemon in dev mode). In prod mode, the
     code-base is simply copied over into the image, so it will not be picked up
     dynamically at run-time
-  - To run everything in development mode, run `docker-compose -f
+  - To run everything in development mode, run `docker compose -f
     docker-compose.dev.yml up --build`
     - To stop everything, enter CTRL+C once to stop processes gracefully;
       sometimes this might fail to properly shutdown everything, in which case
       you can swap `... up --build` with `... down` to re-try shutting
       everything down
-    - Also, when you bring docker-compose systems up/down, it's sometimes
+    - Also, when you bring docker compose systems up/down, it's sometimes
       helpful to also remove the stopped containers with `docker container
       prune`
   - To run everything in prod mode, run `docker-compose -f
@@ -221,29 +221,16 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
 ## Testing
 
-Partial tests are available, both unit tests and tests of a fully working API.
+Partial tests are available, both unit tests and tests of a fully working API.  Testing requirements are installed with `pip install -r requirements.dev.txt`.
 
 ### Unit tests
 
-Python unit tests require tox. `pip install tox` to install this package.
-
-Several testing environments are available. View a list of environments with `tox -l`. To run a single environment, use the `-e` optional parameter, e.g., for the Python 3.9 testing environment:
-
-```
-tox -e py39-test
-```
-
-Enable tests that require a network connection with:
-
-```
-tox -e py39-test -- --remote-data
-```
+- `pytest src/catch_apis/tests -v`
 
 ### API tests
 
-Code in the `tests/` directory is used to run "end-to-end" tests. Testing requirements are listed in `requirements.testing.txt`.
+Code in the `tests/` directory is used to run "end-to-end" tests. Testing requirements are listed in `requirements.dev.txt`.
 
-- `python3 tests/test_alive.py` to execute moving target queries and summarize
-  results (use `--help` for options).
+- `python3 tests/test_alive.py` to execute moving target queries on running instances of the webapp and woRQers (use `--help` for options).
 
-- With pytest installed, use `pytest tests` to run some simple tests on the API.
+- `pytest tests -v` to run some simple tests on the API.  They require real survey data.

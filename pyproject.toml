@@ -25,6 +25,8 @@ homepage = "https://github.com/Small-Bodies-Node/catch-apis"
 [project.optional-dependencies]
 test = [
     "pytest~=8.1",
+    "requests",
+    "sseclient",
 ]
 
 [build-system]

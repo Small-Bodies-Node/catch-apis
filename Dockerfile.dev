@@ -4,19 +4,25 @@ FROM python:3.11.8-slim-bookworm
 ### Set work directory
 WORKDIR /app
 
+### Create a virtual environment for code and c++ library installation
+ENV VIRTUAL_ENV=/opt/venv
+RUN python -m venv ${VIRTUAL_ENV} --prompt=catch-apis-dev
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+
 ### Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV LDFLAGS "-L/usr/local/lib -Wl,-rpath=/usr/local/lib"
-ENV CXXFLAGS="-I/usr/local/include"
+ENV S2PREFIX=$VIRTUAL_ENV
+ENV LDFLAGS="-L/$VIRTUAL_ENV/lib -Wl,-rpath=/$VIRTUAL_ENV/lib"
+ENV CXXFLAGS="-I/$VIRTUAL_ENV/include"
 
 ### Install system dependencies
 RUN apt-get update && apt-get install -y \
   # Stuff for our flask app
   netcat-openbsd \
-  nodejs \
-  npm \
+  inotify-tools \
   # Useful stuff
+  mg \
   vim \
   # Stuff for S2 Geometry: https://s2geometry.io/about/platforms
   git \
@@ -26,25 +32,27 @@ RUN apt-get update && apt-get install -y \
   libgtest-dev \
   libssl-dev \
   swig \
-  cmake
+  cmake \
+  g++
 
 ### Add some tools to make trouble-shooting in container easier
 SHELL ["/bin/bash", "-c"]
 RUN source <(wget -qO- https://raw.githubusercontent.com/d-w-d/myconfig/master/quickstart.sh)  \
   && myconfig install -y self
 
-### Install nodemon
-RUN npm i -g nodemon
-
 ### Install S2; see: https://s2geometry.io/about/platforms
+WORKDIR /app
 COPY ./_install_s2 .
 RUN ./_install_s2
 
 ### Install python dependencies
-RUN pip install --upgrade pip
-RUN pip install --upgrade -q -q -q setuptools wheel cython
-COPY ./requirements.txt .
-RUN mkdir /catchlibs
-RUN pip install --src /catchlibs -r requirements.txt
+COPY . /app/src
+WORKDIR /app/src
+RUN pip install -q -U pip setuptools wheel
+RUN pip install -r requirements.dev.txt
+
+### Setup app directory
+WORKDIR /app/src
+RUN mkdir -p log
 
 # Start up command issued in docker-compose files
