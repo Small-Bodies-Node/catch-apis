@@ -1,7 +1,9 @@
 #!/bin/sh
 
+WORKERS=`test $GUNICORN_FLASK_INSTANCES -lt 0 && nproc || echo $GUNICORN_FLASK_INSTANCES`
+
 gunicorn catch_apis.app \
-  --config src/catch_apis/config/gunicorn_flask.py \
   --name $GUNICORN_APP_NAME \
+  --workers $WORKERS \
   --timeout 600 \
   --bind '0.0.0.0:'$API_PORT

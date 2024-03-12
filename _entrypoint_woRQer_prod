@@ -2,6 +2,5 @@
 
 echo "PWD>>>>    $PWD"
 echo "ls >>>>    $(ls)"
-echo "src >>>>    $(ls src)"
 
 python -m catch_apis.woRQer

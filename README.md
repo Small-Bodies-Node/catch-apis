@@ -146,11 +146,10 @@ the status of the query being immediately lost.
 
 ## Development Setup
 
-
 ### Using Docker
 CATCH-APIs may be developed and run using docker. To develop locally:
 
-- Install `docker` and `docker-compose` on your machine.
+- Install `docker` and `docker-compose-v2` on your machine.
 - Clone this repo.
 - Copy .env-template to .env and edit.
 - CATCH requires a Postgres database populated with survey image metadata. This
@@ -168,8 +167,8 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     "bind-mounted" into the container so that changes made to the code on your
     machine get reflected instantly in the running application (the API and
     woRQer processes are run via nodemon in dev mode). In prod mode, the
-    code-base is simply copied over into the image, so it will not be picked up
-    dynamically at run-time
+    code-base is installed from github, so changes will not be picked up
+    dynamically at run-time.
   - To run everything in development mode, run `docker compose -f
     docker-compose.dev.yml up --build`
     - To stop everything, enter CTRL+C once to stop processes gracefully;
@@ -179,7 +178,7 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     - Also, when you bring docker compose systems up/down, it's sometimes
       helpful to also remove the stopped containers with `docker container
       prune`
-  - To run everything in prod mode, run `docker-compose -f
+  - To run everything in prod mode, run `docker compose -f
     docker-compose.prod.yml up --build`
 - DB setup:
   - The CATCH tool requires a postgresDB populated with initial data. In
@@ -188,10 +187,10 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     service on AWS RDS. If you want to develop this code, you therefore need to
     connect to the development db on our group's AWS instance (contact DWD or
     MSK for access), or you need to set up your own postgres instance and
-    populate with data (see above).
+    populate with data.
 - Once everything is running in dev mode, visit <http://localhost:5000/ui> to
   see the swagger interface, and in a separate tab open to
-  <http://localhost:5000/stream>
+  <http://localhost:5000/stream>.
 
 ### Without Docker
 

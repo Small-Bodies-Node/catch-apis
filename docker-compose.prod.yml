@@ -3,11 +3,11 @@ version: "3.8"
 services:
   apis:
     build:
-      context: ./services/apis
+      context: .
       dockerfile: Dockerfile.prod
     image: catch-prod
-    container_name: apis-prod
-    command: ./_entrypoint_flask_prod
+    container_name: catch-apis-prod
+    command: ./_entrypoint_webapp_prod
     tty: true
     ports:
       - "127.0.0.1:5000:5000"
@@ -17,10 +17,10 @@ services:
       - redis-server
   woRQer:
     build:
-      context: ./services/apis
+      context: .
       dockerfile: Dockerfile.prod
     image: catch-prod
-    container_name: worqer-prod
+    container_name: catch-worqer-prod
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server

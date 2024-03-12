@@ -1,5 +1,5 @@
 ### Pull official base image with Debian OS
-FROM python:3.8.12-slim-buster
+FROM python:3.11.8-slim-bookworm
 
 # Create the app user
 RUN mkdir -p /home/app
@@ -9,16 +9,25 @@ RUN addgroup --system app && adduser --system --group app
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/log
 WORKDIR $APP_HOME
+
+### Create a virtual environment for code and c++ library installation
+ENV VIRTUAL_ENV=$HOME/venv
+RUN python -m venv ${VIRTUAL_ENV} --prompt=catch-apis-dev
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 ### Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV S2PREFIX=$VIRTUAL_ENV
+ENV LDFLAGS="-L/$VIRTUAL_ENV/lib -Wl,-rpath=/$VIRTUAL_ENV/lib"
+ENV CXXFLAGS="-I/$VIRTUAL_ENV/include"
 
 ### Install system dependencies
 RUN apt-get update && apt-get install -y \
   # Stuff for our flask app
-  netcat \
+  netcat-openbsd \
   # Stuff for S2 Geometry: https://s2geometry.io/about/platforms
   git \
   wget \
@@ -28,21 +37,21 @@ RUN apt-get update && apt-get install -y \
   libgtest-dev \
   libssl-dev \
   swig \
-  cmake
-
-COPY . .
+  cmake \
+  g++
 
 
 ### Install S2; see: https://s2geometry.io/about/platforms
-RUN rm -rf build
+COPY ./_install_s2 ./
 RUN ./_install_s2
 
-## Install python dependencies
-RUN pip install --upgrade pip
-RUN pip install --upgrade -q -q -q setuptools wheel cython
-RUN mkdir /catchlibs
-RUN CFLAGS='-I/usr/local/lib/python3.8/site-packages/numpy/core/include/' \
-  pip install --src /catchlibs -r requirements.txt
+### Install python dependencies
+COPY requirements.prod.txt ./
+RUN pip install -q -U pip setuptools wheel
+RUN pip install --src=/catchlibs -r requirements.prod.txt
+
+### Install app and woRQer entrypoints
+COPY _entrypoint_webapp_prod _entrypoint_woRQer_prod ./
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
