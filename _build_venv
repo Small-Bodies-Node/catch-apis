@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-if [ ! -e .env ];
+if [ ! -e .env ]; then
     cp .env-template .env
     echo "Created a new .env file.  Edit to suit your needs and re-run _build_env."
     exit 1
@@ -12,10 +12,14 @@ $PYTHON_3_9_OR_HIGHER -m venv .venv --prompt=$APP_NAME
 source .venv/bin/activate
 pip install -q -U pip setuptools wheel
 
+export S2PREFIX=$VIRTUAL_ENV
 ./_build_s2
+
+export LDFLAGS="-L$S2PREFIX/lib -Wl,-rpath=$S2PREFIX/lib"
+export CXXFLAGS="-I$S2PREFIX/include"
 
 pip install -e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@main#egg=sbsearch
 pip install -e git+https://git@github.com/Small-Bodies-Node/catch.git@main#egg=catch
-pip install -e .
+pip install -e .[test]
 
 echo "Virtual environment is ready.  'source _activate' to use it."

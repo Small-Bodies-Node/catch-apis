@@ -1,3 +1,7 @@
+# first deactivate the current virtual environment
+[[ $(type -t deactivate) == function ]] && deactivate
+
 source .venv/bin/activate
 source .env
+# needed to find libs2 install in VENV
 export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib
