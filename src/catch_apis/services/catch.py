@@ -86,7 +86,8 @@ def catch(
         if queue.full:
             status = QueryStatus.QUEUEFULL
         else:
-            # can parallelize search here
+            # can parallelize search here; when this was tested on 3.0.0.dev4,
+            # the message stream got several copies of the task messages
             queue.enqueue(
                 f=tasks.catch,
                 args=[
