@@ -75,8 +75,6 @@ def catch(
                     # copy cached results to the new job ID
                     cache_sources.append(source)
                 else:
-                    # TODO: consider using queue.enqueue here to parallelize the
-                    # search
                     queue_sources.append(source)
     else:
         # user did not request cached results, search all sources
@@ -88,6 +86,7 @@ def catch(
         if queue.full:
             status = QueryStatus.QUEUEFULL
         else:
+            # can parallelize search here
             queue.enqueue(
                 f=tasks.catch,
                 args=[
