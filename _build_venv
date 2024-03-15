@@ -21,4 +21,4 @@ export CXXFLAGS="-I$S2PREFIX/include"
 
 pip install -r requirements.dev.txt
 
-echo "Virtual environment is ready.  'source _activate' to use it."
+echo -e "\n\nVirtual environment is ready.  'source _activate' to use it.\n\n"

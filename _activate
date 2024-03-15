@@ -3,5 +3,8 @@
 
 source .venv/bin/activate
 source .env
-# needed to find libs2 install in VENV
-export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib
+
+# in case sbsearch needs to be reinstalled...
+export LDFLAGS="-L$S2PREFIX/lib -Wl,-rpath=$S2PREFIX/lib"
+export CXXFLAGS="-I$S2PREFIX/include"
+
