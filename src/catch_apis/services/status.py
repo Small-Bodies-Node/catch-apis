@@ -1,8 +1,8 @@
 from uuid import UUID
-from collections import defaultdict
 from typing import Dict, Union, List, Tuple
+from sqlalchemy import func
 
-from catch.model import SurveyStats
+from catch.model import SurveyStats, CatchQuery, Found
 
 from .catch_manager import Catch, catch_manager
 from .caught import caught
@@ -56,12 +56,20 @@ def job_id(job_id: UUID) -> Tuple[dict, List[dict]]:
 
     catch: Catch
     with catch_manager() as catch:
-        # count number of detections by observational data source
-        n_caught: Dict[str, int] = defaultdict(int)
-        for row in caught(job_id):
-            n_caught[row["source"]] += 1
+        queries: List[CatchQuery] = catch.queries_from_job_id(job_id)
 
-        for query in catch.queries_from_job_id(job_id):
+        # count number of detections by observational data source
+        counts: Dict[str, int] = {}
+        counts.update(
+            catch.db.session.query(CatchQuery.source, func.count(CatchQuery.source))
+            .filter(CatchQuery.job_id == job_id.hex)
+            .join(Found)
+            .group_by(CatchQuery.source)
+            .all()
+        )
+
+        query: CatchQuery
+        for query in queries:
             source: str = query.source
             status.append(
                 {
@@ -70,7 +78,7 @@ def job_id(job_id: UUID) -> Tuple[dict, List[dict]]:
                     "date": query.date,
                     "status": query.status,
                     "execution_time": query.execution_time,
-                    "count": n_caught.get(source),
+                    "count": counts.get(source, 0),
                 }
             )
 
