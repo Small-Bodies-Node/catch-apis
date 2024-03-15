@@ -14,7 +14,7 @@ from ..config import QueryStatus
 def catch(
     job_id: UUID,
     target: str,
-    sources: Union[List[str], None],
+    sources: List[str],
     start_date: Union[Time, None],
     stop_date: Union[Time, None],
     uncertainty_ellipse: bool,
@@ -33,7 +33,7 @@ def catch(
         The target target.
 
     sources : list of str
-        Search these sources, or, if ``None``, all sources.
+        Search these sources.
 
     start_date : Time or None
         Search after this date/time.
@@ -60,18 +60,31 @@ def catch(
     status: QueryStatus = QueryStatus.UNDEFINED
     queue: JobsQueue = JobsQueue()
 
+    queue_sources: List[str] = []  # sources to search in detail
+    cache_sources: List[str] = []  # sources to copy cached results
     if cached:
+        # only check the cache if the user requested it
         with catch_manager() as catch:
             catch.start_date = start_date
             catch.stop_date = stop_date
             catch.uncertainty_ellipse = uncertainty_ellipse
             catch.padding = padding
-            if catch.is_query_cached(target, sources=sources):
-                # copy cached results to the new job ID
-                catch.query(target, job_id, sources=sources, cached=True)
-                status = QueryStatus.SUCCESS
 
-    if status != QueryStatus.SUCCESS:
+            for source in sources:
+                if catch.is_query_cached(target, sources=[source]):
+                    # copy cached results to the new job ID
+                    cache_sources.append(source)
+                else:
+                    # TODO: consider using queue.enqueue here to parallelize the
+                    # search
+                    queue_sources.append(source)
+    else:
+        # user did not request cached results, search all sources
+        queue_sources = sources
+
+    if len(queue_sources) == 0:
+        status = QueryStatus.SUCCESS
+    else:
         if queue.full:
             status = QueryStatus.QUEUEFULL
         else:
@@ -80,7 +93,7 @@ def catch(
                 args=[
                     job_id,
                     target,
-                    sources,
+                    queue_sources,
                     start_date,
                     stop_date,
                     uncertainty_ellipse,
@@ -90,5 +103,9 @@ def catch(
                 job_timeout=1200,
             )
             status = QueryStatus.QUEUED
+
+    # copy cached data as needed
+    if len(cache_sources) > 0:
+        catch.query(target, job_id, sources=cache_sources, cached=True)
 
     return status
