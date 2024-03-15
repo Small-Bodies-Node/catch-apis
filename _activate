@@ -5,6 +5,5 @@ source .venv/bin/activate
 source .env
 
 # in case sbsearch needs to be reinstalled...
-export LDFLAGS="-L$S2PREFIX/lib -Wl,-rpath=$S2PREFIX/lib"
-export CXXFLAGS="-I$S2PREFIX/include"
-
+export LDFLAGS="-L$VIRTUAL_ENV/lib -Wl,-rpath=$VIRTUAL_ENV/lib"
+export CXXFLAGS="-I$VIRTUAL_ENV/include"
