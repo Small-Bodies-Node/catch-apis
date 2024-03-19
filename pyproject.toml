@@ -3,8 +3,8 @@ name = "catch_apis"
 description = "API for the CATCH program, used to search astronomical survey data."
 readme = "README.md"
 authors = [
+    { name = "Dan Darg", email = "ddarg@umd.edu" },
     { name = "Michael S. P. Kelley", email = "msk@astro.umd.edu" },
-    { name = "Dan Darg", email = "ddarg@umd.edu" }
 ]
 license = { text = "BSD 3-Clause License" }
 dependencies = [
@@ -23,11 +23,7 @@ dynamic = ["version"]
 homepage = "https://github.com/Small-Bodies-Node/catch-apis"
 
 [project.optional-dependencies]
-test = [
-    "pytest~=8.1",
-    "requests",
-    "sseclient",
-]
+test = ["pytest~=8.1", "requests", "sseclient"]
 
 [build-system]
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
