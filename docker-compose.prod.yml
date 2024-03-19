@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     image: catch-prod
-    container_name: catch-apis-prod
+    container_name: catch-apis-prod-${DEPLOYMENT_TIER}
     command: ./_entrypoint_webapp_prod
     tty: true
     ports:
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     image: catch-prod
-    container_name: catch-worqer-prod
+    container_name: catch-worqer-prod-${DEPLOYMENT_TIER}
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server
@@ -28,3 +28,4 @@ services:
       - ./.env
   redis-server:
     image: redis:5
+    container_name: catch-redis-prod-${DEPLOYMENT_TIER}
