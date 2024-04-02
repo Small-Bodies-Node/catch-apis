@@ -93,10 +93,10 @@ TARGET_MATCHES = [
     ("neat_maui_geodss", "P/2002 JN16", 6),
     ("neat_maui_geodss", "2019 XS", 9),
     ("neat_maui_geodss", "1995 BT1", 6),
-    ("skymapper", "A/2017 U1", 2),
+    ("skymapper_dr4", "A/2017 U1", 1),
     ("neat_maui_geodss", "1", 12),
     ("neat_palomar_tricam", "(2) Juno", 9),
-    ("skymapper", "1I/`Oumuamua", 2),
+    ("skymapper_dr4", "1I/`Oumuamua", 1),
 ]
 
 
@@ -167,7 +167,13 @@ def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
         data = caught["data"]
         for a, b in zip(data0, data):
             for k in COMPARE_KEYS:
-                assert np.isclose(a[k], b[k])
+                # np.isclose using rtol = 1% in case of ephemeris updates and
+                # cached data
+                assert (
+                    a[k] == b[k]
+                    if isinstance(a[k], (str, type(None)))
+                    else np.isclose(a[k], b[k], rtol=0.01)
+                )
 
 
 @pytest.mark.parametrize("source,target,number", TARGET_MATCHES)

@@ -5,7 +5,6 @@ from sqlalchemy import func
 from catch.model import SurveyStats, CatchQuery, Found
 
 from .catch_manager import Catch, catch_manager
-from .caught import caught
 from ..config import allowed_sources
 
 

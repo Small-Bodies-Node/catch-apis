@@ -10,7 +10,7 @@ from .exceptions import CatchApisException, CatchException
 allowed_sources: List[str] = [
     "neat_palomar_tricam",
     "neat_maui_geodss",
-    "skymapper",
+    "skymapper_dr4",
     "ps1dr2",
     "catalina_bigelow",
     "catalina_lemmon",

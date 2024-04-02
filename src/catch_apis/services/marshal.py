@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional, Union
 from astropy.time import Time
-from catch.model import Found, Observation, SkyMapper
+from catch.model import Found, Observation, SkyMapperDR4
 
 SKYMAPPER_IMAGE_TYPES: Dict[str, str] = {
     "fs": "Shallow Survey",
@@ -29,7 +29,7 @@ SURVEY_SPECIFIC_FIELDS: Dict[str, List[str]] = {
 
 
 def skymapper_image_type(obs):
-    if isinstance(obs, SkyMapper):
+    if isinstance(obs, SkyMapperDR4):
         return SKYMAPPER_IMAGE_TYPES.get(obs.image_type)
     else:
         return None
