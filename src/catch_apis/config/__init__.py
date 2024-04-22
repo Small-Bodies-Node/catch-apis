@@ -16,6 +16,7 @@ allowed_sources: List[str] = [
     "catalina_lemmon",
     "catalina_bokneosurvey",
     "spacewatch",
+    "loneos",
 ]
 
 
