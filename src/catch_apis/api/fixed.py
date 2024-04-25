@@ -24,8 +24,9 @@ def _parse_ra(ra: str) -> Angle:
         sanitized_ra: Angle = Angle(ra, ra_unit)
     except Exception as e:
         raise ValueError(f"Invalid ra: {ra}")
-    
+
     return sanitized_ra
+
 
 def _parse_dec(dec: str) -> Angle:
     """Raise ValueError if cannot be parsed."""
@@ -40,8 +41,9 @@ def _parse_dec(dec: str) -> Angle:
             raise ValueError(f"Invalid dec: {dec}")
     except ValueError as e:
         raise ValueError(f"Invalid dec: {dec}")
-    
+
     return sanitized_dec
+
 
 def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
     sanitized_date: Union[str, None] = None
@@ -51,6 +53,7 @@ def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
         raise ValueError(f"Invalid {kind}_date: {date}")
 
     return sanitized_date
+
 
 def _format_date(date):
     return date if date is None else date.iso
@@ -156,5 +159,6 @@ def fixed_target_query(
         }
 
     logger.info(json.dumps(result))
+    result["count"] = len(data)
     result["data"] = data
     return result

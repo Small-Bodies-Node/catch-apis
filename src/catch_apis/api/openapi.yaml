@@ -367,6 +367,9 @@ paths:
                       intersection_type:
                         description: Types of intersections allowed between the search area and data.
                         type: string
+                  count: 
+                    type: integer
+                    description: Number of observations found.
                   data:
                     type: array
                     description: List of observations matching the query.
