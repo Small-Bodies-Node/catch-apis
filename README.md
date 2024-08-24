@@ -1,5 +1,7 @@
 # CATCH-APIs v3.0
 
+[![CI Tests](https://github.com/Small-Bodies-Node/catch-apis/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/Small-Bodies-Node/catch-apis/actions/workflows/ci-tests.yml)
+
 An API for the Planetary Data System Small Bodies Node survey data search tool:
 catch comets and asteroids in wide-field sky survey data.
 
@@ -64,24 +66,24 @@ These APIs wrap the functionality given by the
    access the scientific data by passing the stated `'job_id'` to the
    `/caught/:job_id` route; e.g., the URL in the `'results'` field:
 
-    ```json
-    {
-    "job_id": "6b9499cf8dd34e94a4e5bc26ccbf45de",
-    "message": "Found cached data.  Retrieve from results URL.",
-    "message_stream": "http://catch-v2.astro-prod-it.aws.umd.edu/stream",
-    "query": {
-        "cached": true,
-        "padding": 0,
-        "sources": ["neat_palomar_tricam"],
-        "target": "65P",
-        "uncertainty_ellipse": true
-    },
-    "queue_full": false,
-    "queued": false,
-    "results": "http://catch-v2.astro-prod-it.aws.umd.edu/caught/6b9499cf8dd34e94a4e5bc26ccbf45de",
-    "version": "2.0.0"
-    }
-    ```
+   ```json
+   {
+     "job_id": "6b9499cf8dd34e94a4e5bc26ccbf45de",
+     "message": "Found cached data.  Retrieve from results URL.",
+     "message_stream": "http://catch-v2.astro-prod-it.aws.umd.edu/stream",
+     "query": {
+       "cached": true,
+       "padding": 0,
+       "sources": ["neat_palomar_tricam"],
+       "target": "65P",
+       "uncertainty_ellipse": true
+     },
+     "queue_full": false,
+     "queued": false,
+     "results": "http://catch-v2.astro-prod-it.aws.umd.edu/caught/6b9499cf8dd34e94a4e5bc26ccbf45de",
+     "version": "2.0.0"
+   }
+   ```
 
 3. If the object has not been previously found, or had the user set `'cached'`
    to false, then a new job will be posted to the CATCH APIs queue (implemented
@@ -147,6 +149,7 @@ the status of the query being immediately lost.
 ## Development Setup
 
 ### Using Docker
+
 CATCH-APIs may be developed and run using docker. To develop locally:
 
 - Install `docker` and `docker-compose-v2` on your machine.
@@ -170,16 +173,16 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     code-base is installed from github, so changes will not be picked up
     dynamically at run-time.
   - To run everything in development mode, run `docker compose -f
-    docker-compose.dev.yml up --build`
+docker-compose.dev.yml up --build`
     - To stop everything, enter CTRL+C once to stop processes gracefully;
       sometimes this might fail to properly shutdown everything, in which case
       you can swap `... up --build` with `... down` to re-try shutting
       everything down
     - Also, when you bring docker compose systems up/down, it's sometimes
       helpful to also remove the stopped containers with `docker container
-      prune`
+prune`
   - To run everything in prod mode, run `docker compose -f
-    docker-compose.prod.yml up --build`
+docker-compose.prod.yml up --build`
 - DB setup:
   - The CATCH tool requires a postgresDB populated with initial data. In
     previous implementations, this DB was provided as a separate docker
@@ -220,7 +223,7 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
 ## Testing
 
-Partial tests are available, both unit tests and tests of a fully working API.  Testing requirements are installed with `pip install -r requirements.dev.txt`.
+Partial tests are available, both unit tests and tests of a fully working API. Testing requirements are installed with `pip install -r requirements.dev.txt`.
 
 ### Unit tests
 
@@ -232,4 +235,4 @@ Code in the `tests/` directory is used to run "end-to-end" tests. Testing requir
 
 - `python3 tests/test_alive.py` to execute moving target queries on running instances of the webapp and woRQers (use `--help` for options).
 
-- `pytest tests -v` to run some simple tests on the API.  They require real survey data.
+- `pytest tests -v` to run some simple tests on the API. They require real survey data.
