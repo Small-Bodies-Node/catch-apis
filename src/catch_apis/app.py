@@ -11,7 +11,6 @@ from . import __version__ as version
 from .config import allowed_sources, get_logger, ENV
 from .services.stream import messages
 
-
 logger: logging.Logger = get_logger()
 app = connexion.FlaskApp(__name__, specification_dir="api/")
 

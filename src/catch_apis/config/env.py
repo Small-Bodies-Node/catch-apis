@@ -7,7 +7,7 @@ load_dotenv(find_dotenv(), override=True, verbose=True)
 
 
 class ENV:
-    """Class to store all env variables used in app"""
+    """All CATCH APIs environment variables."""
 
     # String properties
     APP_NAME: str = os.getenv("APP_NAME", "catch-apis")
@@ -43,5 +43,9 @@ class ENV:
     # Boolean Properties
     DEBUG: bool = os.getenv("DEBUG", "false").lower() not in ["false", "0"]
 
+    def __repr__(self):
+        items = (f"{k}={v!r}" for k, v in self.__dict__.items())
+        return "{}({})".format(type(self).__name__, ", ".join(items))
 
-# print('class stuff: ' + str(ENV.__dict__))
+    def __str__(self):
+        return repr(self)

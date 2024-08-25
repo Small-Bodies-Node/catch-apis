@@ -172,15 +172,12 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     woRQer processes are run via nodemon in dev mode). In prod mode, the
     code-base is installed from github, so changes will not be picked up
     dynamically at run-time.
-  - To run everything in development mode, run `docker compose -f
-docker-compose.dev.yml up --build`
-    - To stop everything, enter CTRL+C once to stop processes gracefully;
-      sometimes this might fail to properly shutdown everything, in which case
-      you can swap `... up --build` with `... down` to re-try shutting
-      everything down
+  - To run everything in development mode, run `docker compose -f docker-compose.dev.yml up --build`
+  - To stop everything, enter CTRL+C once to stop processes gracefully;
+    sometimes this might fail to properly shutdown everything, in which case you
+    can swap `... up --build` with `... down` to re-try shutting everything down
     - Also, when you bring docker compose systems up/down, it's sometimes
-      helpful to also remove the stopped containers with `docker container
-prune`
+      helpful to also remove the stopped containers with `docker container prune`
   - To run everything in prod mode, run `docker compose -f
 docker-compose.prod.yml up --build`
 - DB setup:
@@ -223,16 +220,25 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
 ## Testing
 
-Partial tests are available, both unit tests and tests of a fully working API. Testing requirements are installed with `pip install -r requirements.dev.txt`.
+Unit tests and tests on a live database are available. Requirements are listed in `requirements.dev.txt`. In addition, a running redis server on port 6379 is required.
 
-### Unit tests
+Unit tests are based on a temporary postgres instance and simulated data.
+First, install the testing requirements using the [test] option:
 
-- `pytest src/catch_apis/tests -v`
+```
+pip install .[test]
+```
 
-### API tests
+Then run the tests with pytest:
 
-Code in the `tests/` directory is used to run "end-to-end" tests. Testing requirements are listed in `requirements.dev.txt`.
+```
+pytest tests
+```
 
-- `python3 tests/test_alive.py` to execute moving target queries on running instances of the webapp and woRQers (use `--help` for options).
+Live database tests are in the `live-tests` directory. They require a
+configured `.env` file with `DEPLOYMENT_TIER=LOCAL`. The queries rely on
+Catalina, Spacewatch, NEAT, PanSTARRS, and SkyMapper data.
 
-- `pytest tests -v` to run some simple tests on the API. They require real survey data.
+```
+pytest live-tests
+```

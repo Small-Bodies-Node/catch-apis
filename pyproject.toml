@@ -23,7 +23,13 @@ dynamic = ["version"]
 homepage = "https://github.com/Small-Bodies-Node/catch-apis"
 
 [project.optional-dependencies]
-test = ["pytest~=8.1", "requests", "sseclient", "pytest-cov"]
+test = [
+    "pytest~=8.1",
+    "pytest-cov",
+    "requests",
+    "sseclient",
+    "testing.postgresql",
+]
 
 [build-system]
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
