@@ -1,9 +1,7 @@
 # Licensed with the 3-clause BSD license.  See LICENSE for details.
 
 import pytest
-from typing import Generator
 from importlib import reload
-from unittest.mock import patch
 from urllib.parse import urlparse
 
 import testing.postgresql
@@ -13,34 +11,41 @@ import numpy as np
 from catch.catch import Catch
 from catch.config import Config
 from catch.model import NEATPalomarTricam
-from catch_apis.config.env import ENV
+
+# only import env here, defer any other imports until after the environment is
+# updated
+import catch_apis.config.env as ENV
 
 # testing defaults
-ENV.DEPLOYMENT_TIER = "LOCAL"
-ENV.DB_HOST = ""
-ENV.DB_DIALECT = "postgresql"
-ENV.DB_USERNAME = ""
-ENV.DB_PASSWORD = ""
-ENV.DB_DATABASE = "catch_test"
-ENV.BASE_HREF = "/"
-ENV.API_HOST = "localhost"
-ENV.REDIS_HOST = "redis"
-ENV.REDIS_TASK_MESSAGES = "TEST_TASK_MESSAGES"
-ENV.REDIS_JOBS = "TEST_JOBS"
-ENV.CATCH_LOG_FILE = "./logging/catch_test.log"
-ENV.CATCH_APIS_LOG_FILE = "./logging/catch_apis_test.log"
-ENV.GUNICORN_WORKER_INSTANCES = 1
-ENV.GUNICORN_FLASK_INSTANCES = 1
-ENV.API_PORT = 5000
-ENV.REDIS_PORT = 6379
-ENV.REDIS_MAX_QUEUE_SIZE = 100
-ENV.STREAM_TIMEOUT = 60
-ENV.DEBUG = False
+ENV.update(
+    {
+        "DEPLOYMENT_TIER": "LOCAL",
+        "DB_HOST": "",
+        "DB_DIALECT": "postgresql",
+        "DB_USERNAME": "",
+        "DB_PASSWORD": "",
+        "DB_DATABASE": "catch_test",
+        "BASE_HREF": "/",
+        "API_HOST": "localhost",
+        "REDIS_HOST": "redis",
+        "REDIS_TASK_MESSAGES": "TEST_TASK_MESSAGES",
+        "REDIS_JOBS": "TEST_JOBS",
+        "CATCH_LOG_FILE": "./logging/catch_test.log",
+        "CATCH_APIS_LOG_FILE": "./logging/catch_apis_test.log",
+        "GUNICORN_WORKER_INSTANCES": 1,
+        "GUNICORN_FLASK_INSTANCES": 1,
+        "API_PORT": 5000,
+        "REDIS_PORT": 6379,
+        "REDIS_MAX_QUEUE_SIZE": 100,
+        "STREAM_TIMEOUT": 60,
+        "DEBUG": False,
+    }
+)
 
 # test survey parameters
-SURVEY_START = 56000.0
-EXPTIME = 30 / 86400
-SLEWTIME = 7 / 86400
+SURVEY_START: float = 56000.0
+EXPTIME: float = 30 / 86400
+SLEWTIME: float = 7 / 86400
 
 
 def dummy_surveys(postgresql):
@@ -50,7 +55,7 @@ def dummy_surveys(postgresql):
     product_id = 0
     for iteration in range(4):
         for dec in np.arange(-10, 21, 5):
-            for ra in np.linspace(-10, 21, 5):
+            for ra in np.arange(-10, 21, 5):
                 product_id += 1
                 _fov = fov + np.array([[ra], [dec]])
                 obs = NEATPalomarTricam(
@@ -70,31 +75,27 @@ def dummy_surveys(postgresql):
 
 
 Postgresql = testing.postgresql.PostgresqlFactory(
-    cache_initialized_db=True, on_initialized=dummy_surveys
+    cache_initialized_db=True,
+    on_initialized=dummy_surveys,
 )
 
 
-# @pytest.fixture(name="catch")
-# def fixture_catch():
-#     with Postgresql() as postgresql:
-#         config = Config(database=postgresql.url(), log="/dev/null", debug=True)
-#         with Catch.with_config(config) as catch:
-#             print(config)
-#             print(ENV)
-#             yield catch
+@pytest.fixture(name="test_client")
+def fixture_test_client():
+    # deferred imports so that the testing environment is up to date
+    import catch_apis.app
+    import catch_apis.services.database_provider
 
-
-@pytest.fixture()
-def test_client() -> Generator[TestClient, None, None]:
     with Postgresql() as postgresql:
         url = urlparse(postgresql.url())
-        ENV.DB_HOST = ":".join([url.hostname, str(url.port)])
-        ENV.DB_USERNAME = url.username
-        ENV.DB_PASSWORD = ""
-        ENV.DB_DATABASE = url.path.strip("/")
+        ENV.update(
+            {
+                "DB_HOST": ":".join([url.hostname, str(url.port)]),
+                "DB_USERNAME": url.username,
+                "DB_PASSWORD": "",
+                "DB_DATABASE": url.path.strip("/"),
+            }
+        )
+        reload(catch_apis.services.database_provider)
 
-        with patch.dict("catch_apis.config.env.__dict__", {"ENV": ENV}):
-            import catch_apis.app
-
-            reload(catch_apis.app)
-            yield catch_apis.app.app.test_client()
+        yield TestClient(catch_apis.app.app)

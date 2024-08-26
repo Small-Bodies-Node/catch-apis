@@ -2,7 +2,7 @@
 
 from redis import StrictRedis
 from rq import Queue
-from ..config.env import ENV
+import catch_apis.config.env as ENV
 
 
 class RedisConnection(StrictRedis):

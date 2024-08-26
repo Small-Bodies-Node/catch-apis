@@ -45,7 +45,7 @@ import logging
 import json
 
 from .queue import RedisConnection
-from ..config.env import ENV
+import catch_apis.config.env as ENV
 
 
 class TaskStatus(Enum):

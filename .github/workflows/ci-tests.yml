@@ -24,6 +24,21 @@ env:
 jobs:
   s2geometry:
     uses: Small-Bodies-Node/sbsearch/.github/workflows/s2geometry-venv.yml@main
+  container-job:
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: node:10.18-jessie
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
   test:
     name: CI testing
     needs: [s2geometry]
@@ -43,7 +58,7 @@ jobs:
           key: s2geometry-py${{ steps.setup-python.outputs.python-version }}
           path: |
             ~/.venv
-      - name: Install code and dependences
+      - name: Install Python code and dependencies
         run: |
           source ~/.venv/bin/activate
           LDFLAGS="-L${VIRTUAL_ENV}/lib -Wl,-rpath=${VIRTUAL_ENV}/lib" CXXFLAGS="-I${VIRTUAL_ENV}/include" python3 -m pip install 'sbsearch[recommended] @ git+https://github.com/Small-Bodies-Node/sbsearch.git'

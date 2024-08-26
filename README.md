@@ -235,6 +235,8 @@ Then run the tests with pytest:
 pytest tests
 ```
 
+> Pro tip! Use `--capture=tee-sys` to see CATCH and CATCH APIs console output produced during tests.
+
 Live database tests are in the `live-tests` directory. They require a
 configured `.env` file with `DEPLOYMENT_TIER=LOCAL`. The queries rely on
 Catalina, Spacewatch, NEAT, PanSTARRS, and SkyMapper data.

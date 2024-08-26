@@ -1,7 +1,6 @@
 from typing import List
 import enum
 
-from .env import ENV  # noqa: F401
 from .logging import get_logger  # noqa: F401
 from .exceptions import CatchApisException, CatchException
 
