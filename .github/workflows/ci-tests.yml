@@ -28,8 +28,6 @@ jobs:
     name: CI testing
     needs: [s2geometry]
     runs-on: ubuntu-latest
-    # Docker Hub image
-    container: node:10.18-jessie
     services:
       # Label used to access the service container
       redis:
@@ -41,6 +39,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
