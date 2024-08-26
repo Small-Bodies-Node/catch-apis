@@ -24,9 +24,11 @@ env:
 jobs:
   s2geometry:
     uses: Small-Bodies-Node/sbsearch/.github/workflows/s2geometry-venv.yml@main
-  container-job:
+  test:
+    name: CI testing
+    needs: [s2geometry]
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
+    # Docker Hub image
     container: node:10.18-jessie
     services:
       # Label used to access the service container
@@ -39,10 +41,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-  test:
-    name: CI testing
-    needs: [s2geometry]
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
