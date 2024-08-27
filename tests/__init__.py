@@ -49,6 +49,12 @@ SLEWTIME: float = 7 / 86400
 
 
 def dummy_surveys(postgresql):
+    """Populate the NEAT Palomar Tricam survey with some observations.
+
+    Never mind the fact that this survey is pointed neat the Sun!
+
+    """
+
     mjd_start = SURVEY_START
     fov = np.array(((-0.5, 0.5, 0.5, -0.5), (-0.5, -0.5, 0.5, 0.5))) * 5
     observations = []
