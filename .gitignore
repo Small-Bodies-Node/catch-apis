@@ -43,6 +43,7 @@ src/catch_apis/_version.py
 .redundant
 .pg-init-data
 .catchlibs
+activate
 
 # any possible catch backend config file
 *.config

@@ -37,7 +37,6 @@ Examples
 
 """
 
-
 from typing import Union, Dict
 from uuid import UUID
 from enum import Enum
@@ -45,16 +44,17 @@ import logging
 import json
 
 from .queue import RedisConnection
-from ..config.env import ENV
+from catch_apis.config.env import ENV
 
 
 class TaskStatus(Enum):
     """Valid task statuses."""
-    NONE = 'none'
-    SUCCESS = 'success'
-    ERROR = 'error'
-    RUNNING = 'running'
-    QUEUED = 'queued'
+
+    NONE = "none"
+    SUCCESS = "success"
+    ERROR = "error"
+    RUNNING = "running"
+    QUEUED = "queued"
 
 
 class Message:
@@ -73,8 +73,12 @@ class Message:
 
     """
 
-    def __init__(self, job_id: Union[str, UUID], text: str = '',
-                 status: Union[str, TaskStatus] = TaskStatus.NONE) -> None:
+    def __init__(
+        self,
+        job_id: Union[str, UUID],
+        text: str = "",
+        status: Union[str, TaskStatus] = TaskStatus.NONE,
+    ) -> None:
         self.job_id = UUID(str(job_id), version=4)
         self.text: str = text
         self.status: TaskStatus = TaskStatus(status)
@@ -100,24 +104,25 @@ class Message:
         """JSON-formatted string."""
 
         msg: Dict[str, str] = {
-            'job_prefix': self.job_id.hex[:8],
-            'text': str(self.text)
+            "job_prefix": self.job_id.hex[:8],
+            "text": str(self.text),
         }
 
         if self.status is not TaskStatus.NONE:
-            msg['status'] = self.status.value
+            msg["status"] = self.status.value
 
         return json.dumps(msg)
 
     def __repr__(self) -> str:
         """String representation."""
-        return '<Message: {}>'.format(str(self))
+        return "<Message: {}>".format(str(self))
 
     def publish(self):
         """Publish this message to the user message stream."""
         # self._redis.xadd(RQueues.TASK_MESSAGES, {'data': str(self)},
-        self._redis.xadd(ENV.REDIS_TASK_MESSAGES, {'data': str(self)},
-                         maxlen=100, approximate=True)
+        self._redis.xadd(
+            ENV.REDIS_TASK_MESSAGES, {"data": str(self)}, maxlen=100, approximate=True
+        )
 
 
 class MessageHandler(logging.Handler):
@@ -148,8 +153,9 @@ class MessageHandler(logging.Handler):
         msg.text = record.msg % record.args
         msg.status = TaskStatus.RUNNING
         # self._redis.xadd(RQueues.TASK_MESSAGES, {'data': str(msg)},
-        self._redis.xadd(ENV.REDIS_TASK_MESSAGES, {'data': str(msg)},
-                         maxlen=100, approximate=True)
+        self._redis.xadd(
+            ENV.REDIS_TASK_MESSAGES, {"data": str(msg)}, maxlen=100, approximate=True
+        )
 
 
 def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
@@ -165,7 +171,7 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
     """
 
     job_id = UUID(str(job_id), version=4)
-    logger: logging.Logger = logging.getLogger(f'CATCH-APIs {job_id.hex}')
+    logger: logging.Logger = logging.getLogger(f"CATCH-APIs {job_id.hex}")
     # logger.setLevel not working for MessageHandler, so must pass log level
     # directly to the handler
     level: int = logging.DEBUG if ENV.DEBUG else logging.INFO
@@ -175,9 +181,9 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
 def stop_listening_for_task_messages(job_id: Union[str, UUID]) -> None:
     """Stop publishing messages for this job ID to the task messaging stream."""
     job_id = UUID(str(job_id), version=4)
-    logger: logging.Logger = logging.getLogger(f'CATCH-APIs {job_id.hex}')
+    logger: logging.Logger = logging.getLogger(f"CATCH-APIs {job_id.hex}")
     handler: logging.Handler
     for handler in logger.handlers:
-        if getattr(handler, 'job_id', None) == job_id:
+        if getattr(handler, "job_id", None) == job_id:
             logger.removeHandler(handler)
             break

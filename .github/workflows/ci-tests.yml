@@ -1,0 +1,74 @@
+# GitHub Actions workflow for testing and continuous integration.
+
+name: CI Tests
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+    # branches: # only build on PRs against 'main' if you need to further limit when CI is run.
+    #    - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ARCH_ON_CI: "normal"
+  IS_CRON: "false"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  s2geometry:
+    uses: Small-Bodies-Node/sbsearch/.github/workflows/s2geometry-venv.yml@main
+  test:
+    name: CI testing
+    needs: [s2geometry]
+    runs-on: ubuntu-latest
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Restore virtual environment from cache
+        uses: actions/cache/restore@v4
+        id: cache
+        with:
+          key: s2geometry-py${{ steps.setup-python.outputs.python-version }}
+          path: |
+            ~/.venv
+      - name: Install Python code and dependencies
+        run: |
+          source ~/.venv/bin/activate
+          LDFLAGS="-L${VIRTUAL_ENV}/lib -Wl,-rpath=${VIRTUAL_ENV}/lib" CXXFLAGS="-I${VIRTUAL_ENV}/include" python3 -m pip install 'sbsearch[recommended] @ git+https://github.com/Small-Bodies-Node/sbsearch.git'
+          pip install 'catch @ git+https://github.com/Small-Bodies-Node/catch.git'
+          python3 -m pip install -e .[test]
+      - name: Run tests
+        run: |
+          source ~/.venv/bin/activate
+          pip freeze
+          pytest tests -v --cov=catch_apis --cov-report=xml
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

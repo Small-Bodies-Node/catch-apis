@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
 from sqlalchemy.pool import NullPool
 
-from ..config.env import ENV
+from catch_apis.config.env import ENV
 
 # Build URI and instantiate data-provider service
 # db_engine_URI: str = (
@@ -21,9 +21,11 @@ from ..config.env import ENV
 
 db_engine_URI: str = (
     f"{ENV.DB_DIALECT}://{ENV.DB_USERNAME}:{ENV.DB_PASSWORD}@{ENV.DB_HOST}"
-    f"/{ENV.DB_DATABASE}")
+    f"/{ENV.DB_DATABASE}"
+)
 db_engine: Engine = sqlalchemy.create_engine(
-    db_engine_URI, poolclass=NullPool, pool_recycle=3600, pool_pre_ping=True)
+    db_engine_URI, poolclass=NullPool, pool_recycle=3600, pool_pre_ping=True
+)
 db_session: scoped_session = scoped_session(sessionmaker(bind=db_engine))
 
 

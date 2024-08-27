@@ -4,7 +4,7 @@
 
 from rq import Worker as WoRQer, Queue, Connection
 
-from .config import ENV
+from catch_apis.config.env import ENV
 from .services.queue import RedisConnection
 
 

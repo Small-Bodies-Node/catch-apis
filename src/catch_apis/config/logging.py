@@ -2,7 +2,7 @@
 
 import os
 import logging
-from .env import ENV
+from catch_apis.config.env import ENV
 
 
 def setup() -> logging.Logger:
@@ -18,7 +18,7 @@ def setup() -> logging.Logger:
 
     """
 
-    logger: logging.Logger = logging.getLogger('CATCH-APIs')
+    logger: logging.Logger = logging.getLogger("CATCH-APIs")
 
     logger.handlers = []
 
@@ -28,7 +28,8 @@ def setup() -> logging.Logger:
     logger.handlers = []
 
     formatter: logging.Formatter = logging.Formatter(
-        '%(levelname)s %(asctime)s (catch-apis): %(message)s')
+        "%(levelname)s %(asctime)s (catch-apis): %(message)s"
+    )
 
     console: logging.StreamHandler = logging.StreamHandler()
     console.setFormatter(formatter)
@@ -38,8 +39,8 @@ def setup() -> logging.Logger:
     if not os.path.exists(ENV.CATCH_APIS_LOG_FILE):
         directories = os.path.dirname(ENV.CATCH_APIS_LOG_FILE).split(os.sep)
         for i in range(len(directories)):
-            d = os.sep.join(directories[:i+1])
-            if not os.path.exists(d) and d != '':
+            d = os.sep.join(directories[: i + 1])
+            if not os.path.exists(d) and d != "":
                 os.mkdir(d)
 
     logfile: logging.FileHandler = logging.FileHandler(ENV.CATCH_APIS_LOG_FILE)
@@ -61,7 +62,7 @@ def get_logger() -> logging.Logger:
 
     """
 
-    logger: logging.Logger = logging.getLogger('CATCH-APIs')
+    logger: logging.Logger = logging.getLogger("CATCH-APIs")
 
     if len(logger.handlers) == 0:
         setup()
