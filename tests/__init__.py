@@ -14,7 +14,7 @@ from catch.model import NEATPalomarTricam
 
 # only import env here, defer any other imports until after the environment is
 # updated
-import catch_apis.config.env as ENV
+from catch_apis.config.env import ENV
 
 # testing defaults
 ENV.update(

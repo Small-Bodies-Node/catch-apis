@@ -3,7 +3,7 @@
 from typing import Iterator
 import time
 
-import catch_apis.config.env as ENV
+from catch_apis.config.env import ENV
 from .queue import RedisConnection
 
 

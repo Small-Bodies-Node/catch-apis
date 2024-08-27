@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
 from sqlalchemy.pool import NullPool
 
-import catch_apis.config.env as ENV
+from catch_apis.config.env import ENV
 
 # Build URI and instantiate data-provider service
 # db_engine_URI: str = (

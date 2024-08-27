@@ -7,7 +7,7 @@ from connexion.middleware import MiddlewarePosition
 from starlette.middleware.cors import CORSMiddleware
 from flask import Response
 
-import catch_apis.config.env as ENV
+from catch_apis.config.env import ENV
 from . import __version__ as version
 from .config import allowed_sources, get_logger
 from .services.stream import messages

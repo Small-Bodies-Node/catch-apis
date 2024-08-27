@@ -2,7 +2,7 @@
 
 import os
 import logging
-import catch_apis.config.env as ENV
+from catch_apis.config.env import ENV
 
 
 def setup() -> logging.Logger:
