@@ -20,3 +20,6 @@ def test_status_sources(test_client: TestClient):
     assert skymapper["count"] == 0
     assert skymapper["start_date"] is None
     assert skymapper["stop_date"] is None
+
+
+# test_status_job_id is in test_moving_target.py
