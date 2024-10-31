@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -eu
+
+if [ -z ${VIRTUAL_ENV} ]; then
+    echo -e "\nRequired environment variable VIRTUAL_ENV is not set."
+    exit 1;
+fi
+
+source ${VIRTUAL_ENV}/bin/activate
+
+ABSEIL_TAG=20220623.1
+S2_TAG=v0.10.0
+export LDFLAGS="-L${VIRTUAL_ENV}/lib -Wl,-rpath=${VIRTUAL_ENV}/lib"
+export CXXFLAGS="-I${VIRTUAL_ENV}/include"
+
+pushd .
+test ! -e build && mkdir build
+cd build
+
+if [ ! -e ${VIRTUAL_ENV}/lib/libabsl_base.a ]; then
+    test ! -e ${ABSEIL_TAG}.tar.gz && wget https://github.com/abseil/abseil-cpp/archive/refs/tags/${ABSEIL_TAG}.tar.gz
+    test ! -e abseil-cpp-${ABSEIL_TAG} && tar xzf ${ABSEIL_TAG}.tar.gz
+
+    cd abseil-cpp-${ABSEIL_TAG}
+    mkdir -p build
+    cd build
+    cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=${VIRTUAL_ENV} -DABSL_ENABLE_INSTALL=ON -DABSL_PROPAGATE_CXX_STD=ON ..
+    make -j $(nproc)
+    make install
+    cd ../..
+fi
+
+
+if [ ! -e ${VIRTUAL_ENV}/lib/libs2.so ]; then
+    test ! -e ${S2_TAG}.tar.gz && wget https://github.com/google/s2geometry/archive/refs/tags/${S2_TAG}.tar.gz
+    test ! -e s2geometry-${S2_TAG} && tar xzf ${S2_TAG}.tar.gz
+
+    cd s2geometry-${S2_TAG:1}
+    mkdir -p build
+    cd build
+    cmake -DWITH_PYTHON=ON -DCMAKE_PREFIX_PATH=${VIRTUAL_ENV} -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=${VIRTUAL_ENV} -Wno-dev -DPython3_FIND_STRATEGY=LOCATION -DPython3_ROOT_DIR=${VIRTUAL_ENV} ..
+    make -j $(nproc)
+    make install
+fi
+popd
+
+echo -e "\n\nS2 has been installed into the virtual environment.\n\n"
