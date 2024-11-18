@@ -1,6 +1,6 @@
 #!/bin/bash
-
-set -eu
+11;rgb:1313/1919/2626
+set -e
 
 if [ -z ${VIRTUAL_ENV} ]; then
     echo -e "\nRequired environment variable VIRTUAL_ENV is not set."
@@ -8,6 +8,7 @@ if [ -z ${VIRTUAL_ENV} ]; then
 fi
 
 source ${VIRTUAL_ENV}/bin/activate
+test -z "$PYTHON_ROOT" && PYTHON_ROOT=`${PYTHON} -c "import sys; print(sys.exec_prefix)"`
 
 ABSEIL_TAG=20220623.1
 S2_TAG=v0.10.0
@@ -39,7 +40,7 @@ if [ ! -e ${VIRTUAL_ENV}/lib/libs2.so ]; then
     cd s2geometry-${S2_TAG:1}
     mkdir -p build
     cd build
-    cmake -DWITH_PYTHON=ON -DCMAKE_PREFIX_PATH=${VIRTUAL_ENV} -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=${VIRTUAL_ENV} -Wno-dev -DPython3_FIND_STRATEGY=LOCATION -DPython3_ROOT_DIR=${VIRTUAL_ENV} ..
+    cmake -DWITH_PYTHON=ON -DCMAKE_PREFIX_PATH=${VIRTUAL_ENV} -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=${VIRTUAL_ENV} -Wno-dev -DPython3_FIND_STRATEGY=LOCATION -DPython3_ROOT_DIR=${PYTHON_ROOT} ..
     make -j $(nproc)
     make install
 fi
