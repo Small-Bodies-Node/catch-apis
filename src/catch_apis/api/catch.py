@@ -22,8 +22,10 @@ def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
 
     return sanitized_date
 
+
 def _format_date(date):
     return date if date is None else date.iso
+
 
 def catch(
     target: str,
@@ -69,6 +71,9 @@ def catch(
     target_type: str
     sanitized_target: str
     target_type, sanitized_target = services.parse_target_name(target)
+    if sanitized_target == "":
+        messages.append("Invalid target: empty string")
+        valid_query = False
 
     # default: search all sources allowed in the API spec
     # but, the user may have requested specific sources
@@ -81,7 +86,6 @@ def catch(
     except ValueError as exc:
         messages.append(str(exc))
         valid_query = False
-
 
     if not valid_query:
         # then just stop now
@@ -123,15 +127,17 @@ def catch(
     )
 
     parsed: tuple = urllib.parse.urlsplit(request.url_root)
-    result["results"] = urllib.parse.urlunsplit(
+    results_url: str = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "caught", job_id.hex), "", "")
     )
-    result["message_stream"] = urllib.parse.urlunsplit(
+    message_stream_url: str = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
     )
 
     if status == QueryStatus.QUEUED:
         result["queued"] = True
+        result["message_stream"] = message_stream_url
+        result["results"] = results_url
         messages.append(
             "Enqueued search.  Listen to task messaging stream until job "
             "completed, then retrieve data from results URL."
@@ -142,6 +148,7 @@ def catch(
     else:
         # status.SUCCESS
         result["queued"] = False
+        result["results"] = results_url
         messages.append("Found cached data.  Retrieve from results URL.")
 
     result["message"] = "  ".join(messages)
