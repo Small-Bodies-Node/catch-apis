@@ -13,8 +13,11 @@ def caught(job_id: str) -> Union[dict, Tuple[str, int]]:
     except ValueError:
         return "Invalid job ID", 400
 
+    parameters, status = services.status.job_id(_job_id)
     data: List[Dict[str, Any]] = services.caught(_job_id)
     return {
+        "parameters": parameters,
+        "status": status,
         "count": len(data),
         "job_id": _job_id.hex,
         "version": version,
