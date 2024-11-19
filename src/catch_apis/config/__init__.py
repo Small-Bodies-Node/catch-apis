@@ -16,6 +16,10 @@ allowed_sources: List[str] = [
     "catalina_bokneosurvey",
     "spacewatch",
     "loneos",
+    "atlas_mauna_loa",
+    "atlas_haleakela",
+    "atlas_rio_hurtado",
+    "atlas_sutherland",
 ]
 
 
