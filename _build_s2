@@ -1,5 +1,5 @@
 #!/bin/bash
-11;rgb:1313/1919/2626
+
 set -e
 
 if [ -z ${VIRTUAL_ENV} ]; then

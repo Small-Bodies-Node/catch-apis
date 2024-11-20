@@ -12,7 +12,6 @@ ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 ### Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV S2PREFIX=$VIRTUAL_ENV
 ENV LDFLAGS="-L/$VIRTUAL_ENV/lib -Wl,-rpath=/$VIRTUAL_ENV/lib"
 ENV CXXFLAGS="-I/$VIRTUAL_ENV/include"
 
@@ -43,8 +42,8 @@ RUN source <(wget -qO- https://raw.githubusercontent.com/d-w-d/myconfig/master/q
 ### Install S2; see: https://s2geometry.io/about/platforms; this copy-run
 # avoids rebuilding when any python source is modified
 WORKDIR /app
-COPY ./_install_s2 .
-RUN ./_install_s2
+COPY ./_build_s2 ./
+RUN PYTHON=python ./_build_s2
 
 ### Install python dependencies
 COPY . /app/src
