@@ -7,19 +7,19 @@ from .exceptions import CatchApisException, CatchException
 
 # users are allowed to search these sources through the API
 allowed_sources: List[str] = [
-    "neat_palomar_tricam",
-    "neat_maui_geodss",
-    "skymapper_dr4",
-    "ps1dr2",
+    "atlas_haleakela",
+    "atlas_mauna_loa",
+    "atlas_rio_hurtado",
+    "atlas_sutherland",
     "catalina_bigelow",
     "catalina_lemmon",
     "catalina_bokneosurvey",
-    "spacewatch",
     "loneos",
-    "atlas_mauna_loa",
-    "atlas_haleakela",
-    "atlas_rio_hurtado",
-    "atlas_sutherland",
+    "neat_palomar_tricam",
+    "neat_maui_geodss",
+    "ps1dr2",
+    "skymapper_dr4",
+    "spacewatch",
 ]
 
 
