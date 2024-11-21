@@ -2,7 +2,7 @@ from typing import List
 import enum
 
 from .logging import get_logger  # noqa: F401
-from .exceptions import CatchApisException, CatchException
+from .exceptions import CatchApisException, CatchException  # noqa: F401
 
 
 # users are allowed to search these sources through the API
