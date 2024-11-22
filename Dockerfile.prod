@@ -14,7 +14,7 @@ WORKDIR $APP_HOME
 
 ### Create a virtual environment for code and c++ library installation
 ENV VIRTUAL_ENV=$HOME/venv
-RUN python -m venv ${VIRTUAL_ENV} --prompt=catch-apis-dev
+RUN python -m venv ${VIRTUAL_ENV} --prompt=catch-apis-prod
 ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 ### Set environment variables

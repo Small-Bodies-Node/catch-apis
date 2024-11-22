@@ -15,12 +15,15 @@ services:
       - ./.env
     depends_on:
       - redis-server
-  woRQer:
+  worqer-prod:
     build:
       context: .
       dockerfile: Dockerfile.prod
     image: catch-prod
-    container_name: catch-worqer-prod-${DEPLOYMENT_TIER}
+    deploy:
+      replicas: ${CATCH_QUEUE_WORKER_INSTANCES}
+    labels:
+      deployment_tier: ${DEPLOYMENT_TIER}
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server
