@@ -10,6 +10,10 @@ from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
 from .. import services
+from ..services.message import (
+    listen_for_task_messages,
+    stop_listening_for_task_messages,
+)
 from .. import __version__ as version
 
 
@@ -83,7 +87,7 @@ def catch(
     try:
         sanitized_start_date: Union[str, None] = _parse_date(start_date, "start")
         sanitized_stop_date: Union[str, None] = _parse_date(stop_date, "stop")
-    except ValueError as exc:
+    except ValueError as exc:  # noqa F841
         messages.append(str(exc))
         valid_query = False
 
@@ -114,6 +118,8 @@ def catch(
         "message": None,
         "version": version,
     }
+
+    listen_for_task_messages(job_id)
 
     status: QueryStatus = services.catch(
         job_id,
@@ -153,4 +159,5 @@ def catch(
 
     result["message"] = "  ".join(messages)
     logger.info(json.dumps(result))
+    stop_listening_for_task_messages(job_id)
     return result

@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y \
 ### Install S2; see: https://s2geometry.io/about/platforms; build outside the app home
 WORKDIR $HOME
 COPY ./_build_s2 ./
-RUN PYTHON=python ./_build_s2
+RUN ./_build_s2
 
 ### Install python dependencies
 WORKDIR $APP_HOME

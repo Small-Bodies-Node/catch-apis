@@ -8,7 +8,7 @@ if [ -z ${VIRTUAL_ENV} ]; then
 fi
 
 source ${VIRTUAL_ENV}/bin/activate
-test -z "$PYTHON_ROOT" && PYTHON_ROOT=`${PYTHON} -c "import sys; print(sys.exec_prefix)"`
+test -z "$PYTHON_ROOT" && PYTHON_ROOT=`python3 -c "import sys; print(sys.exec_prefix)"`
 
 ABSEIL_TAG=20220623.1
 S2_TAG=v0.10.0

@@ -43,7 +43,7 @@ RUN source <(wget -qO- https://raw.githubusercontent.com/d-w-d/myconfig/master/q
 # avoids rebuilding when any python source is modified
 WORKDIR /app
 COPY ./_build_s2 ./
-RUN PYTHON=python ./_build_s2
+RUN ./_build_s2
 
 ### Install python dependencies
 COPY . /app/src

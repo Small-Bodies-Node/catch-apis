@@ -18,7 +18,7 @@ class ENV:
     """
 
     # variables and defaults
-    ## String properties
+    # String properties
     APP_NAME: str = "catch-apis"
     TEST_DATA_PATH: str = os.path.abspath("./data/test")
     DEPLOYMENT_TIER: str = "LOCAL"
@@ -35,15 +35,16 @@ class ENV:
     CATCH_LOG_FILE: str = os.path.abspath("./logging/catch.log")
     CATCH_APIS_LOG_FILE: str = os.path.abspath("./logging/catch-apis.log")
 
-    ## Numeric properties
-    GUNICORN_WORKER_INSTANCES: int = -1
+    # Numeric properties
     GUNICORN_FLASK_INSTANCES: int = -1
+    CATCH_QUEUE_WORKER_INSTANCES: int = 2
     API_PORT: int = 5000
     REDIS_PORT: int = 6379
-    REDIS_MAX_QUEUE_SIZE: int = 100
+    REDIS_JOBS_MAX_QUEUE_SIZE: int = 5
+    REDIS_TASK_MESSAGES_MAX_QUEUE_SIZE: int = 1000
     STREAM_TIMEOUT: int = 60  # seconds
 
-    ## Boolean Properties
+    # Boolean Properties
     DEBUG: bool = False
 
     @staticmethod

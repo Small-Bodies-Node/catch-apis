@@ -155,9 +155,11 @@ class MessageHandler(logging.Handler):
         msg: Message = Message(self.job_id)
         msg.text = record.msg % record.args
         msg.status = TaskStatus.RUNNING
-        # self._redis.xadd(RQueues.TASK_MESSAGES, {'data': str(msg)},
         self._redis.xadd(
-            ENV.REDIS_TASK_MESSAGES, {"data": str(msg)}, maxlen=100, approximate=True
+            ENV.REDIS_TASK_MESSAGES,
+            {"data": str(msg)},
+            maxlen=ENV.REDIS_TASK_MESSAGES_MAX_QUEUE_SIZE,
+            approximate=True,
         )
 
 

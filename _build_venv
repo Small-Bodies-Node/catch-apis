@@ -10,11 +10,11 @@ fi
 
 source .env
 
-${PYTHON_3_9_OR_HIGHER} -m venv .venv --prompt=${APP_NAME}
+${PYTHON_BIN} -m venv .venv --prompt=${APP_NAME}
 source .venv/bin/activate
 pip install -q -U pip setuptools wheel
 
-PYTHON=${PYTHON_3_9_OR_HIGHER} VIRTUAL_ENV=${VIRTUAL_ENV} bash _build_s2
+PYTHON=${PYTHON_BIN} VIRTUAL_ENV=${VIRTUAL_ENV} bash _build_s2
 
 export LDFLAGS="-L${VIRTUAL_ENV}/lib -Wl,-rpath=${VIRTUAL_ENV}/lib"
 export CXXFLAGS="-I${VIRTUAL_ENV}/include"

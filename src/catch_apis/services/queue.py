@@ -32,4 +32,4 @@ class JobsQueue(Queue):
 
     @property
     def full(self):
-        return len(self) >= ENV.REDIS_MAX_QUEUE_SIZE
+        return len(self) >= ENV.REDIS_JOBS_MAX_QUEUE_SIZE
