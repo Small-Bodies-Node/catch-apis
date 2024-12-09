@@ -1,7 +1,7 @@
 """Task messages.
 
-Tasks communicate to the user via the ``stream`` route.  Redis requires
-strings for messsages.  So, CATCH-APIs uses JSON-formatted data. Three
+Tasks communicate to the user via the ``stream`` route.  Redis messages must be
+strings.  Therefore, CATCH-APIs publishes messages as JSON-formatted data. Three
 keys are currently supported:
 
     message = {
@@ -18,6 +18,7 @@ the Python logging facility.  Use `listen_to_task_messenger` to register
 a logging handler with a given job ID.  When info messages are sent to
 the logger (e.g., via the catch library), they will be published to the
 stream.
+
 
 Examples
 --------
@@ -59,6 +60,7 @@ class TaskStatus(Enum):
 
 class Message:
     """CATCH-APIs task message container.
+
 
     Parameters
     ----------
@@ -128,6 +130,7 @@ class Message:
 class MessageHandler(logging.Handler):
     """Python logging interface to CATCH-APIs task messaging queue.
 
+
     Parameters
     ----------
     job_id : string or UUID
@@ -163,6 +166,7 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
 
     Intended for messages with `status='running'`.
 
+
     Parameters
     ----------
     job_id : string or UUID
@@ -172,6 +176,12 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
 
     job_id = UUID(str(job_id), version=4)
     logger: logging.Logger = logging.getLogger(f"CATCH-APIs {job_id.hex}")
+
+    # avoid duplicating messages by removing and re-adding the message handler
+    handler: logging.Handler
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+
     # logger.setLevel not working for MessageHandler, so must pass log level
     # directly to the handler
     level: int = logging.DEBUG if ENV.DEBUG else logging.INFO
@@ -179,7 +189,16 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
 
 
 def stop_listening_for_task_messages(job_id: Union[str, UUID]) -> None:
-    """Stop publishing messages for this job ID to the task messaging stream."""
+    """Stop publishing messages for this job ID to the task messaging stream.
+
+
+    Parameters
+    ----------
+    job_id : string or UUID
+        Unique job identifier.
+
+    """
+
     job_id = UUID(str(job_id), version=4)
     logger: logging.Logger = logging.getLogger(f"CATCH-APIs {job_id.hex}")
     handler: logging.Handler
