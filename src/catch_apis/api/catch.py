@@ -11,6 +11,7 @@ from astropy.time import Time
 from ..config import allowed_sources, get_logger, QueryStatus
 from .. import services
 from ..services.message import (
+    Message,
     listen_for_task_messages,
     stop_listening_for_task_messages,
 )
@@ -119,6 +120,7 @@ def catch(
         "version": version,
     }
 
+    Message.reset_t0()
     listen_for_task_messages(job_id)
 
     status: QueryStatus = services.catch(

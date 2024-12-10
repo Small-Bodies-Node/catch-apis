@@ -78,8 +78,8 @@ class Message:
     """
 
     # Reference time.  This will typically get defined when a task worker starts
-    # up, which is what we want.  If needed, use `Message.reset_t0()` to define
-    # a new reference time.
+    # up, which is what we want.  But in some cases we need to use
+    # `Message.reset_t0()` to define a new reference time.
     t0: float = monotonic()
 
     def __init__(
