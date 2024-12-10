@@ -5,9 +5,10 @@ strings.  Therefore, CATCH-APIs publishes messages as JSON-formatted data. Three
 keys are currently supported:
 
     message = {
-        'job_prefix': ''  # 8-character job ID prefix
-        'text': ''        # text message for the user
-        'status': ''      # one of success, error, running, queued
+        'job_prefix': '',  # 8-character job ID prefix
+        'text': '',        # text message for the user
+        'elapsed': 0,      # number of seconds since query began
+        'status': ''       # one of success, error, running, queued
     }
 
 The `tasks.message.Message` class should be used to ensure proper
@@ -41,6 +42,7 @@ Examples
 from typing import Union, Dict
 from uuid import UUID
 from enum import Enum
+from time import monotonic
 import logging
 import json
 
@@ -75,6 +77,11 @@ class Message:
 
     """
 
+    # Reference time.  This will typically get defined when a task worker starts
+    # up, which is what we want.  If needed, use `Message.reset_t0()` to define
+    # a new reference time.
+    t0: float = monotonic()
+
     def __init__(
         self,
         job_id: Union[str, UUID],
@@ -85,6 +92,11 @@ class Message:
         self.text: str = text
         self.status: TaskStatus = TaskStatus(status)
         self._redis: RedisConnection = RedisConnection()
+
+    @classmethod
+    def reset_t0(cls):
+        """Reset the reference time."""
+        cls.t0 = monotonic()
 
     @property
     def job_id(self) -> UUID:
@@ -102,12 +114,18 @@ class Message:
     def status(self, s: Union[str, TaskStatus]) -> None:
         self._status = TaskStatus(s)
 
+    @property
+    def elapsed(self) -> float:
+        """Seconds elapsed since reference time."""
+        return round(monotonic() - Message.t0, 1)
+
     def __str__(self) -> str:
         """JSON-formatted string."""
 
         msg: Dict[str, str] = {
             "job_prefix": self.job_id.hex[:8],
             "text": str(self.text),
+            "elapsed": self.elapsed,
         }
 
         if self.status is not TaskStatus.NONE:
@@ -121,9 +139,11 @@ class Message:
 
     def publish(self):
         """Publish this message to the user message stream."""
-        # self._redis.xadd(RQueues.TASK_MESSAGES, {'data': str(self)},
         self._redis.xadd(
-            ENV.REDIS_TASK_MESSAGES, {"data": str(self)}, maxlen=100, approximate=True
+            ENV.REDIS_TASK_MESSAGES,
+            {"data": str(self)},
+            maxlen=ENV.REDIS_TASK_MESSAGES_MAX_QUEUE_SIZE,
+            approximate=True,
         )
 
 
@@ -155,12 +175,7 @@ class MessageHandler(logging.Handler):
         msg: Message = Message(self.job_id)
         msg.text = record.msg % record.args
         msg.status = TaskStatus.RUNNING
-        self._redis.xadd(
-            ENV.REDIS_TASK_MESSAGES,
-            {"data": str(msg)},
-            maxlen=ENV.REDIS_TASK_MESSAGES_MAX_QUEUE_SIZE,
-            approximate=True,
-        )
+        msg.publish()
 
 
 def listen_for_task_messages(job_id: Union[str, UUID]) -> None:

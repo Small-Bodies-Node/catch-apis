@@ -1,3 +1,3 @@
--e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@de449c54a83779e2c5260d0f3341967325931818#egg=sbsearch
--e git+https://git@github.com/Small-Bodies-Node/catch.git@033372fa146aba07155150cd095da2027bbb0572#egg=catch
+-e git+https://git@github.com/Small-Bodies-Node/sbsearch.git@main#egg=sbsearch
+-e git+https://git@github.com/Small-Bodies-Node/catch.git@main#egg=catch
 -e .[test]

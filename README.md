@@ -120,10 +120,10 @@ The `/stream` route implements messaging using server sent events ([SSE][1]).
 The messages sent by CATCH APIs are JSON-formatted text, e.g.,:
 
 ```
-data: {"job_prefix": "4ed052ff", "text": "Starting moving target query.", "status": "running"}
-data: {"job_prefix": "4ed052ff", "text": "Query NEAT from 2001-11-20 to 2003-03-11.", "status": "running"}
-data: {"job_prefix": "4ed052ff", "text": "Obtained ephemeris from JPL Horizons.", "status": "running"}
-data: {"job_prefix": "4ed052ff", "text": "Caught 5 observations.", "status": "running"}
+data: {"job_prefix": "758ded6a", "text": "Starting moving target query.", "elapsed": 0.0, "status": "running"}
+data: {"job_prefix": "758ded6a", "text": "ATLAS Hawaii, Haleakela: Query from 2018-12-24 to 2021-09-21.", "elapsed": 1.2, "status": "running"}
+data: {"job_prefix": "758ded6a", "text": "ATLAS Hawaii, Haleakela: Searching 176.5 deg over 1004.0 days", "elapsed": 2.7, "status": "running"}
+data: {"job_prefix": "758ded6a", "text": "ATLAS Hawaii, Haleakela: Caught 330 observations", "elapsed": 3.9, "status": "running"}
 ...
 data: {"job_prefix": "4ed052ff", "text": "Task complete.", "status": "success"}
 ```

@@ -1,6 +1,7 @@
 from typing import Union, List
 import uuid
 import logging
+from time import monotonic
 
 from astropy.time import Time
 from sbsearch.exceptions import SBSException
@@ -62,8 +63,9 @@ def catch(
     # subscribe the logger and task messenger to this job_id
     listen_for_task_messages(job_id)
 
+    Message.t0 = monotonic()
     msg: Message = Message(
-        job_id, status="running", text="Starting moving target query."
+        job_id, status=TaskStatus.RUNNING, text="Starting moving target query."
     )
     msg.publish()
 
@@ -77,8 +79,8 @@ def catch(
             catch.uncertainty_ellipse = uncertainty_ellipse
             catch.padding = padding
             catch.query(target, job_id, sources=_sources, cached=cached)
-        msg.status = TaskStatus.SUCCESS
-        msg.text = "Task complete."
+
+        msg: Message = Message(job_id, status=TaskStatus.SUCCESS, text="Task complete.")
     except (CatchException, SBSException) as exc:  # noqa: F841
         logger.exception("catch error.")
         msg.status = TaskStatus.ERROR
