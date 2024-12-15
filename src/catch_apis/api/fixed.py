@@ -17,6 +17,7 @@ def _parse_ra(ra: str) -> Angle:
 
     try:
         float(ra)
+        ra_unit = u.degree
     except ValueError:
         ra_unit = u.hourangle
 
