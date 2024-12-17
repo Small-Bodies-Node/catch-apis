@@ -54,7 +54,7 @@ def fixed_target_query(
         Type of intersections to allow between search area and data.  See
         `catch.IntersectionType` for valid names.
 
-        
+
     Returns
     -------
     data : list
