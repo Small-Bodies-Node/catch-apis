@@ -602,4 +602,41 @@ paths:
                         count:
                           type: integer
                           description: Number of observations that caught the target.
-
+  /status/updates:
+    get:
+      tags:
+        - CATCH Status
+      summary: Summary of recent updates to CATCH's database.
+      operationId: catch_apis.api.status.updates
+      responses:
+        "200":
+          description: Summary of recent updates.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: Data source summary.
+                  properties:
+                    source:
+                      type: string
+                      description: Observational data source key.
+                      nullable: true
+                    source_name:
+                      type: string
+                      description: Observational data source name.
+                    days:
+                      type: integer
+                      description: Number of days of history summarized.
+                    count:
+                      type: integer
+                      description: Number of observations.
+                    start_date:
+                      type: string
+                      description: Earliest image start time, UTC.
+                      nullable: true
+                    stop_date:
+                      type: string
+                      description: Latest image stop time, UTC.
+                      nullable: true

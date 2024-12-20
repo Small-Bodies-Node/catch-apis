@@ -5,19 +5,18 @@ Exposes results from the survey_statistics database table.
 """
 
 import uuid
-from typing import Dict, Union, List, Tuple
 from .. import services
 from .. import __version__ as version
 
 
-def sources() -> List[Dict[str, Union[str, int, None]]]:
-    """Controller for returning survey database status."""
+def sources() -> list[dict[str, str | int | None]]:
+    """Controller to return survey database status."""
 
     return services.status.sources()
 
 
-def job_id(job_id: str) -> Union[dict, Tuple[str, int]]:
-    """Controller for returning job ID status."""
+def job_id(job_id: str) -> dict | tuple[str, int]:
+    """Controller to return job ID status."""
 
     try:
         _job_id: uuid.UUID = uuid.UUID(job_id, version=4)
@@ -32,3 +31,9 @@ def job_id(job_id: str) -> Union[dict, Tuple[str, int]]:
         "parameters": parameters,
         "status": status,
     }
+
+
+def updates() -> list[dict[str, str | int | None]]:
+    """Controller to return summary of recent updates."""
+
+    return services.status.updates()
