@@ -11,6 +11,7 @@ import numpy as np
 from catch.catch import Catch
 from catch.config import Config
 from catch.model import NEATPalomarTricam
+from catch import stats
 
 # only import env here, defer any other imports until after the environment is
 # updated
@@ -72,7 +73,7 @@ def dummy_surveys(postgresql):
     config = Config(database=postgresql.url(), log="/dev/null", debug=True)
     with Catch.with_config(config) as catch:
         catch.add_observations(observations)
-        catch.update_statistics()
+        stats.update_statistics(catch)
 
 
 Postgresql = testing.postgresql.PostgresqlFactory(
