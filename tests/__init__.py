@@ -54,11 +54,12 @@ def dummy_surveys(postgresql):
     mjd_start = SURVEY_START
     fov = np.array(((-0.5, 0.5, 0.5, -0.5), (-0.5, -0.5, 0.5, 0.5))) * 5
     observations = []
-    product_id = 0
+    count = 0
     for iteration in range(4):
         for dec in np.arange(-10, 21, 5):
             for ra in np.arange(-10, 21, 5):
-                product_id += 1
+                count += 1
+                product_id = f"urn:nasa:pds:gbo.ast.neat.survey:data_tricam:p20011126_obsdata_{count}"
                 _fov = fov + np.array([[ra], [dec]])
                 obs = NEATPalomarTricam(
                     mjd_start=mjd_start,

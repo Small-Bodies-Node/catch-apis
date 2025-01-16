@@ -19,9 +19,10 @@ def test_point_full_search(test_client: TestClient):
     assert np.isclose(results["query"]["dec"], 8 + 48 / 60 / 60)
     assert "neat_palomar_tricam" in results["query"]["sources"]
     assert len(results["data"]) == 4
-    assert {obs["product_id"] for obs in results["data"]} == set(
-        [str(7 * 4 + 5 + 49 * i) for i in range(4)]
-    )
+    assert {
+        obs["product_id"][obs["product_id"].rindex("_") + 1 :]
+        for obs in results["data"]
+    } == set([str(7 * 4 + 5 + 49 * i) for i in range(4)])
 
 
 def test_point_date_range(test_client: TestClient):
