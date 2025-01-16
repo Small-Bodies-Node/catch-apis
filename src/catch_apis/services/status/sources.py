@@ -23,6 +23,7 @@ def sources() -> list[dict[str, str | int | None]]:
                         "count": summary.count,
                         "start_date": summary.start_date,
                         "stop_date": summary.stop_date,
+                        "nights": summary.nights,
                         "updated": summary.updated,
                     }
                 )

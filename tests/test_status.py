@@ -15,3 +15,4 @@ def test_status_sources2(test_client: TestClient):
     assert neat_palomar_tricam["count"] == 49 * 4
     assert neat_palomar_tricam["start_date"].startswith("2012-03-14")
     assert neat_palomar_tricam["stop_date"].startswith("2012-03-14")
+    assert neat_palomar_tricam["nights"] == 1

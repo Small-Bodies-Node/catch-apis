@@ -535,6 +535,9 @@ paths:
                       type: string
                       description: Latest image stop time, UTC.
                       nullable: true
+                    nights:
+                      type: integer
+                      description: Number of nights with data.
                     updated:
                       type: string
                       description: Time of last update, UTC.
