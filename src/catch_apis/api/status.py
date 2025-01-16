@@ -6,6 +6,7 @@ Exposes results from the survey_statistics database table.
 
 from uuid import UUID
 from astropy.time import Time
+from ..config.env import ENV
 from .. import services
 from ..services.queue import JobsQueue
 from .. import __version__ as version
@@ -41,17 +42,26 @@ def updates() -> list[dict[str, str | int | None]]:
     return services.status.updates()
 
 
-def queue() -> list[dict[str, str | int]]:
-    "Controller to return summary of job queue."
+def queue() -> dict[str, bool | list[dict[str, str | int]]]:
+    """Controller to return summary of job queue.
 
-    print("*" * 80)
 
-    summary: list[dict[str, str | int]] = []
+    Returns
+    -------
+    full : bool
+        True if the queue is full.
+
+    jobs : list of dict
+        A list of jobs in the queue.
+
+    """
+
+    jobs: list[dict[str, str | int]] = []
     q = JobsQueue()
     for job in q.jobs:
         catch_job_id: UUID = job.args[0]
 
-        summary.append(
+        jobs.append(
             {
                 "prefix": catch_job_id.hex[:8],
                 "position": job.get_position(),
@@ -60,4 +70,10 @@ def queue() -> list[dict[str, str | int]]:
             }
         )
 
-    return summary
+    return {"depth": ENV.REDIS_JOBS_MAX_QUEUE_SIZE, "full": q.full, "jobs": jobs}
+
+
+def queries() -> list[dict[str, str | int]]:
+    """Controller to return summary of recent queries."""
+
+    return services.status.queries()

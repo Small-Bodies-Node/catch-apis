@@ -542,7 +542,7 @@ paths:
     get:
       tags:
         - CATCH Status
-      summary: Query status by job_id
+      summary: Query status by job_id.
       operationId: catch_apis.api.status.job_id
       parameters:
         - name: job_id
@@ -641,7 +641,7 @@ paths:
     get:
       tags:
         - CATCH Status
-      summary: Show the CATCH job queue
+      summary: Show the CATCH job queue.
       operationId: catch_apis.api.status.queue
       responses:
         "200":
@@ -649,29 +649,75 @@ paths:
           content:
             application/json:
               schema:
+                type: object
+                description: Job queue summary.
+                properties:
+                  depth:
+                    type: integer
+                    description: Full depth of the job queue.
+                  full:
+                    type: boolean
+                    description: True if the job queue is full.
+                  jobs:
+                    type: array
+                    items:
+                      type: object
+                      description: List of jobs in the queue.
+                      properties:
+                        prefix:
+                          type: string
+                          description: Job ID prefix.
+                        position:
+                          type: integer
+                          description: Queue position.
+                        enqueued_at:
+                          type: string
+                          description: Time when the job was enqueued, UTC.
+                        status:
+                          type: string
+                          description: Job status.
+                          enum:
+                            - queued
+                            - finished
+                            - failed
+                            - started
+                            - deferred
+                            - scheduled
+                            - stopped
+                            - cancelled
+  /status/queries:
+    get:
+      tags:
+        - CATCH Status
+      summary: Summary of recent CATCH job queries.
+      operationId: catch_apis.api.status.queries
+      responses:
+        "200":
+          description: Success.
+          content:
+            application/json:
+              schema:
                 type: array
+                description: List of query summary by days of history.
                 items:
                   type: object
-                  description: Job queue summary.
+                  description: Query summary.
                   properties:
-                    prefix:
-                      type: string
-                      description: Job ID prefix.
-                    position:
+                    days:
                       type: integer
-                      description: Queue position.
-                    enqueued_at:
-                      type: string
-                      description: Time when the job was enqueued, UTC.
-                    status:
-                      type: string
-                      description: Job status.
-                      enum:
-                        - queued
-                        - finished
-                        - failed
-                        - started
-                        - deferred
-                        - scheduled
-                        - stopped
-                        - cancelled
+                      description: Number of days of history summarized.
+                    jobs:
+                      type: integer
+                      description: Number of query jobs submitted.
+                    finished:
+                      type: integer
+                      description: Number of completed searches on any data source.
+                    cached:
+                      type: integer
+                      description: Number of completed searches that returned cached results.
+                    errored:
+                      type: integer
+                      description: Number of searches with an error status.
+                    in_progress:
+                      type: integer
+                      description: Number of searches with an "in progress" status.
