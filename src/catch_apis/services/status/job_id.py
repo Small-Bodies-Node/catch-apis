@@ -32,6 +32,8 @@ def job_id(job_id: UUID) -> tuple[dict, list[dict]]:
     catch: Catch
     with catch_manager() as catch:
         queries: list[CatchQuery] = catch.queries_from_job_id(job_id)
+        if len(queries) == 0:
+            return {"message": "No jobs found with requested ID"}, []
 
         # count number of detections by observational data source
         counts: dict[str, int] = {}
@@ -57,10 +59,10 @@ def job_id(job_id: UUID) -> tuple[dict, list[dict]]:
                 }
             )
 
-        parameters["target"] = query.query
-        parameters["start_date"] = query.start_date
-        parameters["stop_date"] = query.stop_date
-        parameters["uncertainty_ellipse"] = query.uncertainty_ellipse
-        parameters["padding"] = query.padding
+        parameters["target"] = queries[0].query
+        parameters["start_date"] = queries[0].start_date
+        parameters["stop_date"] = queries[0].stop_date
+        parameters["uncertainty_ellipse"] = queries[0].uncertainty_ellipse
+        parameters["padding"] = queries[0].padding
 
     return parameters, status
