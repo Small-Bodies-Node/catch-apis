@@ -24,6 +24,32 @@ def test_point_full_search(test_client: TestClient):
         for obs in results["data"]
     } == set([str(7 * 4 + 5 + 49 * i) for i in range(4)])
 
+    # try negative dec
+    parameters = {
+        "ra": "00:34:32.0",  # 8.63 deg
+        "dec": "-8 00 48",  # -8.01 deg
+    }
+    response = test_client.get("/fixed", params=parameters)
+    response.raise_for_status()
+    results = response.json()
+
+    assert results["message"] == ""
+    assert np.isclose(results["query"]["ra"], ((34 + 32 / 60) / 60) * 15)
+    assert np.isclose(results["query"]["dec"], -8 - 48 / 60 / 60)
+    assert "neat_palomar_tricam" in results["query"]["sources"]
+    assert len(results["data"]) == 4
+    assert all(
+        [
+            row["fov"]
+            == "7.500000:-12.500000,12.500000:-12.500000,12.500000:-7.500000,7.500000:-7.500000"
+            for row in results["data"]
+        ]
+    )
+    assert {
+        obs["product_id"][obs["product_id"].rindex("_") + 1 :]
+        for obs in results["data"]
+    } == set([str(5 + 49 * i) for i in range(4)])
+
 
 def test_point_date_range(test_client: TestClient):
     parameters = {
