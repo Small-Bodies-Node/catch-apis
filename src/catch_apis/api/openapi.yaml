@@ -498,6 +498,10 @@ paths:
                           type: string
                           description: URL to original archive image.
                           nullable: true
+                        diff_url:
+                          type: string
+                          description: URL to difference (reference sky subtracted) image, if available.
+                          nullable: true
                         cutout_url:
                           type: string
                           description: URL to cutout around target ephemeris.

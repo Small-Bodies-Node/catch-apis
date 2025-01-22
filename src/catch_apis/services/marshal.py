@@ -74,6 +74,7 @@ def observation(
         "maglimit": obs.maglimit,
         "date": Time((obs.mjd_start + obs.mjd_stop) / 2, format="mjd").iso,
         "archive_url": obs.archive_url,
+        "diff_url": getattr(obs, "diff_url", None),
     }
 
     if ra is not None and dec is not None:
