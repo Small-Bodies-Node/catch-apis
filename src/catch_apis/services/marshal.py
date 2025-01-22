@@ -66,6 +66,7 @@ def observation(
         "source_name": obs.__data_source_name__,
         "mjd_start": obs.mjd_start,
         "mjd_stop": obs.mjd_stop,
+        "fov": obs.fov,
         "filter": obs.filter,
         "exposure": obs.exposure,
         "seeing": obs.seeing,

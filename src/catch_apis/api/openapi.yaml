@@ -166,6 +166,9 @@ paths:
                         mjd_stop:
                           type: number
                           description: Shutter close, modified Julian date, UTC.
+                        fov:
+                          type: string
+                          description: "Data product field of view as a comma-separated list of corners as RA:Dec in units of degrees."
                         filter:
                           type: string
                           description: Filter/bandpass.
@@ -429,6 +432,9 @@ paths:
                         mjd_stop:
                           type: number
                           description: Shutter close, modified Julian date, UTC.
+                        fov:
+                          type: string
+                          description: "Data product field of view as a comma-separated list of corners as RA:Dec in units of degrees."
                         filter:
                           type: string
                           description: Filter/bandpass.
