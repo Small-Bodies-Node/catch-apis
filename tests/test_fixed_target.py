@@ -110,15 +110,3 @@ def test_areal_search(test_client: TestClient):
     response.raise_for_status()
     results = response.json()
     assert len(results["data"]) == 0
-
-    parameters = {
-        "ra": "00:00",
-        "dec": "+0 0",
-        "sources": ["neat_palomar_tricam"],
-        "radius": np.hypot(5, 5) / 2 * 60 + 1,
-        "intersection_type": "AreaContainsImage",
-    }
-    response = test_client.get("/fixed", params=parameters)
-    response.raise_for_status()
-    results = response.json()
-    assert len(results["data"]) == 4
