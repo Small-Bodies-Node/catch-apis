@@ -8,7 +8,7 @@ authors = [
 ]
 license = { text = "BSD 3-Clause License" }
 dependencies = [
-    "catch~=1.4",
+    "catch~=2.0rc1",
     "psycopg2-binary~=2.8",
     "connexion[flask,swagger-ui,uvicorn]~=3.0",
     "gunicorn~=21.2",
