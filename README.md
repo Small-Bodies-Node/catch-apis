@@ -1,4 +1,4 @@
-# CATCH-APIs v3.0
+# CATCH-APIs
 
 [![CI Tests](https://github.com/Small-Bodies-Node/catch-apis/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/Small-Bodies-Node/catch-apis/actions/workflows/ci-tests.yml)
 [![codecov](https://codecov.io/gh/Small-Bodies-Node/catch-apis/graph/badge.svg?token=Y3ZKTCFGOE)](https://codecov.io/gh/Small-Bodies-Node/catch-apis)
