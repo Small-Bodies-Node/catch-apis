@@ -9,13 +9,15 @@ catch comets and asteroids in wide-field sky survey data.
 ## Overview
 
 CATCH-APIs provide a REST API service that enable a user to search for potential
-observations of comets and asteroids in wide-field sky survey data. This API is
-designed for use by the Planetary Data System Small Bodies Node (SBN) at the
-University of Maryland, but it is possible to deploy anywhere with other data
-sets. SBN is the primary archive for the Near-Earth Asteroid Tracking (NEAT)
-survey, the Asteroid Terrestrial-impact Last Alert System (ATLAS), the Catalina
-Sky Survey, and Spacewatch. CATCH-APIs is one of the primary methods for users
-to discover scientifically interesting data in those data sets.
+observations of comets and asteroids in wide-field sky survey data.  CATCH can
+also be used to search for any fixed position on the sky. This API is designed
+for use by the Planetary Data System Small Bodies Node (SBN) at the University
+of Maryland, but it is possible to deploy with modifications anywhere with other
+data sets.  SBN is the primary archive for the Near-Earth Asteroid Tracking
+(NEAT) survey, the Asteroid Terrestrial-impact Last Alert System (ATLAS), the
+Catalina Sky Survey (CSS), Spacewatch, and the Lowell Observatory
+Near-Earth-Asteroid Search (LONEOS).  CATCH-APIs is one of the primary methods
+for users to discover scientifically interesting data in those data sets.
 
 The API uses the following:
 
@@ -69,20 +71,24 @@ These APIs wrap the functionality given by the
 
    ```json
    {
-     "job_id": "6b9499cf8dd34e94a4e5bc26ccbf45de",
-     "message": "Found cached data.  Retrieve from results URL.",
-     "message_stream": "http://catch-v2.astro-prod-it.aws.umd.edu/stream",
+     "job_id": "c5746cfca71340419060560d95e4a1e3",
+     "message": "Enqueued search.  Listen to task messaging stream until job completed, then retrieve data from results URL.",
+     "message_stream": "http://catch-api.astro.umd.edu/stream",
      "query": {
-       "cached": true,
+       "cached": false,
        "padding": 0,
-       "sources": ["neat_palomar_tricam"],
-       "target": "65P",
-       "uncertainty_ellipse": true
+       "sources": [
+         "atlas_haleakela"
+       ],
+       "start_date": null,
+       "stop_date": null,
+       "target": "2024 YR4",
+       "type": "ASTEROID",
+       "uncertainty_ellipse": false
      },
-     "queue_full": false,
-     "queued": false,
-     "results": "http://catch-v2.astro-prod-it.aws.umd.edu/caught/6b9499cf8dd34e94a4e5bc26ccbf45de",
-     "version": "2.0.0"
+     "queued": true,
+     "results": "http://catch-api.astro.umd.edu/caught/c5746cfca71340419060560d95e4a1e3",
+     "version": "3.0.0"
    }
    ```
 
@@ -95,9 +101,8 @@ These APIs wrap the functionality given by the
       generate the scientific data for that comet or asteroid.
    2. During this job, the worker will post status messages back to the redis
       queue. These messages are available to the user via the `/stream` route
-      (see `'message_stream'` field in the above JSON response). See the second
-      on the [user messaging stream](#user-messaging-stream) below for more
-      details.
+      (see `'message_stream'` field in the above JSON response). See the [user
+      messaging stream](#user-messaging-stream) section below for more details.
    3. Once complete, the worker will save the results to the database and
       publish a `"status": "success"` message to the message stream. Because
       this will take an unknown amount of time to complete, one can subscribe to
@@ -105,7 +110,7 @@ These APIs wrap the functionality given by the
       labeled with their job prefix.
 
 Note: there are two types of "worker" to think about in this code base. There
-are the gunicorn workers that handle the http requests within the "apis"
+are the gunicorn workers that handle the HTTP requests within the "apis"
 service, and there are the workers that accept tasks from the redis queue and
 carry out the computationally expensive workload. We try wherever possible to
 label this latter kind of redis-queue ('RQ') workers as "woRQer".
@@ -120,12 +125,15 @@ The `/stream` route implements messaging using server sent events ([SSE][1]).
 The messages sent by CATCH APIs are JSON-formatted text, e.g.,:
 
 ```
-data: {"job_prefix": "758ded6a", "text": "Starting moving target query.", "elapsed": 0.0, "status": "running"}
-data: {"job_prefix": "758ded6a", "text": "ATLAS Hawaii, Haleakela: Query from 2018-12-24 to 2021-09-21.", "elapsed": 1.2, "status": "running"}
-data: {"job_prefix": "758ded6a", "text": "ATLAS Hawaii, Haleakela: Searching 176.5 deg over 1004.0 days", "elapsed": 2.7, "status": "running"}
-data: {"job_prefix": "758ded6a", "text": "ATLAS Hawaii, Haleakela: Caught 330 observations", "elapsed": 3.9, "status": "running"}
-...
-data: {"job_prefix": "4ed052ff", "text": "Task complete.", "status": "success"}
+data: {"job_prefix": "c5746cfc", "text": "Starting moving target query.", "elapsed": 0.0, "status": "running"}
+
+data: {"job_prefix": "c5746cfc", "text": "ATLAS Hawaii, Haleakela: Query from 2018-12-24 to 2022-01-10.", "elapsed": 0.3, "status": "running"}
+
+data: {"job_prefix": "c5746cfc", "text": "ATLAS Hawaii, Haleakela: Searching 374.8 deg over 1115.0 days", "elapsed": 6.1, "status": "running"}
+
+data: {"job_prefix": "c5746cfc", "text": "ATLAS Hawaii, Haleakela: Caught 479 observations", "elapsed": 10.2, "status": "running"}
+
+data: {"job_prefix": "c5746cfc", "text": "Task complete.", "elapsed": 17.3, "status": "success"}
 ```
 
 Each message is labeled with the first eight characters of the user's `job_id`
@@ -215,7 +223,7 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
 2. Add the source table name to the API's list of allowed sources:
 
-   - `services/apis/src/api/openapi.yaml` at `paths./catch.get.parameters[name=sources].schema.items.enum`.
+   - `services/apis/src/api/openapi.yaml` at `paths.catch.get.parameters[name=sources].schema.items.enum`.
 
 3. Optionally update tests, e.g., `tests/test_query_moving.py`.
 
