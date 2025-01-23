@@ -51,13 +51,13 @@ paths:
             format: date
         - name: uncertainty_ellipse
           in: query
-          description: Account for uncertainty ellipse using a polygonal approximation.
+          description: Search using the uncertainty ellipse.
           required: false
           schema:
             type: boolean
         - name: padding
           in: query
-          description: Increase the search area by padding the ephemeris by this amount, in units of arcmin (0 to 120).
+          description: Increase the search area by padding the ephemeris by this amount, 0 to 120 arcmin.
           required: false
           schema:
             type: number
@@ -304,7 +304,7 @@ paths:
       parameters:
         - name: ra
           in: query
-          description: 'Right ascension in sexagesimal or decimal format, e.g., "10.2345d", "1 2 0 hours", "1h2m3.4s".  If the unit is unspecified and the string is parsable as a decimal value, then degree is assumed.'
+          description: 'Right ascension (ICRF) in sexagesimal or decimal format.  Units may be specified, e.g., "10.2345d", "1 2 0 hours", "1h2m3.4s", or inferred (hour angle for sexagesimal format, degrees for decimal format).'
           example: "05:34:32.0"
           required: true
           allowReserved: true
@@ -312,7 +312,7 @@ paths:
             type: string
         - name: dec
           in: query
-          description: Declination, sexagesimal or decimal format.  If the unit is unspecified then degree is assumed.
+          description: Declination (ICRF), sexagesimal or decimal format.  Units may be specified, e.g., "10.2345d", "1d2m3.4s".  If units are not given, degrees are assumed.
           example: "+22 00 48"
           required: true
           allowReserved: true
@@ -332,21 +332,21 @@ paths:
                 {% endfor %}
         - name: start_date
           in: query
-          description: Search for data taken after this date.
+          description: Search for data taken after this date (YYYY-MM-DD HH:MM)
           required: false
           schema:
             type: string
             format: date
         - name: stop_date
           in: query
-          description: Search for data taken before this date.
+          description: Search for data taken before this date (YYYY-MM-DD HH:MM)
           required: false
           schema:
             type: string
             format: date
         - name: radius
           in: query
-          description: Search around the point, arcmin.
+          description: Search around the point, 0 to 120 arcmin.
           required: false
           schema:
             type: number
@@ -354,7 +354,7 @@ paths:
             maximum: 120
         - name: intersection_type
           in: query
-          description: Type of intersections to allow between search area and data.
+          description: Type of intersections to allow between the search area and the data products.
           required: false
           schema:
             type: string
