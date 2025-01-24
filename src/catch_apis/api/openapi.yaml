@@ -4,7 +4,7 @@ servers:
 info:
   title: CATCH APIs
   version: {{version}}
-  description: API for finding comets, asteroids, and fixed targets in wide-field sky survey data.
+  description: API for finding comets, asteroids, and fixed targets in wide-field sky survey data.  Most of the available data sets are archived with the Small-Bodies Node of the NASA Planetary Data System.
 servers:
   - url: {{base_href}}
 paths:
@@ -12,7 +12,7 @@ paths:
     get:
       summary: Query the CATCH database for data covering the requested target's ephemeris position.
       tags:
-        - Moving Target Query
+        - Moving target query
       operationId: catch_apis.api.catch
       parameters:
         - name: target
@@ -80,7 +80,7 @@ paths:
   /caught/{job_id}:
     get:
       tags:
-        - Moving Target Query
+        - Moving target query
       summary: Get moving target query results.
       operationId: catch_apis.api.caught
       parameters:
@@ -513,7 +513,7 @@ paths:
   /status/sources:
     get:
       tags:
-        - CATCH Status
+        - CATCH status
       summary: Summary of data sources in CATCH's database.
       operationId: catch_apis.api.status.sources
       responses:
@@ -554,7 +554,7 @@ paths:
   /status/{job_id}:
     get:
       tags:
-        - CATCH Status
+        - CATCH status
       summary: Query status by job_id.
       operationId: catch_apis.api.status.job_id
       parameters:
@@ -618,7 +618,7 @@ paths:
   /status/updates:
     get:
       tags:
-        - CATCH Status
+        - CATCH status
       summary: Summary of recent updates to CATCH's database.
       operationId: catch_apis.api.status.updates
       responses:
@@ -653,7 +653,7 @@ paths:
   /status/queue:
     get:
       tags:
-        - CATCH Status
+        - CATCH status
       summary: Show the CATCH job queue.
       operationId: catch_apis.api.status.queue
       responses:
@@ -701,7 +701,7 @@ paths:
   /status/queries:
     get:
       tags:
-        - CATCH Status
+        - CATCH status
       summary: Summary of recent CATCH job queries.
       operationId: catch_apis.api.status.queries
       responses:
