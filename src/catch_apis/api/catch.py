@@ -115,7 +115,8 @@ def catch(
             "padding": padding,
         },
         "job_id": job_id.hex,
-        "queued": None,
+        "queued": False,
+        "queue_full": False,
         "message": None,
         "version": version,
     }
@@ -152,6 +153,7 @@ def catch(
         )
     elif status == QueryStatus.QUEUEFULL:
         result["queued"] = False
+        result["queue_full"] = True
         messages.append("Queue is full, please try again later.")
     else:
         # status.SUCCESS
