@@ -57,7 +57,7 @@ paths:
             type: boolean
         - name: padding
           in: query
-          description: Increase the search area by padding the ephemeris by this amount, 0 to 120 arcmin.
+          description: Increase the search area by padding the ephemeris by this amount, 0 to 120 arcmin (0.01 arcmin steps).
           required: false
           schema:
             type: number
