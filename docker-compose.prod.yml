@@ -17,9 +17,6 @@ services:
       - redis-server
     restart: always
   worqer-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
     image: catch-prod
     deploy:
       replicas: ${CATCH_QUEUE_WORKER_INSTANCES}
