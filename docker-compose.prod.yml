@@ -25,6 +25,7 @@ services:
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server
+      - apis
     restart: always
     env_file:
       - ./.env
