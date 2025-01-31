@@ -15,6 +15,7 @@ services:
       - ./.env
     depends_on:
       - redis-server
+    restart: always
   worqer-prod:
     build:
       context: .
@@ -27,8 +28,10 @@ services:
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server
+    restart: always
     env_file:
       - ./.env
   redis-server:
     image: redis:5
+    restart: always
     container_name: catch-redis-prod-${DEPLOYMENT_TIER}
