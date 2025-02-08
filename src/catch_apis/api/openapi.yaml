@@ -4,7 +4,10 @@ servers:
 info:
   title: CATCH APIs
   version: {{version}}
-  description: API for finding comets, asteroids, and fixed targets in wide-field sky survey data.  Most of the available data sets are archived with the Small-Bodies Node of the NASA Planetary Data System.
+  description: |
+    API for finding comets, asteroids, and fixed targets in wide-field sky
+    survey data.  Most of the available data sets are archived with the
+    Small-Bodies Node of the NASA Planetary Data System.
 servers:
   - url: {{base_href}}
 paths:
@@ -221,6 +224,9 @@ paths:
                       type: object
                       description: Observation and found object metadata.
                       properties:
+                        observation_id:
+                          type: integer
+                          description: Unique CATCH observation identifier.
                         product_id:
                           type: string
                           description: Unique data product identifier, format varies by data source.
@@ -295,6 +301,9 @@ paths:
                           type: number
                           description: SkyMapper approximate photometric zeropoint for the exposure.
                           nullable: true
+                        found_id:
+                          type: integer
+                          description: Unique CATCH found object metadata identifier.
                         date:
                           type: string
                           description: Date at which the ephemeris is calculated, UTC.
@@ -490,6 +499,9 @@ paths:
                       type: object
                       description: Observation and found object metadata.
                       properties:
+                        observation_id:
+                          type: integer
+                          description: Unique CATCH observation identifier.
                         product_id:
                           type: string
                           description: Unique data product identifier, format varies by data source.
@@ -583,6 +595,63 @@ paths:
                           type: string
                           description: URL to preview cutout image in web format.
                           nullable: true
+  /download:
+    post:
+      tags:
+        - Download data
+      summary: Download data based on a moving or fixed target query.
+      operationId: catch_apis.api.download.package
+      requestBody:
+        description: Data products to download.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: object
+                    description: Specifications for each image to download.
+                    properties:
+                      observation_id:
+                        type: integer
+                        description: Unique CATCH observation identifier.
+                      ra:
+                        type: number
+                        description: Right ascension of image cutout center point, ICRF, degrees.
+                      dec:
+                        type: number
+                        description: Declination of image cutout center point, ICRF, degrees.
+                      size:
+                        type: number
+                        description: Cutout image size, degrees.
+                  example:
+                    - observation_id: 52685201
+                      ra: 89.04414
+                      dec: 51.10841
+                      size: 0.15
+                    - observation_id: 52685157
+                      ra: 88.98157
+                      dec: 51.07456
+                      size: 0.15
+                    - observation_id: 52685145
+                      ra: 88.96483
+                      dec: 51.06541
+                      size: 0.15
+                    - observation_id: 52685221
+                      ra: 89.07327
+                      dec: 51.12399
+                      size: 0.15
+      responses:
+        "200":
+          description: URL to packaged data.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: URL
   /status/sources:
     get:
       tags:
@@ -818,3 +887,46 @@ paths:
                     in_progress:
                       type: integer
                       description: Number of searches with an "in progress" status.
+  {% if test_env %}
+  /test/data/{filename}:
+    get:
+      tags:
+        - CATCH testing
+      summary: Get data for unit testing.
+      operationId: catch_apis.api.test.data
+      parameters:
+        - name: filename
+          description: File name to get.  See api.test.data() function for details.
+          in: path
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+        - name: ra
+          description: "Right ascension in degrees."
+          in: query
+          schema:
+            type: number
+            nullable: true
+        - name: dec
+          description: "Declination in degrees."
+          in: query
+          schema:
+            type: number
+            nullable: true
+      responses:
+        "200":
+          description: Testing data
+          content:
+            text/plain:
+              schema:
+                type: string
+            image/fits:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+  {% endif %}

@@ -56,7 +56,7 @@ def test_point_full_search(test_client: TestClient):
     assert results["message"] == ""
     assert np.isclose(results["query"]["ra"], ((34 + 32 / 60) / 60) * 15)
     assert np.isclose(results["query"]["dec"], 8 + 48 / 60 / 60)
-    assert "neat_palomar_tricam" in results["query"]["sources"]
+    assert "test_sky_survey" in results["query"]["sources"]
     assert len(results["data"]) == 4
     assert {
         obs["product_id"][obs["product_id"].rindex("_") + 1 :]  # noqa E203
@@ -75,7 +75,7 @@ def test_point_full_search(test_client: TestClient):
     assert results["message"] == ""
     assert np.isclose(results["query"]["ra"], ((34 + 32 / 60) / 60) * 15)
     assert np.isclose(results["query"]["dec"], -8 - 48 / 60 / 60)
-    assert "neat_palomar_tricam" in results["query"]["sources"]
+    assert "test_sky_survey" in results["query"]["sources"]
     assert len(results["data"]) == 4
     assert all(
         [
@@ -94,7 +94,7 @@ def test_point_date_range(test_client: TestClient):
     parameters = {
         "ra": "00:34:32.0",
         "dec": "+8 00 48",
-        "sources": ["neat_palomar_tricam"],
+        "sources": ["test_sky_survey"],
     }
     response = test_client.get("/fixed", params=parameters)
     response.raise_for_status()
@@ -129,7 +129,7 @@ def test_areal_search(test_client: TestClient):
     parameters = {
         "ra": "00:34:32.0",
         "dec": "+8 00 48",
-        "sources": ["neat_palomar_tricam"],
+        "sources": ["test_sky_survey"],
         "radius": 35,
         "intersection_type": "ImageIntersectsArea",
     }

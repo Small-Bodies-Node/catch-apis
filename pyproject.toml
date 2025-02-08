@@ -29,6 +29,7 @@ test = [
     "requests",
     "sseclient",
     "testing.postgresql",
+    "pillow",
 ]
 
 [build-system]
