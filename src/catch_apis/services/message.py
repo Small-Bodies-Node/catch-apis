@@ -39,12 +39,15 @@ Examples
 
 """
 
-from typing import Union, Dict
+import os
+import json
+import logging
+import urllib.parse
 from uuid import UUID
 from enum import Enum
 from time import monotonic
-import logging
-import json
+
+from flask import request
 
 from .queue import RedisConnection
 from catch_apis.config.env import ENV
@@ -84,9 +87,9 @@ class Message:
 
     def __init__(
         self,
-        job_id: Union[str, UUID],
+        job_id: str | UUID,
         text: str = "",
-        status: Union[str, TaskStatus] = TaskStatus.NONE,
+        status: str | TaskStatus = TaskStatus.NONE,
     ) -> None:
         self.job_id = UUID(str(job_id), version=4)
         self.text: str = text
@@ -103,7 +106,7 @@ class Message:
         return self._job_id
 
     @job_id.setter
-    def job_id(self, j: Union[str, UUID]) -> None:
+    def job_id(self, j: str | UUID) -> None:
         self._job_id = UUID(str(j), version=4)
 
     @property
@@ -111,7 +114,7 @@ class Message:
         return self._status
 
     @status.setter
-    def status(self, s: Union[str, TaskStatus]) -> None:
+    def status(self, s: str | TaskStatus) -> None:
         self._status = TaskStatus(s)
 
     @property
@@ -158,7 +161,7 @@ class MessageHandler(logging.Handler):
 
     """
 
-    def __init__(self, job_id: Union[str, UUID], level: int = logging.INFO) -> None:
+    def __init__(self, job_id: str | UUID, level: int = logging.INFO) -> None:
         self.job_id = UUID(str(job_id), version=4)
         self._redis: RedisConnection = RedisConnection()
         super().__init__(level)
@@ -168,7 +171,7 @@ class MessageHandler(logging.Handler):
         return self._job_id
 
     @job_id.setter
-    def job_id(self, j: Union[str, UUID]) -> None:
+    def job_id(self, j: str | UUID) -> None:
         self._job_id = UUID(str(j), version=4)
 
     def emit(self, record: logging.LogRecord) -> None:
@@ -178,7 +181,7 @@ class MessageHandler(logging.Handler):
         msg.publish()
 
 
-def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
+def listen_for_task_messages(job_id: str | UUID) -> None:
     """Publish messages for this job ID to the task messaging stream.
 
     Intended for messages with `status='running'`.
@@ -205,7 +208,7 @@ def listen_for_task_messages(job_id: Union[str, UUID]) -> None:
     logger.addHandler(MessageHandler(job_id, level=level))
 
 
-def stop_listening_for_task_messages(job_id: Union[str, UUID]) -> None:
+def stop_listening_for_task_messages(job_id: str | UUID) -> None:
     """Stop publishing messages for this job ID to the task messaging stream.
 
 
@@ -223,3 +226,14 @@ def stop_listening_for_task_messages(job_id: Union[str, UUID]) -> None:
         if getattr(handler, "job_id", None) == job_id:
             logger.removeHandler(handler)
             break
+
+
+def get_message_stream_url() -> str:
+    """Get the message stream url."""
+
+    parsed: tuple = urllib.parse.urlsplit(request.url_root)
+    message_stream_url: str = urllib.parse.urlunsplit(
+        (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
+    )
+
+    return message_stream_url

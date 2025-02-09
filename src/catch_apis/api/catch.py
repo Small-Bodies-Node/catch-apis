@@ -14,6 +14,7 @@ from ..services.message import (
     Message,
     listen_for_task_messages,
     stop_listening_for_task_messages,
+    get_message_stream_url,
 )
 from .. import __version__ as version
 
@@ -139,13 +140,10 @@ def catch(
     results_url: str = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "caught", job_id.hex), "", "")
     )
-    message_stream_url: str = urllib.parse.urlunsplit(
-        (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
-    )
 
     if status == QueryStatus.QUEUED:
         result["queued"] = True
-        result["message_stream"] = message_stream_url
+        result["message_stream"] = get_message_stream_url()
         result["results"] = results_url
         messages.append(
             "Enqueued search.  Listen to task messaging stream until job "
