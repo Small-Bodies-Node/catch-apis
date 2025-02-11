@@ -51,35 +51,29 @@ class PackageManager:
         self.download_and_package(manifest)
         return self.filenames
 
-    def get_observations(
-        self, catch: Catch, observation_ids: list[int]
-    ) -> list[Observation]:
+    def get_observations(self, catch: Catch, observation_ids: list[int]) -> None:
         """Get observation metadata by observation_id from the CATCH database."""
 
-        self.observations = (
-            catch.db.session.query(Observation)
-            .filter(Observation.observation_id.in_(observation_ids))
-            .all()
-        )
-
-        missing = set(observation_ids) - {
-            obs.observation_id for obs in self.observations
+        self.observations = {
+            obs.observation_id: obs
+            for obs in (
+                catch.db.session.query(Observation)
+                .filter(Observation.observation_id.in_(observation_ids))
+                .all()
+            )
         }
+
+        missing = set(observation_ids) - set(self.observations.keys())
 
         for m in missing:
             self.error_log.append(f"{m}: Not found in the CATCH database.")
 
-    def get_manifest(
-        self, observations: list[Observation], data_products: DataProducts
-    ) -> dict[str, list]:
+    def get_manifest(self, data_products: DataProducts) -> dict[str, list]:
         """Forms lists of URLs from which to retrieve the data.
 
 
         Parameters
         ----------
-        observations : list of Observation
-            The observational meta data from the CATCH database.
-
         data_products : DataProducts
             The requested data products to download.  This may indicate, e.g.,
             if cutouts are to be downloaded.
@@ -93,29 +87,48 @@ class PackageManager:
 
         """
 
-        manifest = defaultdict(list)
+        manifest = defaultdict(set)
 
-        for obs in self.observations:
-            cutout_spec = data_products.cutout_spec(obs.observation_id)
+        for image in data_products.images:
+            observation_id = image["observation_id"]
+            obs = self.observations.get(observation_id)
+
+            if obs is None:
+                # missing observations should already be noted in the error log,
+                # so continue on to the next one
+                continue
+
+            cutout_spec = image.get("cutout")
             if cutout_spec is None:
                 url = obs.archive_url
                 if url is None:
                     self.error_log.append(
-                        f"{obs.observation_id}: Full-size image not available for {obs.product_id}"
+                        f"{observation_id}: Full-size image not available for {obs.product_id}"
                     )
-                manifest["archive-data"].append(url)
+                    continue
+
+                manifest["archive-data"].add(url)
             else:
                 if not all([k in cutout_spec for k in ["ra", "dec", "size"]]):
                     self.error_log.append(
-                        f"{obs.observation_id}: Cannot get cutout for {obs.product_id}, cutouts require ra, dec, and size: {str(cutout_spec)}"
+                        f"{observation_id}: Cannot get cutout for {obs.product_id}, cutouts require ra, dec, and size: {str(cutout_spec)}"
                     )
                     continue
-                manifest["cutouts"].append(obs.cutout_url(**cutout_spec))
+
+                url = obs.cutout_url(**cutout_spec)
+                if url is None:
+                    self.error_log.append(
+                        f"{observation_id}: Cannot get cutout for {obs.product_id}, cutouts not available for this data source."
+                    )
+                    continue
+
+                manifest["cutouts"].add(url)
 
             if obs.label_url is not None:
-                manifest["archive-data"].append(obs.label_url)
+                manifest["archive-data"].add(obs.label_url)
 
-        return manifest
+        # return as a plain dict with lists (not sets)
+        return {k: list(v) for k, v in manifest.items()}
 
     def download_and_package(self, manifest: dict[str, list]):
         """Download the data from the URLs and package into gzipped tar files.

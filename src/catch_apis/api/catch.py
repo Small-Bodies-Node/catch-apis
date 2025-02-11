@@ -41,7 +41,7 @@ def catch(
     uncertainty_ellipse: bool = False,
     padding: float = 0,
     cached: bool = True,
-):
+) -> dict:
     """Controller for moving target queries.
 
     Parameters

@@ -30,34 +30,26 @@ class DataProducts:
     def __init__(self, images: list[dict], previews: bool):
         self.images = images
         self.previews = previews
+        self.observation_ids = list(
+            set([image["observation_id"] for image in self.images])
+        )
 
-        # sort image requests into a list by observation ID
-        self.images_by_id: dict[int, dict] = {
-            image["observation_id"]: image for image in self.images
-        }
+    # def cutout_spec(self, observation_id: int) -> dict[str, float] | None:
+    #     """Get the user's requested cutout parameters.
 
-    @property
-    def observation_ids(self):
-        return list(self.images_by_id.keys())
+    #     Parameters
+    #     ----------
+    #     observation_id : int
+    #         The observation ID in question.
 
-    def cutout_spec(self, observation_id: int) -> dict[str, float] | None:
-        """Get the user's requested cutout parameters.
+    #     Returns
+    #     -------
+    #     spec : dict or None
+    #         The specifications (ra, dec, size) or None, if no cutout requested.
 
+    #     """
 
-        Parameters
-        ----------
-        observation_id : int
-            The observation ID in question.
-
-
-        Returns
-        -------
-        spec : dict or None
-            The specifications (ra, dec, size) or None, if no cutout requested.
-
-        """
-
-        return self.images_by_id.get(observation_id, {}).get("cutout")
+    #     return self.images_by_id.get(observation_id, {}).get("cutout")
 
 
 def package(job_id: UUID, data_products: DataProducts) -> PackagingStatus:

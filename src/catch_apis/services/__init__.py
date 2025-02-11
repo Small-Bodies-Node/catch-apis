@@ -1,4 +1,3 @@
-from ..tasks import download
 from .target_name import parse_target_name  # noqa: F401
 from .catch import catch  # noqa: F401
 from .caught import caught  # noqa: F401
