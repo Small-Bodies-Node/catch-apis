@@ -117,6 +117,7 @@ def catch(
         "job_id": job_id.hex,
         "queued": False,
         "queue_full": False,
+        "queue_position": None,
         "message": None,
         "version": version,
     }
@@ -144,6 +145,11 @@ def catch(
     )
 
     if status == QueryStatus.QUEUED:
+        for job in services.status.queue()["jobs"]:
+            if job["prefix"] == job_id.hex[:8]:
+                result["queue_position"] = job["position"]
+                break
+
         result["queued"] = True
         result["message_stream"] = message_stream_url
         result["results"] = results_url

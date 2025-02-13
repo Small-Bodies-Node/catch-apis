@@ -120,6 +120,10 @@ paths:
                   queue_full:
                     description: true if the queue is full, false if the queue is accepting queries.
                     type: boolean
+                  queue_position:
+                    description: Query position within the queue.  0 is next to be processed.  null if not queued.
+                    type: int
+                    nullable: true
                   message:
                     description: Text message for the user.
                     type: string
