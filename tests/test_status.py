@@ -27,9 +27,7 @@ def test_status_sources(test_client: TestClient):
     assert neat_palomar_tricam["nights"] == 1
 
 
-def test_status_job_id(
-    test_client: TestClient, mock_redis, mock_flask_request, monkeypatch
-):
+def test_status_job_id(test_client: TestClient):
     job_id = uuid.uuid4()
     catch_task(job_id, "65P", ["neat_palomar_tricam"], None, None, False, 0, True)
 
