@@ -120,3 +120,17 @@ def test_queue(test_client: TestClient, mock_redis, mock_flask_request, monkeypa
     assert results["jobs"][0]["position"] == 0
     Time(results["jobs"][0]["enqueued_at"])
     assert results["jobs"][0]["status"] == "queued"
+
+
+def test_queries(test_client: TestClient):
+    response = test_client.get(f"/status/queries")
+    response.raise_for_status()
+    results = response.json()
+    assert len(results) == 3
+    for i, d in enumerate([1, 7, 30]):
+        assert results[i]["days"] == d
+        assert results[i]["cached"] == 0
+        assert results[i]["errored"] == 0
+        assert results[i]["finished"] == 0
+        assert results[i]["in_progress"] == 0
+        assert results[i]["jobs"] == 0
