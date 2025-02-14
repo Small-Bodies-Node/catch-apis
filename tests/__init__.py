@@ -8,6 +8,7 @@ from collections import defaultdict
 import testing.postgresql
 from starlette.testclient import TestClient
 import numpy as np
+from astropy.time import Time
 
 from catch.catch import Catch
 from catch.config import Config
@@ -66,6 +67,7 @@ def dummy_surveys(postgresql):
                     mjd_start=mjd_start,
                     mjd_stop=mjd_start + EXPTIME,
                     product_id=product_id,
+                    mjd_added=Time.now().mjd,
                 )
                 obs.set_fov(*_fov)
                 observations.append(obs)
@@ -110,9 +112,13 @@ class MockedJob:
         self.f = f
         self.args = args
         self.position = position
+        self.enqueued_at = Time.now().iso
 
     def get_position(self):
         return self.position
+
+    def get_status(self):
+        return "queued"
 
 
 class MockedJobsQueue:
@@ -155,9 +161,13 @@ def mock_redis(monkeypatch):
     import catch_apis.services.status.queue
     import catch_apis.services.queue
 
-    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", MockedJobsQueue)
-    monkeypatch.setattr(catch_apis.services.status.queue, "JobsQueue", MockedJobsQueue)
-    monkeypatch.setattr(catch_apis.services.catch, "JobsQueue", MockedJobsQueue)
+    jobs_queue = MockedJobsQueue()
+
+    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", lambda: jobs_queue)
+    monkeypatch.setattr(
+        catch_apis.services.status.queue, "JobsQueue", lambda: jobs_queue
+    )
+    monkeypatch.setattr(catch_apis.services.catch, "JobsQueue", lambda: jobs_queue)
 
     monkeypatch.setattr(
         catch_apis.services.message, "RedisConnection", MockedRedisConnection

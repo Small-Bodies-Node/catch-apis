@@ -4,7 +4,7 @@ from ...config import allowed_sources
 
 
 def queries_service() -> list[dict[str, str | int | None]]:
-    "Get a summary of data recently added to the CATCH database."
+    "Get a summary of recent queries from the CATCH database."
 
     data: list[dict[str, str | int | None]]
     catch: Catch
