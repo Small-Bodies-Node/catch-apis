@@ -46,7 +46,7 @@ def test_catch_controller_queue_accounting(
             assert result["queue_position"] is None
 
 
-def test_caught(test_client: TestClient):
+def test_caught(test_client: TestClient, mock_redis):
     job_id = uuid.uuid4()
     catch_task(job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, True)
 

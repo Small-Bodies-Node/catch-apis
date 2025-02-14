@@ -161,9 +161,13 @@ def mock_redis(monkeypatch):
     import catch_apis.services.status.queue
     import catch_apis.services.queue
 
-    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", MockedJobsQueue)
-    monkeypatch.setattr(catch_apis.services.status.queue, "JobsQueue", MockedJobsQueue)
-    monkeypatch.setattr(catch_apis.services.catch, "JobsQueue", MockedJobsQueue)
+    jobs_queue = MockedJobsQueue()
+
+    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", lambda: jobs_queue)
+    monkeypatch.setattr(
+        catch_apis.services.status.queue, "JobsQueue", lambda: jobs_queue
+    )
+    monkeypatch.setattr(catch_apis.services.catch, "JobsQueue", lambda: jobs_queue)
 
     monkeypatch.setattr(
         catch_apis.services.message, "RedisConnection", MockedRedisConnection
