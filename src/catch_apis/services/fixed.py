@@ -14,7 +14,7 @@ from .catch_manager import catch_manager
 from . import marshal
 
 
-def fixed_target_query(
+def fixed_target_query_service(
     job_id: UUID,
     ra: Angle,
     dec: Angle,

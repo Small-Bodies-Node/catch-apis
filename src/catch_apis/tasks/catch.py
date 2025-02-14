@@ -17,7 +17,7 @@ from ..services.message import (
 from ..config import get_logger, allowed_sources
 
 
-def catch(
+def catch_task(
     job_id: uuid.UUID,
     target: str,
     sources: Union[List[str], None],

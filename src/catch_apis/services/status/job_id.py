@@ -6,7 +6,7 @@ from catch.model import CatchQuery, Found
 from ..catch_manager import Catch, catch_manager
 
 
-def job_id(job_id: UUID) -> tuple[dict, list[dict]]:
+def job_id_service(job_id: UUID) -> tuple[dict, list[dict]]:
     """Return summary of previous query by job_id.
 
 

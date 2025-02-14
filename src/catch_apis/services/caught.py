@@ -6,7 +6,7 @@ from . import marshal
 from .catch_manager import Catch, catch_manager
 
 
-def caught(job_id: uuid.UUID) -> List[Dict[str, Any]]:
+def caught_service(job_id: uuid.UUID) -> List[Dict[str, Any]]:
     """Caught object results.
 
 
@@ -31,9 +31,10 @@ def caught(job_id: uuid.UUID) -> List[Dict[str, Any]]:
 
         found: Found
         obs: Observation
-        for (found, obs) in found_observations:
-            row: Dict[str, Union[str, float, int, None]
-                      ] = marshal.observation(obs, found.ra, found.dec)
+        for found, obs in found_observations:
+            row: Dict[str, Union[str, float, int, None]] = marshal.observation(
+                obs, found.ra, found.dec
+            )
             row.update(marshal.found(found))
             data.append(row)
 

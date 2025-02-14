@@ -26,7 +26,7 @@ ENV.REDIS_JOBS = "REDIS_JOBS_TESTING"
 ENV.REDIS_TASK_MESSAGES = "TASK_MESSAGES_TESTING"
 
 from catch_apis.app import app
-from catch_apis.services.stream import messages as stream_messages
+from catch_apis.services.stream import messages_service
 from catch_apis import woRQer
 
 
@@ -39,8 +39,8 @@ def test_client() -> TestClient:
 def mock_stream_messages(timeout):
     """Patch message stream to timeout in an absolute amount of time."""
     with mock.patch(
-        "catch_apis.services.stream.messages",
-        partial(stream_messages, timeout),
+        "catch_apis.services.stream.messages_service",
+        partial(messages_service, timeout),
     ):
         yield
 
@@ -124,7 +124,7 @@ def _query(
         # hang until the timeout is reached, run a worker in "burst" mode, then
         # directly read messages from the message function
         woRQer.run(True)
-        messages = [message for message in stream_messages(1)]
+        messages = [message for message in messages_service(1)]
         for message in messages:
             if len(message) == 0 or not message.startswith("data:"):
                 continue
@@ -160,11 +160,11 @@ def _query(
 def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
     source = "neat_maui_geodss"
     catch0, caught0, queued0 = _query(test_client, targets[0], True, source=source)
-    data0 = caught0["data"]
+    data0 = sorted(caught0["data"], key=lambda row: row["product_id"])
     assert len(data0) > 0
     for target in targets[1:]:
         catch, caught, queued = _query(test_client, target, True, source=source)
-        data = caught["data"]
+        data = sorted(caught["data"], key=lambda row: row["product_id"])
         for a, b in zip(data0, data):
             for k in COMPARE_KEYS:
                 # np.isclose using rtol = 1% in case of ephemeris updates and

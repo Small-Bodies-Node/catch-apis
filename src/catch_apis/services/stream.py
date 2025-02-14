@@ -7,7 +7,7 @@ from catch_apis.config.env import ENV
 from .queue import RedisConnection
 
 
-def messages(timeout: int = 0) -> Iterator[str]:
+def messages_service(timeout: int = 0) -> Iterator[str]:
     """Iterator for all CATCH-APIs task messages.
 
     Listens to redis task messaging stream, prints the messages.
