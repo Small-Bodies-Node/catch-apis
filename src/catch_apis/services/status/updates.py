@@ -3,7 +3,7 @@ from ..catch_manager import Catch, catch_manager
 from ...config import allowed_sources
 
 
-def updates() -> list[dict[str, str | int | None]]:
+def updates_service() -> list[dict[str, str | int | None]]:
     "Get a summary of data recently added to the CATCH database."
 
     data: list[dict[str, str | int | None]]

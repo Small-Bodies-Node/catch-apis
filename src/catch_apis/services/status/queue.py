@@ -1,10 +1,10 @@
 from uuid import UUID
 from astropy.time import Time
-from ..config.env import ENV
-from .queue import JobsQueue
+from ...config.env import ENV
+from ...services.queue import JobsQueue
 
 
-def queue() -> dict[str, bool | list[dict[str, str | int]]]:
+def queue_service() -> dict[str, bool | list[dict[str, str | int]]]:
     """Controller to return summary of job queue.
 
 

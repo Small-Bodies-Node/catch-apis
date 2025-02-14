@@ -7,11 +7,11 @@ from astropy.time import Time
 
 from .catch_manager import catch_manager
 from .queue import JobsQueue
-from .. import tasks
+from ..tasks.catch import catch_task
 from ..config import QueryStatus
 
 
-def catch(
+def catch_service(
     job_id: UUID,
     target: str,
     sources: List[str],
@@ -89,7 +89,7 @@ def catch(
             # can parallelize search here; when this was tested on 3.0.0.dev4,
             # the message stream got several copies of the task messages
             queue.enqueue(
-                f=tasks.catch,
+                f=catch_task,
                 args=[
                     job_id,
                     target,
