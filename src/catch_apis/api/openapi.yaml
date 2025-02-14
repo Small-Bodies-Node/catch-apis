@@ -646,15 +646,26 @@ paths:
                     type: object
                     description: Query parameters.
                     properties:
+                      padding:
+                        description: Ephemeris search area was increased by this amount, units of arcmin.
+                        type: number
+                      sources:
+                        description: Sources to search.
+                        type: array
+                        items:
+                          type: string
+                      start_date:
+                        description: Query start date.
+                        type: string
+                      stop_date:
+                        description: Query stop date.
+                        type: string
                       target:
                         description: Target query string.
                         type: string
                       uncertainty_ellipse:
                         description: Was the ephemeris uncertainty ellipse used in the search?
                         type: boolean
-                      padding:
-                        description: Ephemeris search area was increased by this amount, units of arcmin.
-                        type: number
                   status:
                     type: array
                     items:
