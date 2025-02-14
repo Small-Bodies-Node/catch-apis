@@ -112,9 +112,13 @@ class MockedJob:
         self.f = f
         self.args = args
         self.position = position
+        self.enqueued_at = Time.now().iso
 
     def get_position(self):
         return self.position
+
+    def get_status(self):
+        return "queued"
 
 
 class MockedJobsQueue:
