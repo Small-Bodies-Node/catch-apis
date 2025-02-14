@@ -8,6 +8,7 @@ from collections import defaultdict
 import testing.postgresql
 from starlette.testclient import TestClient
 import numpy as np
+from astropy.time import Time
 
 from catch.catch import Catch
 from catch.config import Config
@@ -66,6 +67,7 @@ def dummy_surveys(postgresql):
                     mjd_start=mjd_start,
                     mjd_stop=mjd_start + EXPTIME,
                     product_id=product_id,
+                    mjd_added=Time.now().mjd,
                 )
                 obs.set_fov(*_fov)
                 observations.append(obs)

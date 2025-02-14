@@ -59,3 +59,21 @@ def test_status_job_id(
     # test invalid job id
     response = test_client.get(f"/status/invalid_job_id")
     assert response.status_code == 400
+
+
+def test_updates(test_client: TestClient):
+    response = test_client.get(f"/status/updates")
+    response.raise_for_status()
+    results = response.json()
+
+    assert len(results) == 3
+
+    # they should all be the same except for days
+    for i in range(3):
+        assert results[i]["count"] == 196
+        assert results[i]["source"] == "neat_palomar_tricam"
+        assert results[i]["source_name"] == "NEAT Palomar Tricam"
+        assert results[i]["start_date"] == "2012-03-14 00:00:00.000"
+        assert results[i]["stop_date"] == "2012-03-14 02:00:45.000"
+
+    assert [result["days"] for result in results] == [1, 7, 30]
