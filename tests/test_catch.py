@@ -1,10 +1,14 @@
 # Licensed with the 3-clause BSD license.  See LICENSE for details.
 
+import uuid
+import pytest
+import numpy as np
 from starlette.testclient import TestClient
 import catch_apis.api.catch
 from catch_apis.api.catch import catch_controller
+from catch_apis.tasks.catch import catch_task
 from catch_apis.config.env import ENV
-from catch_apis.config import QueryStatus
+from catch_apis.config import QueryStatus, allowed_sources
 from . import fixture_test_client, mock_flask_request, mock_redis, MockedJobsQueue
 
 
@@ -32,6 +36,49 @@ class TestCatchController:
         assert result["error"]
         assert not result["queued"]
         assert "Invalid stop_date" in result["message"]
+
+    def test_queued(self, test_client: TestClient, mock_redis):
+        response = test_client.get(f"/catch", params={"target": "2P", "cached": True})
+        response.raise_for_status()
+        results = response.json()
+
+        assert uuid.UUID(results["job_id"]).version == 4
+        assert not results["error"]
+        assert results["queued"]
+        assert not results["queue_full"]
+        assert results["results"] == f"http://testserver/caught/{results['job_id']}"
+        assert results["message_stream"] == "http://testserver/stream"
+        assert results["query"]["target"] == "2P"
+        assert set(results["query"]["sources"]) == set(allowed_sources)
+        assert results["query"]["start_date"] is None
+        assert results["query"]["stop_date"] is None
+        assert not results["query"]["uncertainty_ellipse"]
+        assert np.isclose(results["query"]["padding"], 0)
+        assert results["query"]["cached"]
+
+    @pytest.mark.remote
+    def test_cached(self, test_client: TestClient, mock_redis):
+        # first, cache a query
+        job_id = uuid.uuid4()
+        catch_task(job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, False)
+
+        # re-run, fetching the cached result
+        response = test_client.get(
+            f"/catch",
+            params={
+                "target": "3910",
+                "sources": ["neat_palomar_tricam"],
+                "cached": True,
+            },
+        )
+        response.raise_for_status()
+        results = response.json()
+
+        assert results["job_id"] != job_id.hex
+        assert not results["error"]
+        assert not results["queued"]
+        assert not results["queue_full"]
+        assert results["results"] == f"http://testserver/caught/{results['job_id']}"
 
     def test_queue_accounting(
         self,

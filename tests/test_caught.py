@@ -4,6 +4,7 @@ import uuid
 import pytest
 import numpy as np
 from starlette.testclient import TestClient
+from catch_apis.api.caught import caught_controller
 from catch_apis.tasks.catch import catch_task
 from . import fixture_test_client, mock_redis
 
@@ -63,3 +64,9 @@ def test_caught(test_client: TestClient, mock_redis):
             assert expected[k] is None
         else:
             assert expected[k] == v
+
+
+def test_invalid_job_id(test_client: TestClient):
+    response = test_client.get(f"/caught/invalid_job_id")
+    assert response.status_code == 400
+    assert response.content == "Invalid job ID"
