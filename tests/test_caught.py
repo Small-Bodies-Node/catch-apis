@@ -69,4 +69,4 @@ def test_caught(test_client: TestClient, mock_redis):
 def test_invalid_job_id(test_client: TestClient):
     response = test_client.get(f"/caught/invalid_job_id")
     assert response.status_code == 400
-    assert response.content == "Invalid job ID"
+    assert response.content == b'"Invalid job ID"\n'

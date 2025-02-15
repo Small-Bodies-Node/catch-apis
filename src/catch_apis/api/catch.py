@@ -7,7 +7,7 @@ from flask import request
 from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
-from ..services.target_name import parse_target_name
+from ..validation import parse_target_name, parse_date
 from ..services.catch import catch_service
 from ..services.queue import JobsQueue
 from ..services.message import (
@@ -30,6 +30,19 @@ def _parse_date(date: str | None, kind: str) -> str | None:
 
 def _format_date(date):
     return date if date is None else date.iso
+
+
+def invalid_query(messages: list[str]) -> dict:
+    """Form the response for an invalid query."""
+    logger = get_logger()
+    result = {
+        "error": True,
+        "queued": False,
+        "message": "  ".join(messages),
+        "version": version,
+    }
+    logger.info(json.dumps(result))
+    return result
 
 
 def catch_controller(
@@ -110,7 +123,7 @@ def catch_controller(
     result = {
         "query": {
             "target": sanitized_target,
-            "type": target_type,
+            "type": target_type.name,
             "sources": _sources,
             "start_date": _format_date(sanitized_start_date),
             "stop_date": _format_date(sanitized_stop_date),
@@ -130,7 +143,7 @@ def catch_controller(
     Message.reset_t0()
     listen_for_task_messages(job_id)
 
-    status: QueryStatus = catch_service(
+    status = catch_service(
         job_id,
         sanitized_target,
         sources=_sources,
@@ -173,6 +186,9 @@ def catch_controller(
         messages.append("Found cached data.  Retrieve from results URL.")
 
     result["message"] = "  ".join(messages)
+
     logger.info(json.dumps(result))
+
     stop_listening_for_task_messages(job_id)
+
     return result

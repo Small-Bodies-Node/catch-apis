@@ -13,7 +13,7 @@ from . import fixture_test_client, mock_flask_request, mock_redis, MockedJobsQue
 
 
 class TestCatchController:
-    def test_target_error(self):
+    def test_target_error(self, test_client: TestClient, mock_flask_request):
         # empty target string
         result = catch_controller("")
         assert result["error"]
@@ -37,7 +37,7 @@ class TestCatchController:
         assert not result["queued"]
         assert "Invalid stop_date" in result["message"]
 
-    def test_queued(self, test_client: TestClient, mock_redis):
+    def test_queued(self, test_client: TestClient, mock_redis, mock_flask_request):
         response = test_client.get(f"/catch", params={"target": "2P", "cached": True})
         response.raise_for_status()
         results = response.json()

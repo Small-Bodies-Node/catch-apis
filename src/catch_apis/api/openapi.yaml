@@ -441,6 +441,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  error:
+                    description: true if an error occurred.
+                    type: boolean
                   message:
                     type: string
                     description: Message for the user.
