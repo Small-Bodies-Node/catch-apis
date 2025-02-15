@@ -114,6 +114,9 @@ paths:
                   job_id:
                     description: Unique job ID, used to retrieve results.
                     type: string
+                  error:
+                    description: true if an error occurred.
+                    type: boolean
                   queued:
                     description: true if a search has been queued, false if the results are ready."
                     type: boolean
