@@ -78,8 +78,15 @@ def catch_controller(
     target_type: str
     sanitized_target: str
     target_type, sanitized_target = parse_target_name(target)
-    if sanitized_target == "":
+    if target.strip() == "":
         messages.append("Invalid target: empty string")
+        valid_query = False
+    elif sanitized_target == "":
+        messages.append(
+            "Target names may be ambiguous (e.g., Encke is the name of a comet and "
+            "an asteroid) and are not supported.  Use the target's designation or "
+            "permanent catalog ID (e.g., 2P or 9134)."
+        )
         valid_query = False
 
     # default: search all sources allowed in the API spec
@@ -97,6 +104,7 @@ def catch_controller(
     if not valid_query:
         # then just stop now
         result: dict = {
+            "error": True,
             "queued": False,
             "message": "  ".join(messages),
             "version": version,
@@ -117,6 +125,7 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
+        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
