@@ -1,71 +1,39 @@
+# Licensed with the 3-clause BSD license.  See LICENSE for details.
+
 import json
 import uuid
 import logging
-from typing import List, Optional, Union
 
-from astropy.time import Time
 from astropy.coordinates import Angle
-import astropy.units as u
 
+from ..validation import parse_ra, parse_dec, parse_date
 from ..services.fixed import fixed_target_query_service
 from ..config import CatchApisException, get_logger, allowed_sources
 from .. import __version__ as version
-
-
-def _parse_ra(ra: str) -> Angle:
-    """Raise ValueError if cannot be parsed."""
-
-    try:
-        float(ra)
-        ra_unit = u.degree
-    except ValueError:
-        ra_unit = u.hourangle
-
-    try:
-        sanitized_ra: Angle = Angle(ra, ra_unit)
-    except Exception as e:
-        raise ValueError(f"Invalid ra: {ra}")
-
-    return sanitized_ra
-
-
-def _parse_dec(dec: str) -> Angle:
-    """Raise ValueError if cannot be parsed."""
-
-    sanitized_dec: Angle
-    try:
-        sanitized_dec = Angle(dec)
-    except u.UnitsError:
-        try:
-            sanitized_dec = Angle(dec, u.deg)
-        except Exception as e:
-            raise ValueError(f"Invalid dec: {dec}")
-    except ValueError as e:
-        raise ValueError(f"Invalid dec: {dec}")
-
-    return sanitized_dec
-
-
-def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
-    sanitized_date: Union[str, None] = None
-    try:
-        sanitized_date = None if date is None else Time(date)
-    except ValueError:
-        raise ValueError(f"Invalid {kind}_date: {date}")
-
-    return sanitized_date
 
 
 def _format_date(date):
     return date if date is None else date.iso
 
 
+def invalid_query(messages: list[str]) -> dict:
+    """Form the response for an invalid query."""
+    logger = get_logger()
+    result = {
+        "error": True,
+        "message": "  ".join(messages),
+        "version": version,
+    }
+    logger.info(json.dumps(result))
+    return result
+
+
 def fixed_target_query_controller(
     ra: str,
     dec: str,
-    sources: Optional[List[str]] = None,
-    start_date: Optional[str] = None,
-    stop_date: Optional[str] = None,
+    sources: list[str] | None = None,
+    start_date: str | None = None,
+    stop_date: str | None = None,
     radius: float = 0,
     intersection_type: str = "ImageIntersectsArea",
 ) -> dict:
@@ -100,56 +68,52 @@ def fixed_target_query_controller(
 
     """
 
-    logger: logging.Logger = get_logger()
-    job_id: uuid.UUID = uuid.uuid4()
-    messages: List[str] = []
+    logger = get_logger()
+    job_id = uuid.uuid4()
+    messages = []
+    valid_query = True  # assume valid until it isn't
 
     # default: search all sources allowed in the API spec
     # but, the user may have requested specific sources
-    _sources: List[str] = allowed_sources if sources is None else sources
+    _sources = allowed_sources if sources is None else sources
 
-    valid_query: bool = True
-
-    exc: Exception
     try:
-        sanitized_ra: Angle = _parse_ra(ra)
-        sanitized_dec: Angle = _parse_dec(dec)
+        sanitized_ra = parse_ra(ra)
+        sanitized_dec = parse_dec(dec)
     except ValueError as exc:
         messages.append(str(exc))
         valid_query = False
 
     try:
-        sanitized_start_date: Union[str, None] = _parse_date(start_date, "start")
-        sanitized_stop_date: Union[str, None] = _parse_date(stop_date, "stop")
+        sanitized_start_date = parse_date(start_date, "start")
+        sanitized_stop_date = parse_date(stop_date, "stop")
     except ValueError as exc:
         messages.append(str(exc))
         valid_query = False
 
-    data: List[dict] = []
-    if valid_query:
-        try:
-            data = fixed_target_query_service(
-                job_id,
-                sanitized_ra,
-                sanitized_dec,
-                sources,
-                sanitized_start_date,
-                sanitized_stop_date,
-                radius,
-                intersection_type,
-            )
-        except CatchApisException as exc:
-            messages.append(str(exc))
+    if not valid_query:
+        return invalid_query(messages)
 
-    result: dict = {
+    data = []
+    try:
+        data = fixed_target_query_service(
+            job_id,
+            sanitized_ra,
+            sanitized_dec,
+            sources,
+            sanitized_start_date,
+            sanitized_stop_date,
+            radius,
+            intersection_type,
+        )
+    except CatchApisException as exc:
+        messages.append(str(exc))
+
+    # add data to the result after logging
+    result = {
         "message": "  ".join(messages),
         "version": version,
-    }
-
-    if valid_query:
-        # only append if the query seems valid otherwise the angles and dates
-        # may not be defined
-        result["query"] = {
+        "query": {
             "ra": sanitized_ra.deg,
             "dec": sanitized_dec.deg,
             "sources": _sources,
@@ -157,9 +121,10 @@ def fixed_target_query_controller(
             "stop_date": _format_date(sanitized_stop_date),
             "radius": radius,
             "intersection_type": intersection_type,
-        }
+        },
+        "count": len(data),
+    }
 
     logger.info(json.dumps(result))
-    result["count"] = len(data)
     result["data"] = data
     return result
