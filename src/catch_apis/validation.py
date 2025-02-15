@@ -5,11 +5,11 @@ from enum import Enum
 from typing import Pattern
 
 from astropy.time import Time
-from astropy.coordinates import Angle
+from astropy.coordinates import Latitude, Longitude
 import astropy.units as u
 
 
-def parse_ra(ra: str) -> Angle:
+def parse_ra(ra: str) -> Longitude:
     """Parse a string as an angle of right ascension.
 
     The string may specify the units, see astropy.coordinates.Angle() for
@@ -29,14 +29,14 @@ def parse_ra(ra: str) -> Angle:
         ra_unit = u.hourangle
 
     try:
-        sanitized_ra = Angle(ra, ra_unit)
+        sanitized_ra = Longitude(ra, ra_unit)
     except Exception as e:
         raise ValueError(f"Invalid ra: {ra}")
 
     return sanitized_ra
 
 
-def parse_dec(dec: str) -> Angle:
+def parse_dec(dec: str) -> Latitude:
     """Parse a string as an angle of declination.
 
     The string may specify the units, see astropy.coordinates.Angle() for
@@ -49,16 +49,11 @@ def parse_dec(dec: str) -> Angle:
     """
 
     try:
-        return Angle(dec)
+        return Latitude(dec, u.deg)
     except ValueError:
         raise ValueError(f"Invalid dec: {dec}")
     except u.UnitsError:
-        pass
-
-    try:
-        return Angle(dec, u.deg)
-    except Exception:
-        raise ValueError(f"Invalid dec: {dec}")
+        raise ValueError(f"Invalid units for dec: {dec}")
 
 
 def parse_date(date: str | None, kind: str) -> str | None:

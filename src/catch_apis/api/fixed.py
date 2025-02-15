@@ -107,7 +107,15 @@ def fixed_target_query_controller(
             intersection_type,
         )
     except CatchApisException as exc:
+        logger.exception("Error during fixed target query.")
         messages.append(str(exc))
+        return invalid_query(messages)
+    except:
+        logger.exception("Unexpected error during fixed target query.")
+        messages.append(
+            "Unexpected error.  Please contact us with the details of your query."
+        )
+        return invalid_query(messages)
 
     # add data to the result after logging
     result = {
