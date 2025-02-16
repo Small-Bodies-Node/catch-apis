@@ -137,9 +137,18 @@ class MockedJobsQueue:
 class MockedRedisConnection:
     def __init__(self, *args, **kwargs):
         self.items = defaultdict(list)
+        self.last = None
 
     def xadd(self, name, data, **kwargs):
         self.items[name].append(data)
+
+    def xread(self, streams, **kwargs):
+        # very sloppy, but getting accurate and precise is not important for our
+        # testing
+        name = list(streams.keys())[0]
+        if len(self.items[name]) == 0:
+            return []
+        return [[b"0", [(b"1", self.items[name].pop(0))]]]
 
     def llen(self, name, *args, **kwargs):
         return len(self.items[name])
@@ -184,3 +193,27 @@ def mock_flask_request(monkeypatch):
         url_root = "http://testserver/"
 
     monkeypatch.setattr(catch_apis.api.catch, "request", Request)
+
+
+@pytest.fixture
+def mock_messages(monkeypatch):
+    import catch_apis.services.message
+
+    # from catch_apis.services.stream import messages_service
+    import catch_apis.services.stream
+
+    redis_connection = MockedRedisConnection()
+
+    monkeypatch.setattr(
+        catch_apis.services.message, "RedisConnection", lambda: redis_connection
+    )
+    monkeypatch.setattr(
+        catch_apis.services.stream, "RedisConnection", lambda: redis_connection
+    )
+
+    # # Patch message stream to timeout in an absolute amount of time
+    # with mock.patch(
+    #     "catch_apis.services.stream.messages_service",
+    #     partial(messages_service, 0),
+    # ):
+    #     yield

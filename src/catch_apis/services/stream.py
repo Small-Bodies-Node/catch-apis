@@ -7,7 +7,7 @@ from catch_apis.config.env import ENV
 from .queue import RedisConnection
 
 
-def messages_service(timeout: int = 0) -> Iterator[str]:
+def message_stream_service(timeout: int = 0) -> Iterator[str]:
     """Iterator for all CATCH-APIs task messages.
 
     Listens to redis task messaging stream, prints the messages.
@@ -21,12 +21,12 @@ def messages_service(timeout: int = 0) -> Iterator[str]:
 
     """
 
-    redis: RedisConnection = RedisConnection()
+    redis = RedisConnection()
 
-    last: bytes = b"0"
-    start_time: float = time.monotonic()
-    wait: int = 3  # seconds between keep alive messages
-    count: int = 0  # number of consecutive keep alive messages
+    last = b"0"
+    start_time = time.monotonic()
+    wait = 3  # seconds between keep alive messages
+    count = 0  # number of consecutive keep alive messages
     while True:
         message = redis.xread(
             {ENV.REDIS_TASK_MESSAGES: last}, count=1, block=wait * 1000
@@ -44,9 +44,9 @@ def messages_service(timeout: int = 0) -> Iterator[str]:
                 yield ": stayin' alive\n\n"
                 continue
 
-        content: bytes
         last, content = message[0][1][0]
-        data: str = content.get(b"data", b"").decode()
+
+        data = content.get("data", "")
         if data != "":
             count = 0
             yield f"data: {data}\n\n"
