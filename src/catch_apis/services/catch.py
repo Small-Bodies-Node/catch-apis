@@ -57,11 +57,11 @@ def catch_service(
 
     """
 
-    status: QueryStatus = QueryStatus.UNDEFINED
-    queue: JobsQueue = JobsQueue()
+    status = QueryStatus.UNDEFINED
+    queue = JobsQueue()
 
-    queue_sources: List[str] = []  # sources to search in detail
-    cache_sources: List[str] = []  # sources to copy cached results
+    queue_sources = []  # sources to search in detail
+    cache_sources = []  # sources to copy cached results
     if cached:
         # only check the cache if the user requested it
         with catch_manager() as catch:
@@ -106,6 +106,7 @@ def catch_service(
 
     # copy cached data as needed
     if len(cache_sources) > 0:
-        catch.query(target, job_id, sources=cache_sources, cached=True)
+        with catch_manager() as catch:
+            catch.query(target, job_id, sources=cache_sources, cached=True)
 
     return status

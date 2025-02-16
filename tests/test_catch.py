@@ -7,6 +7,7 @@ from starlette.testclient import TestClient
 import catch_apis.api.catch
 from catch_apis.api.catch import catch_controller
 from catch_apis.tasks.catch import catch_task
+from catch_apis.services.catch import catch_service
 from catch_apis.config.env import ENV
 from catch_apis.config import QueryStatus, allowed_sources
 from . import fixture_test_client, mock_flask_request, mock_redis, MockedJobsQueue
@@ -56,7 +57,6 @@ class TestCatchController:
         assert np.isclose(results["query"]["padding"], 0)
         assert results["query"]["cached"]
 
-    @pytest.mark.remote
     def test_cached(self, test_client: TestClient, mock_redis):
         # first, cache a query
         job_id = uuid.uuid4()
@@ -116,3 +116,34 @@ class TestCatchController:
                 assert not result["queued"]
                 assert result["queue_full"]
                 assert result["queue_position"] is None
+
+
+class TestCatchService:
+    def test_queuing_caching(self, test_client: TestClient, mock_redis):
+        # queue a query
+        job_id = uuid.uuid4()
+        status = catch_service(
+            job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, False
+        )
+        assert status == QueryStatus.QUEUED
+
+        # run a query (mocked redis does not run queries)
+        catch_task(job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, False)
+
+        # get the cached query
+        job_id = uuid.uuid4()
+        status = catch_service(
+            job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, True
+        )
+        assert status == QueryStatus.SUCCESS
+
+    def test_filling_queue(self, test_client: TestClient, mock_redis):
+        for i in range(ENV.REDIS_JOBS_MAX_QUEUE_SIZE + 2):
+            job_id = uuid.uuid4()
+            status = catch_service(
+                job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, False
+            )
+            if i < ENV.REDIS_JOBS_MAX_QUEUE_SIZE:
+                assert status == QueryStatus.QUEUED
+            else:
+                assert status == QueryStatus.QUEUEFULL
