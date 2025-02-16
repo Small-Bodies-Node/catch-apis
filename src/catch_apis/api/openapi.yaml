@@ -55,6 +55,7 @@ paths:
           required: false
           schema:
             type: boolean
+            default: false
         - name: padding
           in: query
           description: Increase the search area by padding the ephemeris by this amount, 0 to 120 arcmin (0.01 arcmin steps).
@@ -63,6 +64,7 @@ paths:
             type: number
             minimum: 0
             maximum: 120
+            default: 0
         - name: cached
           in: query
           description: Allow cached results, otherwise force a new search.
@@ -70,6 +72,7 @@ paths:
           required: false
           schema:
             type: boolean
+            default: true
       responses:
         '200':
           description: Query status.
@@ -78,7 +81,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  parameters:
+                  query:
                     description: Query parameters.
                     type: object
                     properties:
@@ -114,6 +117,9 @@ paths:
                   job_id:
                     description: Unique job ID, used to retrieve results.
                     type: string
+                  error:
+                    description: true if an error occurred.
+                    type: boolean
                   queued:
                     description: true if a search has been queued, false if the results are ready."
                     type: boolean
@@ -435,6 +441,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  error:
+                    description: true if an error occurred.
+                    type: boolean
                   message:
                     type: string
                     description: Message for the user.

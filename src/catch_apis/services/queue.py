@@ -9,7 +9,12 @@ class RedisConnection(StrictRedis):
     """Connect to Redis."""
 
     def __init__(self):
-        super(RedisConnection, self).__init__(host=ENV.REDIS_HOST, port=ENV.REDIS_PORT)
+        super().__init__(
+            host=ENV.REDIS_HOST,
+            port=ENV.REDIS_PORT,
+            charset="utf-8",
+            decode_responses=True,
+        )
 
 
 class JobsQueue(Queue):

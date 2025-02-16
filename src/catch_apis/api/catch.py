@@ -9,7 +9,7 @@ from flask import request
 from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
-from ..services.target_name import parse_target_name
+from ..validation import parse_target_name, parse_date
 from ..services.catch import catch_service
 from ..services.queue import JobsQueue
 from ..services.message import (
@@ -20,18 +20,21 @@ from ..services.message import (
 from .. import __version__ as version
 
 
-def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
-    sanitized_date: Union[str, None] = None
-    try:
-        sanitized_date = None if date is None else Time(date)
-    except ValueError:
-        raise ValueError(f"Invalid {kind}_date: {date}")
-
-    return sanitized_date
-
-
 def _format_date(date):
     return date if date is None else date.iso
+
+
+def invalid_query(messages: list[str]) -> dict:
+    """Form the response for an invalid query."""
+    logger = get_logger()
+    result = {
+        "error": True,
+        "queued": False,
+        "message": "  ".join(messages),
+        "version": version,
+    }
+    logger.info(json.dumps(result))
+    return result
 
 
 def catch_controller(
@@ -70,45 +73,38 @@ def catch_controller(
 
     """
 
-    logger: logging.Logger = get_logger()
-    job_id: uuid.UUID = uuid.uuid4()
-    messages: List[str] = []
-    valid_query: bool = True
+    logger = get_logger()
+    job_id = uuid.uuid4()
+    messages = []
+    valid_query = True
 
-    target_type: str
-    sanitized_target: str
-    target_type, sanitized_target = parse_target_name(target)
-    if sanitized_target == "":
-        messages.append("Invalid target: empty string")
+    try:
+        target_type, sanitized_target = parse_target_name(target)
+    except ValueError as exc:
+        messages.append(str(exc))
         valid_query = False
 
-    # default: search all sources allowed in the API spec
-    # but, the user may have requested specific sources
-    _sources: List[str] = allowed_sources if sources is None else sources
+    # default: search all sources allowed in the API spec but, the user may have
+    # requested specific sources.  Note that invalid sources will be prevented
+    # by the OpenAPI spec.
+    _sources = allowed_sources if sources is None else sources
 
-    exc: Exception
     try:
-        sanitized_start_date: Union[str, None] = _parse_date(start_date, "start")
-        sanitized_stop_date: Union[str, None] = _parse_date(stop_date, "stop")
-    except ValueError as exc:  # noqa F841
+        sanitized_start_date = parse_date(start_date, "start")
+        sanitized_stop_date = parse_date(stop_date, "stop")
+    except ValueError as exc:
         messages.append(str(exc))
         valid_query = False
 
     if not valid_query:
         # then just stop now
-        result: dict = {
-            "queued": False,
-            "message": "  ".join(messages),
-            "version": version,
-        }
-        logger.info(json.dumps(result))
-        return result
+        return invalid_query(messages)
 
     # otherwise, we can proceed with the search
-    result: dict = {
+    result = {
         "query": {
             "target": sanitized_target,
-            "type": target_type,
+            "type": target_type.name,
             "sources": _sources,
             "start_date": _format_date(sanitized_start_date),
             "stop_date": _format_date(sanitized_stop_date),
@@ -117,6 +113,7 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
+        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
@@ -127,7 +124,7 @@ def catch_controller(
     Message.reset_t0()
     listen_for_task_messages(job_id)
 
-    status: QueryStatus = catch_service(
+    status = catch_service(
         job_id,
         sanitized_target,
         sources=_sources,
@@ -138,11 +135,11 @@ def catch_controller(
         cached=cached,
     )
 
-    parsed: tuple = urllib.parse.urlsplit(request.url_root)
-    results_url: str = urllib.parse.urlunsplit(
+    parsed = urllib.parse.urlsplit(request.url_root)
+    results_url = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "caught", job_id.hex), "", "")
     )
-    message_stream_url: str = urllib.parse.urlunsplit(
+    message_stream_url = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
     )
     if status == QueryStatus.QUEUED:
@@ -170,6 +167,9 @@ def catch_controller(
         messages.append("Found cached data.  Retrieve from results URL.")
 
     result["message"] = "  ".join(messages)
+
     logger.info(json.dumps(result))
+
     stop_listening_for_task_messages(job_id)
+
     return result
