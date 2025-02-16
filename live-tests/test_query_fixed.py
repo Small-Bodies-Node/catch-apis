@@ -13,6 +13,9 @@ import pytest
 from starlette.testclient import TestClient
 import numpy as np
 from catch_apis.app import app
+from catch_apis.config.env import ENV
+
+deployment_local = ENV.DEPLOYMENT_TIER == "LOCAL"
 
 
 @pytest.fixture()
@@ -20,6 +23,7 @@ def test_client() -> TestClient:
     return app.test_client()
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_point_full_search(test_client: TestClient):
     # Crab nebula
     parameters = {
@@ -64,6 +68,7 @@ def test_point_full_search(test_client: TestClient):
     )
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_point_date_range(test_client: TestClient):
     # Crab nebula
     parameters = {
@@ -102,6 +107,7 @@ def test_point_date_range(test_client: TestClient):
     # 117 + 73 - 24 = 166
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_areal_search(test_client: TestClient):
     # Crab nebula
     parameters = {

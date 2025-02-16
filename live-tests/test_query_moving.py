@@ -29,6 +29,8 @@ from catch_apis.app import app
 from catch_apis.services.stream import message_stream_service
 from catch_apis import woRQer
 
+deployment_local = ENV.DEPLOYMENT_TIER == "LOCAL"
+
 
 @pytest.fixture()
 def test_client() -> TestClient:
@@ -117,6 +119,7 @@ def _query(
     catch_response = test_client.get("/catch", params=parameters)
     print(catch_response.url)
     catch_results = catch_response.json()
+    breakpoint()
 
     queued = catch_results["queued"]
     if queued:
@@ -157,6 +160,7 @@ def _query(
 
 
 @pytest.mark.parametrize("targets", TARGET_EQUIVALENCIES)
+@pytest.mark.skipif("not deployment_local")
 def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
     source = "neat_maui_geodss"
     catch0, caught0, queued0 = _query(test_client, targets[0], True, source=source)
@@ -177,6 +181,7 @@ def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
 
 
 @pytest.mark.parametrize("source,target,number", TARGET_MATCHES)
+@pytest.mark.skipif("not deployment_local")
 def test_cached_queries(
     test_client: TestClient,
     source: str,
@@ -195,6 +200,7 @@ def test_cached_queries(
     assert caught["count"] == number
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_padding_caching(test_client: TestClient):
     source = "neat_maui_geodss"
     target = "65P"
@@ -221,6 +227,7 @@ def test_padding_caching(test_client: TestClient):
     assert caught["count"] == number
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_ephemeris_uncertainties_are_null(test_client: TestClient):
     # regression test for #33
 
@@ -233,6 +240,7 @@ def test_ephemeris_uncertainties_are_null(test_client: TestClient):
         assert row["unc_theta"] is None
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_status_job_id(test_client: TestClient):
     catch, caught, queued = _query(
         test_client, TARGET_MATCHES[0][1], False, source=TARGET_MATCHES[0][0]
