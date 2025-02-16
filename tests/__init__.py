@@ -124,13 +124,12 @@ class MockedJob:
 class MockedJobsQueue:
     def __init__(self, *args, **kwargs):
         self.jobs = []
-        self.full = False
+
+    @property
+    def full(self):
+        return len(self.jobs) >= ENV.REDIS_JOBS_MAX_QUEUE_SIZE
 
     def enqueue(self, **kwargs):
-        if len(self.jobs) >= ENV.REDIS_JOBS_MAX_QUEUE_SIZE:
-            self.full = True
-            return
-
         self.jobs.append(MockedJob(kwargs["f"], kwargs["args"], len(self.jobs)))
 
 
@@ -198,8 +197,6 @@ def mock_flask_request(monkeypatch):
 @pytest.fixture
 def mock_messages(monkeypatch):
     import catch_apis.services.message
-
-    # from catch_apis.services.stream import messages_service
     import catch_apis.services.stream
 
     redis_connection = MockedRedisConnection()
@@ -210,10 +207,3 @@ def mock_messages(monkeypatch):
     monkeypatch.setattr(
         catch_apis.services.stream, "RedisConnection", lambda: redis_connection
     )
-
-    # # Patch message stream to timeout in an absolute amount of time
-    # with mock.patch(
-    #     "catch_apis.services.stream.messages_service",
-    #     partial(messages_service, 0),
-    # ):
-    #     yield
