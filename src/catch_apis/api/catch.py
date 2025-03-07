@@ -2,8 +2,6 @@ import os
 import uuid
 import json
 import urllib.parse
-import logging
-from typing import List, Optional, Union
 
 from flask import request
 from astropy.time import Time
@@ -20,8 +18,7 @@ from ..services.message import (
 from .. import __version__ as version
 
 
-def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
-    sanitized_date: Union[str, None] = None
+def _parse_date(date: str | None, kind: str) -> str | None:
     try:
         sanitized_date = None if date is None else Time(date)
     except ValueError:
@@ -36,9 +33,9 @@ def _format_date(date):
 
 def catch_controller(
     target: str,
-    sources: Optional[List[str]] = None,
-    start_date: Optional[str] = None,
-    stop_date: Optional[str] = None,
+    sources: str | None = None,
+    start_date: str | None = None,
+    stop_date: str | None = None,
     uncertainty_ellipse: bool = False,
     padding: float = 0,
     cached: bool = True,
@@ -75,14 +72,15 @@ def catch_controller(
     messages = []
     valid_query = True
 
-    target_type, sanitized_target = parse_target_name(target)
-    if sanitized_target == "":
-        messages.append("Invalid target: empty string")
+    try:
+        target_type, sanitized_target = parse_target_name(target)
+    except ValueError as exc:
+        messages.append("Invalid target: {}".format(exc))
         valid_query = False
 
     # default: search all sources allowed in the API spec
     # but, the user may have requested specific sources
-    _sources: List[str] = allowed_sources if sources is None else sources
+    _sources: list[str] = allowed_sources if sources is None else sources
 
     try:
         sanitized_start_date = _parse_date(start_date, "start")
@@ -94,6 +92,7 @@ def catch_controller(
     if not valid_query:
         # then just stop now
         result = {
+            "error": True,
             "queued": False,
             "message": "  ".join(messages),
             "version": version,
@@ -114,6 +113,7 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
+        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
@@ -157,6 +157,7 @@ def catch_controller(
             "completed, then retrieve data from results URL."
         )
     elif status == QueryStatus.QUEUEFULL:
+        result["error"] = True
         result["queued"] = False
         result["queue_full"] = True
         messages.append("Queue is full, please try again later.")
