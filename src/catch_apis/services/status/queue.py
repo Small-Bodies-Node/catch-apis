@@ -1,4 +1,3 @@
-from uuid import UUID
 from astropy.time import Time
 from ...config.env import ENV
 from ...services.queue import JobsQueue
@@ -21,10 +20,10 @@ def queue_service() -> dict[str, bool | list[dict[str, str | int]]]:
 
     """
 
-    jobs: list[dict[str, str | int]] = []
-    q = JobsQueue()
-    for job in q.jobs:
-        catch_job_id: UUID = job.args[0]
+    jobs = []
+    queue = JobsQueue()
+    for job in queue.jobs:
+        catch_job_id = job.args[0]
 
         jobs.append(
             {
@@ -35,4 +34,4 @@ def queue_service() -> dict[str, bool | list[dict[str, str | int]]]:
             }
         )
 
-    return {"depth": ENV.REDIS_JOBS_MAX_QUEUE_SIZE, "full": q.full, "jobs": jobs}
+    return {"depth": ENV.REDIS_JOBS_MAX_QUEUE_SIZE, "full": queue.full, "jobs": jobs}

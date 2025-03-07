@@ -9,14 +9,14 @@ catch comets and asteroids in wide-field sky survey data.
 ## Overview
 
 CATCH-APIs provide a REST API service that enable a user to search for potential
-observations of comets and asteroids in wide-field sky survey data.  CATCH can
+observations of comets and asteroids in wide-field sky survey data. CATCH can
 also be used to search for any fixed position on the sky. This API is designed
 for use by the Planetary Data System Small Bodies Node (SBN) at the University
 of Maryland, but it is possible to deploy with modifications anywhere with other
-data sets.  SBN is the primary archive for the Near-Earth Asteroid Tracking
+data sets. SBN is the primary archive for the Near-Earth Asteroid Tracking
 (NEAT) survey, the Asteroid Terrestrial-impact Last Alert System (ATLAS), the
 Catalina Sky Survey (CSS), Spacewatch, and the Lowell Observatory
-Near-Earth-Asteroid Search (LONEOS).  CATCH-APIs is one of the primary methods
+Near-Earth-Asteroid Search (LONEOS). CATCH-APIs is one of the primary methods
 for users to discover scientifically interesting data in those data sets.
 
 The API uses the following:
@@ -77,9 +77,7 @@ These APIs wrap the functionality given by the
      "query": {
        "cached": false,
        "padding": 0,
-       "sources": [
-         "atlas_haleakela"
-       ],
+       "sources": ["atlas_haleakela"],
        "start_date": null,
        "stop_date": null,
        "target": "2024 YR4",
@@ -246,10 +244,5 @@ pytest tests
 
 > Pro tip! Use `--capture=tee-sys` to see CATCH and CATCH APIs console output produced during tests.
 
-Live database tests are in the `live-tests` directory. They require a
-configured `.env` file with `DEPLOYMENT_TIER=LOCAL`. The queries rely on
-Catalina, Spacewatch, NEAT, PanSTARRS, and SkyMapper data.
-
-```
-pytest live-tests
-```
+Live database tests are in the `live-db-tests` directory. They require a
+configured `.env` file with `DEPLOYMENT_TIER=LOCAL`. See the live-db-tests/README.md for more details.

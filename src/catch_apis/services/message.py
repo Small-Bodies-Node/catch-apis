@@ -1,3 +1,5 @@
+# Licensed with the 3-clause BSD license.  See LICENSE for details.
+
 """Task messages.
 
 Tasks communicate to the user via the ``stream`` route.  Redis messages must be
@@ -89,9 +91,9 @@ class Message:
         status: Union[str, TaskStatus] = TaskStatus.NONE,
     ) -> None:
         self.job_id = UUID(str(job_id), version=4)
-        self.text: str = text
-        self.status: TaskStatus = TaskStatus(status)
-        self._redis: RedisConnection = RedisConnection()
+        self.text = text
+        self.status = TaskStatus(status)
+        self._redis = RedisConnection()
 
     @classmethod
     def reset_t0(cls):
@@ -122,7 +124,7 @@ class Message:
     def __str__(self) -> str:
         """JSON-formatted string."""
 
-        msg: Dict[str, str] = {
+        msg = {
             "job_prefix": self.job_id.hex[:8],
             "text": str(self.text),
             "elapsed": self.elapsed,
@@ -160,7 +162,7 @@ class MessageHandler(logging.Handler):
 
     def __init__(self, job_id: Union[str, UUID], level: int = logging.INFO) -> None:
         self.job_id = UUID(str(job_id), version=4)
-        self._redis: RedisConnection = RedisConnection()
+        self._redis = RedisConnection()
         super().__init__(level)
 
     @property
@@ -172,7 +174,7 @@ class MessageHandler(logging.Handler):
         self._job_id = UUID(str(j), version=4)
 
     def emit(self, record: logging.LogRecord) -> None:
-        msg: Message = Message(self.job_id)
+        msg = Message(self.job_id)
         msg.text = record.msg % record.args
         msg.status = TaskStatus.RUNNING
         msg.publish()

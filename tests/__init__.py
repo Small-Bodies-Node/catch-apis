@@ -124,22 +124,30 @@ class MockedJob:
 class MockedJobsQueue:
     def __init__(self, *args, **kwargs):
         self.jobs = []
-        self.full = False
+
+    @property
+    def full(self):
+        return len(self.jobs) >= ENV.REDIS_JOBS_MAX_QUEUE_SIZE
 
     def enqueue(self, **kwargs):
-        if len(self.jobs) >= ENV.REDIS_JOBS_MAX_QUEUE_SIZE:
-            self.full = True
-            return
-
         self.jobs.append(MockedJob(kwargs["f"], kwargs["args"], len(self.jobs)))
 
 
 class MockedRedisConnection:
     def __init__(self, *args, **kwargs):
         self.items = defaultdict(list)
+        self.last = None
 
     def xadd(self, name, data, **kwargs):
         self.items[name].append(data)
+
+    def xread(self, streams, **kwargs):
+        # very sloppy, but getting accurate and precise is not important for our
+        # testing
+        name = list(streams.keys())[0]
+        if len(self.items[name]) == 0:
+            return []
+        return [[b"0", [(b"1", self.items[name].pop(0))]]]
 
     def llen(self, name, *args, **kwargs):
         return len(self.items[name])
@@ -159,11 +167,9 @@ def mock_redis(monkeypatch):
     import catch_apis.services.catch
     import catch_apis.services.message
     import catch_apis.services.status.queue
-    import catch_apis.services.queue
 
     jobs_queue = MockedJobsQueue()
 
-    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", lambda: jobs_queue)
     monkeypatch.setattr(
         catch_apis.services.status.queue, "JobsQueue", lambda: jobs_queue
     )
@@ -184,3 +190,18 @@ def mock_flask_request(monkeypatch):
         url_root = "http://testserver/"
 
     monkeypatch.setattr(catch_apis.api.catch, "request", Request)
+
+
+@pytest.fixture
+def mock_messages(monkeypatch):
+    import catch_apis.services.message
+    import catch_apis.services.stream
+
+    redis_connection = MockedRedisConnection()
+
+    monkeypatch.setattr(
+        catch_apis.services.message, "RedisConnection", lambda: redis_connection
+    )
+    monkeypatch.setattr(
+        catch_apis.services.stream, "RedisConnection", lambda: redis_connection
+    )
