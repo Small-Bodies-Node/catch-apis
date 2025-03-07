@@ -9,9 +9,9 @@ from flask import request
 from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
-from ..validation import parse_target_name, parse_date
+from ..validation import parse_target_name
 from ..services.catch import catch_service
-from ..services.queue import JobsQueue
+from ..services.status.queue import queue_service
 from ..services.message import (
     Message,
     listen_for_task_messages,
@@ -20,21 +20,18 @@ from ..services.message import (
 from .. import __version__ as version
 
 
+def _parse_date(date: Union[str, None], kind: str) -> Union[str, None]:
+    sanitized_date: Union[str, None] = None
+    try:
+        sanitized_date = None if date is None else Time(date)
+    except ValueError:
+        raise ValueError(f"Invalid {kind}_date: {date}")
+
+    return sanitized_date
+
+
 def _format_date(date):
     return date if date is None else date.iso
-
-
-def invalid_query(messages: list[str]) -> dict:
-    """Form the response for an invalid query."""
-    logger = get_logger()
-    result = {
-        "error": True,
-        "queued": False,
-        "message": "  ".join(messages),
-        "version": version,
-    }
-    logger.info(json.dumps(result))
-    return result
 
 
 def catch_controller(
@@ -78,33 +75,37 @@ def catch_controller(
     messages = []
     valid_query = True
 
-    try:
-        target_type, sanitized_target = parse_target_name(target)
-    except ValueError as exc:
-        messages.append(str(exc))
+    target_type, sanitized_target = parse_target_name(target)
+    if sanitized_target == "":
+        messages.append("Invalid target: empty string")
         valid_query = False
 
-    # default: search all sources allowed in the API spec but, the user may have
-    # requested specific sources.  Note that invalid sources will be prevented
-    # by the OpenAPI spec.
-    _sources = allowed_sources if sources is None else sources
+    # default: search all sources allowed in the API spec
+    # but, the user may have requested specific sources
+    _sources: List[str] = allowed_sources if sources is None else sources
 
     try:
-        sanitized_start_date = parse_date(start_date, "start")
-        sanitized_stop_date = parse_date(stop_date, "stop")
-    except ValueError as exc:
+        sanitized_start_date = _parse_date(start_date, "start")
+        sanitized_stop_date = _parse_date(stop_date, "stop")
+    except ValueError as exc:  # noqa F841
         messages.append(str(exc))
         valid_query = False
 
     if not valid_query:
         # then just stop now
-        return invalid_query(messages)
+        result = {
+            "queued": False,
+            "message": "  ".join(messages),
+            "version": version,
+        }
+        logger.info(json.dumps(result))
+        return result
 
     # otherwise, we can proceed with the search
     result = {
         "query": {
             "target": sanitized_target,
-            "type": target_type.name,
+            "type": target_type.value,
             "sources": _sources,
             "start_date": _format_date(sanitized_start_date),
             "stop_date": _format_date(sanitized_stop_date),
@@ -113,7 +114,6 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
-        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
@@ -142,11 +142,11 @@ def catch_controller(
     message_stream_url = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
     )
+
     if status == QueryStatus.QUEUED:
-        queue = JobsQueue()
-        for job in queue.jobs:
-            if job.args[0].hex == job_id.hex:
-                result["queue_position"] = job.get_position()
+        for job in queue_service()["jobs"]:
+            if job["prefix"] == job_id.hex[:8]:
+                result["queue_position"] = job["position"]
                 break
 
         result["queued"] = True
@@ -167,9 +167,6 @@ def catch_controller(
         messages.append("Found cached data.  Retrieve from results URL.")
 
     result["message"] = "  ".join(messages)
-
     logger.info(json.dumps(result))
-
     stop_listening_for_task_messages(job_id)
-
     return result

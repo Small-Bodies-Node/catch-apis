@@ -1,23 +1,17 @@
 """
 A few simple tests to see that the API is working.
-
-To see messages returned from the API, e.g., to debug failing tests:
-
-    pytest --capture=tee-sys
-
-These tests are currently hard-coded for DEPLOYMENT_TIER=LOCAL in .env.
-
 """
 
 import sys
 import json
 import pytest
+from typing import Any
 from unittest import mock
 from functools import partial
 from contextlib import contextmanager
 
 import numpy as np
-from typing import Tuple, List, Any, Optional
+from httpx import Response
 from starlette.testclient import TestClient
 from catch_apis.config.env import ENV
 
@@ -106,9 +100,9 @@ def _query(
     test_client: TestClient,
     target: str,
     cached: bool,
-    source: Optional[str] = None,
+    source: str | None = None,
     **kwargs,
-) -> Tuple[Any, bool]:
+) -> tuple[Any, bool]:
 
     parameters = {"target": target, "cached": cached}
     parameters.update(kwargs)
@@ -116,10 +110,9 @@ def _query(
     if source is not None:
         parameters["sources"] = [source]
 
-    catch_response = test_client.get("/catch", params=parameters)
-    print(catch_response.url)
+    catch_response: Response = test_client.get("/catch", params=parameters)
+    catch_response.raise_for_status()
     catch_results = catch_response.json()
-    breakpoint()
 
     queued = catch_results["queued"]
     if queued:
@@ -161,7 +154,7 @@ def _query(
 
 @pytest.mark.parametrize("targets", TARGET_EQUIVALENCIES)
 @pytest.mark.skipif("not deployment_local")
-def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
+def test_equivalencies(test_client: TestClient, targets: list[str]) -> None:
     source = "neat_maui_geodss"
     catch0, caught0, queued0 = _query(test_client, targets[0], True, source=source)
     data0 = sorted(caught0["data"], key=lambda row: row["product_id"])

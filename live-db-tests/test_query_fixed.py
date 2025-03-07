@@ -1,12 +1,5 @@
 """
 A few simple tests to see that the API is working.
-
-To see messages returned from the API, e.g., to debug failing tests:
-
-    pytest --capture=tee-sys
-
-These tests are currently hard-coded for DEPLOYMENT_TIER=LOCAL in .env.
-
 """
 
 import pytest
