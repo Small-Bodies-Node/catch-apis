@@ -7,9 +7,9 @@ from flask import request
 from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
-from ..validation import parse_target_name, parse_date
+from ..validation import parse_target_name
 from ..services.catch import catch_service
-from ..services.queue import JobsQueue
+from ..services.status.queue import queue_service
 from ..services.message import (
     Message,
     listen_for_task_messages,
@@ -30,19 +30,6 @@ def _parse_date(date: str | None, kind: str) -> str | None:
 
 def _format_date(date):
     return date if date is None else date.iso
-
-
-def invalid_query(messages: list[str]) -> dict:
-    """Form the response for an invalid query."""
-    logger = get_logger()
-    result = {
-        "error": True,
-        "queued": False,
-        "message": "  ".join(messages),
-        "version": version,
-    }
-    logger.info(json.dumps(result))
-    return result
 
 
 def catch_controller(
@@ -123,7 +110,7 @@ def catch_controller(
     result = {
         "query": {
             "target": sanitized_target,
-            "type": target_type.name,
+            "type": target_type.value,
             "sources": _sources,
             "start_date": _format_date(sanitized_start_date),
             "stop_date": _format_date(sanitized_stop_date),
@@ -132,7 +119,6 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
-        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
@@ -161,11 +147,11 @@ def catch_controller(
     message_stream_url = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
     )
+
     if status == QueryStatus.QUEUED:
-        queue = JobsQueue()
-        for job in queue.jobs:
-            if job.args[0].hex == job_id.hex:
-                result["queue_position"] = job.get_position()
+        for job in queue_service()["jobs"]:
+            if job["prefix"] == job_id.hex[:8]:
+                result["queue_position"] = job["position"]
                 break
 
         result["queued"] = True
@@ -186,9 +172,6 @@ def catch_controller(
         messages.append("Found cached data.  Retrieve from results URL.")
 
     result["message"] = "  ".join(messages)
-
     logger.info(json.dumps(result))
-
     stop_listening_for_task_messages(job_id)
-
     return result
