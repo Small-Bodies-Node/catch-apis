@@ -99,6 +99,7 @@ def catch_controller(
     if not valid_query:
         # then just stop now
         result = {
+            "error": True,
             "queued": False,
             "message": "  ".join(messages),
             "version": version,
@@ -119,6 +120,7 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
+        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
@@ -162,6 +164,7 @@ def catch_controller(
             "completed, then retrieve data from results URL."
         )
     elif status == QueryStatus.QUEUEFULL:
+        result["error"] = True
         result["queued"] = False
         result["queue_full"] = True
         messages.append("Queue is full, please try again later.")

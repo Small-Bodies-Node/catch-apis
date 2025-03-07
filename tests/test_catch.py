@@ -104,7 +104,6 @@ class TestCatchController:
             )
 
         monkeypatch.setattr(catch_apis.api.catch, "catch_service", mock_catch_service)
-        monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", lambda: queue)
 
         for i in range(ENV.REDIS_JOBS_MAX_QUEUE_SIZE + 2):
             result = catch_controller("65P", cached=False)

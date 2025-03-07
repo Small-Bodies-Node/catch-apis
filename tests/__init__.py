@@ -171,7 +171,6 @@ def mock_redis(monkeypatch):
 
     jobs_queue = MockedJobsQueue()
 
-    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", lambda: jobs_queue)
     monkeypatch.setattr(
         catch_apis.services.status.queue, "JobsQueue", lambda: jobs_queue
     )
