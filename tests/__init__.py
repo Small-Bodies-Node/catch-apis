@@ -167,7 +167,6 @@ def mock_redis(monkeypatch):
     import catch_apis.services.catch
     import catch_apis.services.message
     import catch_apis.services.status.queue
-    import catch_apis.services.queue
 
     jobs_queue = MockedJobsQueue()
 
