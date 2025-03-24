@@ -10,11 +10,11 @@ license = { text = "BSD 3-Clause License" }
 dependencies = [
     "catch~=2.0rc1",
     "psycopg2-binary~=2.8",
-    "connexion[flask,swagger-ui,uvicorn]~=3.0",
-    "gunicorn~=21.2",
-    "redis~=4.1",
-    "requests~=2.27.0",
-    "rq~=1.1",
+    "connexion[flask,swagger-ui,uvicorn]~=3.2",
+    "gunicorn~=23.0",
+    "redis~=5.2",
+    "requests>=2.27.0",
+    "rq~=2.2",
     "python-dotenv~=1.0",
 ]
 dynamic = ["version"]
