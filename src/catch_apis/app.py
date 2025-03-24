@@ -10,7 +10,7 @@ from flask import Response
 from catch_apis.config.env import ENV
 from . import __version__ as version
 from .config import allowed_sources, get_logger
-from .services.stream import messages
+from .services.stream import messages_service
 
 logger: logging.Logger = get_logger()
 app = connexion.FlaskApp(__name__, specification_dir="api/")
@@ -42,7 +42,7 @@ def stream() -> Response:
     """Shared task messaging stream."""
 
     return Response(
-        messages(),
+        messages_service(),
         mimetype="text/event-stream",
         headers={
             "Content-Type": "text/event-stream",

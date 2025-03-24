@@ -15,10 +15,8 @@ services:
       - ./.env
     depends_on:
       - redis-server
+    restart: always
   worqer-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
     image: catch-prod
     deploy:
       replicas: ${CATCH_QUEUE_WORKER_INSTANCES}
@@ -27,8 +25,11 @@ services:
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server
+      - apis
+    restart: always
     env_file:
       - ./.env
   redis-server:
     image: redis:5
+    restart: always
     container_name: catch-redis-prod-${DEPLOYMENT_TIER}

@@ -14,9 +14,11 @@ from starlette.testclient import TestClient
 import numpy as np
 from catch_apis.app import app
 
+
 @pytest.fixture()
 def test_client() -> TestClient:
     return app.test_client()
+
 
 def test_point_full_search(test_client: TestClient):
     # Crab nebula
@@ -31,13 +33,36 @@ def test_point_full_search(test_client: TestClient):
     assert results["message"] == ""
     assert np.isclose(results["query"]["ra"], (5 + (34 + 32 / 60) / 60) * 15)
     assert np.isclose(results["query"]["dec"], 22 + 48 / 60 / 60)
-    assert "neat_palomar_tricam" in results["query"]["sources"]
-    assert len(results["data"]) == 428
+    assert set([row["source"] for row in results["data"]]) == {
+        "atlas_haleakela",
+        "atlas_mauna_loa",
+        "catalina_bigelow",
+        "catalina_lemmon",
+        "neat_maui_geodss",
+        "ps1dr2",
+        "spacewatch",
+    }
+
+    # only count static data sets
+    sources = [row["source"] for row in results["data"]]
+    expected = {
+        "neat_maui_geodss": 1,
+        "neat_palomar_tricam": 0,
+        "ps1dr2": 73,
+        "spacewatch": 166,
+    }
+    for source, count in expected.items():
+        assert sources.count(source) == count
+
     product_ids = [obs["product_id"] for obs in results["data"]]
 
-    # these are verified to be the Crab:
+    # verified to be the Crab:
     assert "rings.v3.skycell.1784.059.wrp.g.55560_46188.fits" in product_ids
-    assert "urn:nasa:pds:gbo.ast.catalina.survey:data_calibrated:703_20211108_2b_n24018_01_0002.arch" in product_ids
+    assert (
+        "urn:nasa:pds:gbo.ast.catalina.survey:data_calibrated:703_20211108_2b_n24018_01_0002.arch"
+        in product_ids
+    )
+
 
 def test_point_date_range(test_client: TestClient):
     # Crab nebula
@@ -51,14 +76,14 @@ def test_point_date_range(test_client: TestClient):
     results = response.json()
     assert results["query"]["start_date"] is None
     assert results["query"]["stop_date"] is None
-    assert len(results["data"]) == 167
+    assert len(results["data"]) == 166
 
     parameters["start_date"] = "2007-01-01"
     response = test_client.get("/fixed", params=parameters)
     response.raise_for_status()
     results = response.json()
     assert results["query"]["start_date"] == "2007-01-01 00:00:00.000"
-    assert len(results["data"]) == 118
+    assert len(results["data"]) == 117
 
     parameters["stop_date"] = "2008-01-01"
     response = test_client.get("/fixed", params=parameters)
@@ -66,7 +91,7 @@ def test_point_date_range(test_client: TestClient):
     results = response.json()
     assert results["query"]["stop_date"] == "2008-01-01 00:00:00.000"
     assert len(results["data"]) == 24
-    
+
     del parameters["start_date"]
     response = test_client.get("/fixed", params=parameters)
     response.raise_for_status()
@@ -74,7 +99,8 @@ def test_point_date_range(test_client: TestClient):
     assert results["query"]["start_date"] is None
     assert len(results["data"]) == 73
 
-    # 118 + 73 - 24 = 167
+    # 117 + 73 - 24 = 166
+
 
 def test_areal_search(test_client: TestClient):
     # Crab nebula

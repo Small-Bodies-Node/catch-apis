@@ -9,7 +9,9 @@ from flask import request
 from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
-from .. import services
+from ..services.target_name import parse_target_name
+from ..services.catch import catch_service
+from ..services.queue import JobsQueue
 from ..services.message import (
     Message,
     listen_for_task_messages,
@@ -32,7 +34,7 @@ def _format_date(date):
     return date if date is None else date.iso
 
 
-def catch(
+def catch_controller(
     target: str,
     sources: Optional[List[str]] = None,
     start_date: Optional[str] = None,
@@ -75,7 +77,7 @@ def catch(
 
     target_type: str
     sanitized_target: str
-    target_type, sanitized_target = services.parse_target_name(target)
+    target_type, sanitized_target = parse_target_name(target)
     if sanitized_target == "":
         messages.append("Invalid target: empty string")
         valid_query = False
@@ -115,7 +117,9 @@ def catch(
             "padding": padding,
         },
         "job_id": job_id.hex,
-        "queued": None,
+        "queued": False,
+        "queue_full": False,
+        "queue_position": None,
         "message": None,
         "version": version,
     }
@@ -123,7 +127,7 @@ def catch(
     Message.reset_t0()
     listen_for_task_messages(job_id)
 
-    status: QueryStatus = services.catch(
+    status: QueryStatus = catch_service(
         job_id,
         sanitized_target,
         sources=_sources,
@@ -141,8 +145,13 @@ def catch(
     message_stream_url: str = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
     )
-
     if status == QueryStatus.QUEUED:
+        queue = JobsQueue()
+        for job in queue.jobs:
+            if job.args[0].hex == job_id.hex:
+                result["queue_position"] = job.get_position()
+                break
+
         result["queued"] = True
         result["message_stream"] = message_stream_url
         result["results"] = results_url
@@ -152,6 +161,7 @@ def catch(
         )
     elif status == QueryStatus.QUEUEFULL:
         result["queued"] = False
+        result["queue_full"] = True
         messages.append("Queue is full, please try again later.")
     else:
         # status.SUCCESS

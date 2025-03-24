@@ -7,7 +7,7 @@ from astropy.time import Time
 from astropy.coordinates import Angle
 import astropy.units as u
 
-from .. import services
+from ..services.fixed import fixed_target_query_service
 from ..config import CatchApisException, get_logger, allowed_sources
 from .. import __version__ as version
 
@@ -60,7 +60,7 @@ def _format_date(date):
     return date if date is None else date.iso
 
 
-def fixed_target_query(
+def fixed_target_query_controller(
     ra: str,
     dec: str,
     sources: Optional[List[str]] = None,
@@ -128,7 +128,7 @@ def fixed_target_query(
     data: List[dict] = []
     if valid_query:
         try:
-            data = services.fixed_target_query(
+            data = fixed_target_query_service(
                 job_id,
                 sanitized_ra,
                 sanitized_dec,

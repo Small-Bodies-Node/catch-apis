@@ -3,10 +3,12 @@
 import pytest
 from importlib import reload
 from urllib.parse import urlparse
+from collections import defaultdict
 
 import testing.postgresql
 from starlette.testclient import TestClient
 import numpy as np
+from astropy.time import Time
 
 from catch.catch import Catch
 from catch.config import Config
@@ -37,7 +39,7 @@ ENV.update(
         "CATCH_QUEUE_WORKER_INSTANCES": 1,
         "API_PORT": 5000,
         "REDIS_PORT": 6379,
-        "REDIS_JOBS_MAX_QUEUE_SIZE": 100,
+        "REDIS_JOBS_MAX_QUEUE_SIZE": 5,
         "REDIS_TASK_MESSAGES_MAX_QUEUE_SIZE": 1000,
         "STREAM_TIMEOUT": 60,
         "DEBUG": False,
@@ -65,6 +67,7 @@ def dummy_surveys(postgresql):
                     mjd_start=mjd_start,
                     mjd_stop=mjd_start + EXPTIME,
                     product_id=product_id,
+                    mjd_added=Time.now().mjd,
                 )
                 obs.set_fov(*_fov)
                 observations.append(obs)
@@ -102,3 +105,82 @@ def fixture_test_client():
         reload(catch_apis.services.database_provider)
 
         yield TestClient(catch_apis.app.app)
+
+
+class MockedJob:
+    def __init__(self, f, args, position):
+        self.f = f
+        self.args = args
+        self.position = position
+        self.enqueued_at = Time.now().iso
+
+    def get_position(self):
+        return self.position
+
+    def get_status(self):
+        return "queued"
+
+
+class MockedJobsQueue:
+    def __init__(self, *args, **kwargs):
+        self.jobs = []
+        self.full = False
+
+    def enqueue(self, **kwargs):
+        if len(self.jobs) >= ENV.REDIS_JOBS_MAX_QUEUE_SIZE:
+            self.full = True
+            return
+
+        self.jobs.append(MockedJob(kwargs["f"], kwargs["args"], len(self.jobs)))
+
+
+class MockedRedisConnection:
+    def __init__(self, *args, **kwargs):
+        self.items = defaultdict(list)
+
+    def xadd(self, name, data, **kwargs):
+        self.items[name].append(data)
+
+    def llen(self, name, *args, **kwargs):
+        return len(self.items[name])
+
+    def lrange(self, key, start, end):
+        for i in range(start, end + 1):
+            if i < len(self.items[key]):
+                yield self.items[key]
+                continue
+            break
+
+
+@pytest.fixture
+def mock_redis(monkeypatch):
+    """Mocked classes to avoid any interaction with redis."""
+
+    import catch_apis.services.catch
+    import catch_apis.services.message
+    import catch_apis.services.status.queue
+    import catch_apis.services.queue
+
+    jobs_queue = MockedJobsQueue()
+
+    monkeypatch.setattr(catch_apis.api.catch, "JobsQueue", lambda: jobs_queue)
+    monkeypatch.setattr(
+        catch_apis.services.status.queue, "JobsQueue", lambda: jobs_queue
+    )
+    monkeypatch.setattr(catch_apis.services.catch, "JobsQueue", lambda: jobs_queue)
+
+    monkeypatch.setattr(
+        catch_apis.services.message, "RedisConnection", MockedRedisConnection
+    )
+
+
+@pytest.fixture
+def mock_flask_request(monkeypatch):
+    """Mocked flask.request"""
+
+    import catch_apis.api.catch
+
+    class Request:
+        url_root = "http://testserver/"
+
+    monkeypatch.setattr(catch_apis.api.catch, "request", Request)

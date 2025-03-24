@@ -4,7 +4,7 @@ from ..catch_manager import Catch, catch_manager
 from ...config import allowed_sources
 
 
-def sources() -> list[dict[str, str | int | None]]:
+def sources_service() -> list[dict[str, str | int | None]]:
     """Get source summary statistics from CATCH database."""
 
     data: list[dict[str, str | int | None]] = []
