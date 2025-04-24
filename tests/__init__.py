@@ -239,11 +239,13 @@ def mock_flask_request(monkeypatch):
     """Mocked flask.request"""
 
     import catch_apis.api.catch
+    import catch_apis.services.message
 
     class Request:
         url_root = "http://testserver/"
 
     monkeypatch.setattr(catch_apis.api.catch, "request", Request)
+    monkeypatch.setattr(catch_apis.services.message, "request", Request)
 
 
 @pytest.fixture
