@@ -595,14 +595,14 @@ paths:
                           type: string
                           description: URL to preview cutout image in web format.
                           nullable: true
-  /download:
+  /download/package:
     post:
       tags:
         - Download data
       summary: Download data based on a moving or fixed target query.
       operationId: catch_apis.api.download.package
       requestBody:
-        description: Data products to download.
+        description: Data products to download.  There is a limit of 5000 images per request.
         required: true
         content:
           application/json:
@@ -611,6 +611,7 @@ paths:
               properties:
                 images:
                   type: array
+                  maxItems: 5000
                   items:
                     type: object
                     description: Specifications for each image to download.
@@ -646,12 +647,33 @@ paths:
                       size: 0.15
       responses:
         "200":
-          description: URL to packaged data.
+          description: Packaging status.
           content:
             application/json:
               schema:
-                type: string
-                description: URL
+                type: object
+                properties:
+                  job_id:
+                    description: Unique job ID, used to retrieve results.
+                    type: string
+                  queued:
+                    description: true if a search has been queued, false if the results are ready."
+                    type: boolean
+                  queue_full:
+                    description: true if the queue is full, false if the queue is accepting queries.
+                    type: boolean
+                  message:
+                    description: Text message for the user.
+                    type: string
+                    nullable: true
+                  message_stream:
+                    description: Listen for query progress at this URL.  Messages will be prefixed with the first eight characters of your job_id.
+                    type: string
+                    nullable: true
+                  results:
+                    description: URL from which to retrieve results.
+                    type: string
+                    nullable: true
   /status/sources:
     get:
       tags:

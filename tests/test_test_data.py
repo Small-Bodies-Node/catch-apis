@@ -8,14 +8,14 @@ from starlette.testclient import TestClient
 from . import fixture_test_client
 
 
-def test_label(test_client):
+def test_label(test_client: TestClient):
     response = test_client.get("/test/data/image.xml")
     response.raise_for_status()
 
     assert "image.xml" in response.content.decode()
 
 
-def test_fits(test_client):
+def test_fits(test_client: TestClient):
     response = test_client.get("/test/data/image.fits")
     response.raise_for_status()
 
@@ -38,7 +38,7 @@ def test_fits(test_client):
         assert im[50, 0] == -20
 
 
-def test_jpeg(test_client):
+def test_jpeg(test_client: TestClient):
     parameters = {
         "ra": "10",
         "dec": "-20",
