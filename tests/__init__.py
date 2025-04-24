@@ -81,23 +81,26 @@ class SkySurvey(Observation):
     @property
     def archive_url(self):
         product_id = self.product_id[self.product_id.rindex(":") + 1 :]
-        # return f"http://{ENV.API_HOST}:{ENV.API_PORT}/test/data/{product_id}.fits"
         return f"http://testserver/test/data/{product_id}.fits"
 
     @property
     def label_url(self):
         return self.archive_url[:-4] + "xml"
 
-    def cutout_url(self, ra, dec, format="fits"):
+    def cutout_url(self, ra, dec, size=0.1, format="fits"):
         url = self.archive_url
+        if url is None:
+            return None
+
         if format == "jpeg":
             url = url[:-4]
         elif format != "fits":
             raise NotImplementedError
-        return f"{url}?ra={ra}&dec={dec}"
+        return f"{url}?ra={ra}&dec={dec}&size={size}"
 
     def preview_url(self, ra, dec, format="jpeg"):
         return self.cutout_url(ra, dec, format)
+
 
 def dummy_surveys(postgresql):
     mjd_start = SURVEY_START
@@ -137,11 +140,11 @@ Postgresql = testing.postgresql.PostgresqlFactory(
 def fixture_test_client():
     # deferred imports so that the testing environment is up to date
     import catch_apis.config
+
     catch_apis.config.allowed_sources.append("test_sky_survey")
 
     import catch_apis.app
     import catch_apis.services.database_provider
-
 
     with Postgresql() as postgresql:
         url = urlparse(postgresql.url())

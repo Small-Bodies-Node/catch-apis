@@ -6,7 +6,7 @@ import urllib.parse
 import uuid
 from flask import request
 from ..config import PackagingStatus, get_logger
-from ..services.download import DataProducts, package
+from ..services import download
 from ..services.message import (
     Message,
     get_message_stream_url,
@@ -15,35 +15,40 @@ from ..services.message import (
 )
 
 
-def package(body: dict) -> str:
+def package(body: dict) -> dict:
     """Controller for packaging data."""
 
     logger = get_logger()
     job_id = uuid.uuid4()
     listen_for_task_messages(job_id)
-    status = DataProducts(body["images"])
-
-    packaging_status = package(job_id, status)
-
     Message.reset_t0()
 
     # setup the result object to send to the user
     result = {
         "job_id": job_id.hex,
-        "queued": packaging_status == PackagingStatus.QUEUED,
-        "queue_full": packaging_status == PackagingStatus.QUEUEFULL,
+        "queued": False,
+        "queue_full": False,
         "message": None,
         "message_stream": None,
         "results": None,
     }
 
+    # enqueue the package task
+    try:
+        data_products = download.DataProducts(**body)
+        packaging_status = download.package(job_id, data_products)
+        result["queued"] = packaging_status == PackagingStatus.QUEUED
+        result["queue_full"] = packaging_status == PackagingStatus.QUEUEFULL
+    except:
+        logger.exception("Unexpected error.")
+
     # form the results URL
-    parsed: tuple = urllib.parse.urlsplit(request.url_root)
-    results_url: str = urllib.parse.urlunsplit(
+    parsed = urllib.parse.urlsplit(request.url_root)
+    results_url = urllib.parse.urlunsplit(
         (
             parsed[0],
             parsed[1],
-            os.path.join(parsed[2], "download/data/", job_id.hex),
+            os.path.join(parsed[2], "download/", job_id.hex),
             "",
             "",
         )

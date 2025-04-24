@@ -595,11 +595,11 @@ paths:
                           type: string
                           description: URL to preview cutout image in web format.
                           nullable: true
-  /download/package:
+  /package:
     post:
       tags:
-        - Download data
-      summary: Download data based on a moving or fixed target query.
+        - Data packaging and download
+      summary: Package data based on a moving or fixed target query.
       operationId: catch_apis.api.download.package
       requestBody:
         description: Data products to download.  There is a limit of 5000 images per request.
