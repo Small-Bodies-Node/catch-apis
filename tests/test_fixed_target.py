@@ -3,6 +3,8 @@
 import numpy as np
 from starlette.testclient import TestClient
 from . import fixture_test_client  # noqa F401
+import catch_apis.api.fixed
+from catch_apis.api.fixed import fixed_target_query_controller, CatchApisException
 
 
 def test_invalid_queries():

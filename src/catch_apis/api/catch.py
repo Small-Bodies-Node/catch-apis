@@ -73,16 +73,10 @@ def catch_controller(
     messages = []
     valid_query = True
 
-    target_type, sanitized_target = parse_target_name(target)
-    if target.strip() == "":
-        messages.append("Invalid target: empty string")
-        valid_query = False
-    elif sanitized_target == "":
-        messages.append(
-            "Target names may be ambiguous (e.g., Encke is the name of a comet and "
-            "an asteroid) and are not supported.  Use the target's designation or "
-            "permanent catalog ID (e.g., 2P or 9134)."
-        )
+    try:
+        target_type, sanitized_target = parse_target_name(target)
+    except ValueError as e:
+        messages.append(str(e))
         valid_query = False
 
     # default: search all sources allowed in the API spec

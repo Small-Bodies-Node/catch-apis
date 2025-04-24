@@ -15,7 +15,7 @@ def parse_ra(ra: str) -> Longitude:
     The string may specify the units, see astropy.coordinates.Angle() for
     allowed formats.
 
-    If parsable by float(), then degrees are assumed.  Otherise, hour angle is
+    If parsable by float(), then degrees are assumed.  Otherwise, hour angle is
     assumed.
 
     Raise ValueError if it cannot be parsed.
@@ -30,7 +30,7 @@ def parse_ra(ra: str) -> Longitude:
 
     try:
         sanitized_ra = Longitude(ra, ra_unit)
-    except Exception as e:
+    except ValueError:
         raise ValueError(f"Invalid ra: {ra}")
 
     return sanitized_ra
@@ -200,8 +200,8 @@ def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
 
     if match == "":
         raise ValueError(
-            "Target names may be ambiguous (e.g., Encke is the name of a comet and "
-            "an asteroid) and are not supported.  Use the target's designation or "
+            "Some target names are ambiguous (e.g., Encke is the name of a comet and "
+            "an asteroid) and thus not supported.  Use the target's designation or "
             "permanent catalog ID (e.g., 2P or 9134)."
         )
 

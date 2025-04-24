@@ -2,10 +2,6 @@
 
 import json
 import uuid
-import logging
-
-from astropy.coordinates import Angle
-
 from ..validation import parse_ra, parse_dec, parse_date
 from ..services.fixed import fixed_target_query_service
 from ..config import CatchApisException, get_logger, allowed_sources
@@ -110,7 +106,7 @@ def fixed_target_query_controller(
         logger.exception("Error during fixed target query.")
         messages.append(str(exc))
         return invalid_query(messages)
-    except:
+    except Exception:
         logger.exception("Unexpected error during fixed target query.")
         messages.append(
             "Unexpected error.  Please contact us with the details of your query."
