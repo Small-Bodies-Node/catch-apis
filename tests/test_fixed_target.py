@@ -3,6 +3,45 @@
 import numpy as np
 from starlette.testclient import TestClient
 from . import fixture_test_client  # noqa F401
+import catch_apis.api.fixed
+from catch_apis.api.fixed import fixed_target_query_controller, CatchApisException
+
+
+def test_invalid_queries():
+    result = fixed_target_query_controller("bad ra", "1")
+    assert result["error"]
+    assert "Invalid ra" in result["message"]
+
+    result = fixed_target_query_controller("1d", "10d", start_date="invalid date")
+    assert result["error"]
+    assert "Invalid start_date" in result["message"]
+
+
+def test_service_exceptions(test_client: TestClient, monkeypatch):
+    def error(*args, **kwargs):
+        raise CatchApisException("APIs exception")
+
+    monkeypatch.setattr(catch_apis.api.fixed, "fixed_target_query_service", error)
+
+    parameters = {
+        "ra": "00:34:32.0",  # 8.63 deg
+        "dec": "+8 00 48",  # 8.01 deg
+    }
+    response = test_client.get("/fixed", params=parameters)
+    response.raise_for_status()
+    results = response.json()
+    assert results["error"]
+    assert "APIs exception" in results["message"]
+
+    def error(*args, **kwargs):
+        raise RuntimeError
+
+    monkeypatch.setattr(catch_apis.api.fixed, "fixed_target_query_service", error)
+    response = test_client.get("/fixed", params=parameters)
+    response.raise_for_status()
+    results = response.json()
+    assert results["error"]
+    assert "Unexpected error" in results["message"]
 
 
 def test_point_full_search(test_client: TestClient):

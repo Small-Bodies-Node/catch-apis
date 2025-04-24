@@ -7,9 +7,9 @@ from flask import request
 from astropy.time import Time
 
 from ..config import allowed_sources, get_logger, QueryStatus
-from ..services.target_name import parse_target_name
+from ..validation import parse_target_name
 from ..services.catch import catch_service
-from ..services.queue import JobsQueue
+from ..services.status.queue import queue_service
 from ..services.message import (
     Message,
     listen_for_task_messages,
@@ -73,9 +73,10 @@ def catch_controller(
     messages = []
     valid_query = True
 
-    target_type, sanitized_target = parse_target_name(target)
-    if sanitized_target == "":
-        messages.append("Invalid target: empty string")
+    try:
+        target_type, sanitized_target = parse_target_name(target)
+    except ValueError as e:
+        messages.append(str(e))
         valid_query = False
 
     # default: search all sources allowed in the API spec
@@ -92,6 +93,7 @@ def catch_controller(
     if not valid_query:
         # then just stop now
         result = {
+            "error": True,
             "queued": False,
             "message": "  ".join(messages),
             "version": version,
@@ -103,7 +105,7 @@ def catch_controller(
     result = {
         "query": {
             "target": sanitized_target,
-            "type": target_type,
+            "type": target_type.value,
             "sources": _sources,
             "start_date": _format_date(sanitized_start_date),
             "stop_date": _format_date(sanitized_stop_date),
@@ -112,6 +114,7 @@ def catch_controller(
             "padding": padding,
         },
         "job_id": job_id.hex,
+        "error": False,
         "queued": False,
         "queue_full": False,
         "queue_position": None,
@@ -122,7 +125,7 @@ def catch_controller(
     Message.reset_t0()
     listen_for_task_messages(job_id)
 
-    status: QueryStatus = catch_service(
+    status = catch_service(
         job_id,
         sanitized_target,
         sources=_sources,
@@ -140,11 +143,11 @@ def catch_controller(
     message_stream_url = urllib.parse.urlunsplit(
         (parsed[0], parsed[1], os.path.join(parsed[2], "stream"), "", "")
     )
+
     if status == QueryStatus.QUEUED:
-        queue = JobsQueue()
-        for job in queue.jobs:
-            if job.args[0].hex == job_id.hex:
-                result["queue_position"] = job.get_position()
+        for job in queue_service()["jobs"]:
+            if job["prefix"] == job_id.hex[:8]:
+                result["queue_position"] = job["position"]
                 break
 
         result["queued"] = True
@@ -155,6 +158,7 @@ def catch_controller(
             "completed, then retrieve data from results URL."
         )
     elif status == QueryStatus.QUEUEFULL:
+        result["error"] = True
         result["queued"] = False
         result["queue_full"] = True
         messages.append("Queue is full, please try again later.")

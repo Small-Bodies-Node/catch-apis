@@ -1,23 +1,17 @@
 """
 A few simple tests to see that the API is working.
-
-To see messages returned from the API, e.g., to debug failing tests:
-
-    pytest --capture=tee-sys
-
-These tests are currently hard-coded for DEPLOYMENT_TIER=LOCAL in .env.
-
 """
 
 import sys
 import json
 import pytest
+from typing import Any
 from unittest import mock
 from functools import partial
 from contextlib import contextmanager
 
 import numpy as np
-from typing import Tuple, List, Any, Optional
+from httpx import Response
 from starlette.testclient import TestClient
 from catch_apis.config.env import ENV
 
@@ -26,8 +20,10 @@ ENV.REDIS_JOBS = "REDIS_JOBS_TESTING"
 ENV.REDIS_TASK_MESSAGES = "TASK_MESSAGES_TESTING"
 
 from catch_apis.app import app
-from catch_apis.services.stream import messages_service
+from catch_apis.services.stream import message_stream_service
 from catch_apis import woRQer
+
+deployment_local = ENV.DEPLOYMENT_TIER == "LOCAL"
 
 
 @pytest.fixture()
@@ -40,7 +36,7 @@ def mock_stream_messages(timeout):
     """Patch message stream to timeout in an absolute amount of time."""
     with mock.patch(
         "catch_apis.services.stream.messages_service",
-        partial(messages_service, timeout),
+        partial(message_stream_service, timeout),
     ):
         yield
 
@@ -104,9 +100,9 @@ def _query(
     test_client: TestClient,
     target: str,
     cached: bool,
-    source: Optional[str] = None,
+    source: str | None = None,
     **kwargs,
-) -> Tuple[Any, bool]:
+) -> tuple[Any, bool]:
 
     parameters = {"target": target, "cached": cached}
     parameters.update(kwargs)
@@ -114,8 +110,8 @@ def _query(
     if source is not None:
         parameters["sources"] = [source]
 
-    catch_response = test_client.get("/catch", params=parameters)
-    print(catch_response.url)
+    catch_response: Response = test_client.get("/catch", params=parameters)
+    catch_response.raise_for_status()
     catch_results = catch_response.json()
 
     queued = catch_results["queued"]
@@ -124,7 +120,7 @@ def _query(
         # hang until the timeout is reached, run a worker in "burst" mode, then
         # directly read messages from the message function
         woRQer.run(True)
-        messages = [message for message in messages_service(1)]
+        messages = [message for message in message_stream_service(1)]
         for message in messages:
             if len(message) == 0 or not message.startswith("data:"):
                 continue
@@ -157,7 +153,8 @@ def _query(
 
 
 @pytest.mark.parametrize("targets", TARGET_EQUIVALENCIES)
-def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
+@pytest.mark.skipif("not deployment_local")
+def test_equivalencies(test_client: TestClient, targets: list[str]) -> None:
     source = "neat_maui_geodss"
     catch0, caught0, queued0 = _query(test_client, targets[0], True, source=source)
     data0 = sorted(caught0["data"], key=lambda row: row["product_id"])
@@ -177,6 +174,7 @@ def test_equivalencies(test_client: TestClient, targets: List[str]) -> None:
 
 
 @pytest.mark.parametrize("source,target,number", TARGET_MATCHES)
+@pytest.mark.skipif("not deployment_local")
 def test_cached_queries(
     test_client: TestClient,
     source: str,
@@ -195,6 +193,7 @@ def test_cached_queries(
     assert caught["count"] == number
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_padding_caching(test_client: TestClient):
     source = "neat_maui_geodss"
     target = "65P"
@@ -221,6 +220,7 @@ def test_padding_caching(test_client: TestClient):
     assert caught["count"] == number
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_ephemeris_uncertainties_are_null(test_client: TestClient):
     # regression test for #33
 
@@ -233,6 +233,7 @@ def test_ephemeris_uncertainties_are_null(test_client: TestClient):
         assert row["unc_theta"] is None
 
 
+@pytest.mark.skipif("not deployment_local")
 def test_status_job_id(test_client: TestClient):
     catch, caught, queued = _query(
         test_client, TARGET_MATCHES[0][1], False, source=TARGET_MATCHES[0][0]

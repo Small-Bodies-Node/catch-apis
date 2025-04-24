@@ -1,8 +1,78 @@
-"""Target name verification."""
+# Licensed with the 3-clause BSD license.  See LICENSE for details.
 
-from typing import Pattern, Tuple, Union, Match
 import re
 from enum import Enum
+from typing import Pattern
+
+from astropy.time import Time
+from astropy.coordinates import Latitude, Longitude
+import astropy.units as u
+
+
+def parse_ra(ra: str) -> Longitude:
+    """Parse a string as an angle of right ascension.
+
+    The string may specify the units, see astropy.coordinates.Angle() for
+    allowed formats.
+
+    If parsable by float(), then degrees are assumed.  Otherwise, hour angle is
+    assumed.
+
+    Raise ValueError if it cannot be parsed.
+
+    """
+
+    try:
+        float(ra)
+        ra_unit = u.degree
+    except ValueError:
+        ra_unit = u.hourangle
+
+    try:
+        sanitized_ra = Longitude(ra, ra_unit)
+    except ValueError:
+        raise ValueError(f"Invalid ra: {ra}")
+
+    return sanitized_ra
+
+
+def parse_dec(dec: str) -> Latitude:
+    """Parse a string as an angle of declination.
+
+    The string may specify the units, see astropy.coordinates.Angle() for
+    allowed formats.
+
+    If units are not specified, then degrees are assumed.
+
+    Raise ValueError if it cannot be parsed.
+
+    """
+
+    try:
+        return Latitude(dec, u.deg)
+    except ValueError:
+        raise ValueError(f"Invalid dec: {dec}")
+    except u.UnitsError:
+        raise ValueError(f"Invalid units for dec: {dec}")
+
+
+def parse_date(date: str | None, kind: str) -> str | None:
+    """Valid if None or parsable by astropy.time.Time().
+
+    Raises ValueError if not.
+
+    """
+
+    if date is None:
+        return None
+
+    try:
+        return Time(date)
+    except ValueError:
+        raise ValueError(f"Invalid {kind}_date: {date}")
+
+
+"""Target name verification."""
 
 
 class SSOTargetType(Enum):
@@ -78,7 +148,7 @@ class TargetTypePatterns:
     )
 
 
-def parse_target_name(name: str) -> Tuple[str, str]:
+def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
     """Parse moving target name.
 
 
@@ -90,35 +160,49 @@ def parse_target_name(name: str) -> Tuple[str, str]:
 
     Returns
     -------
-    target_type : str
-        'asteroid', 'comet', 'interstellar object', or 'unknown'.
+    target_type : SSOTargetType
+        The type of target.
 
     match : str
         String that matched the target type format.  Blank for unknown.
 
+
+    Raises
+    ------
+    ValueError for empty strings or ambiguous target types.
+
     """
 
-    pattern: Pattern
-    match: str
-    target_type: str
     name = name.strip()
+    if name == "":
+        raise ValueError("Invalid target: empty string")
 
-    for target_type, pattern in (
-        (SSOTargetType.COMET.name, TargetTypePatterns.cometary),
-        (SSOTargetType.ASTEROID.name, TargetTypePatterns.asteroidal),
+    # test target patterns until there is a match
+    target_patterns = [
+        (SSOTargetType.COMET, TargetTypePatterns.cometary),
+        (SSOTargetType.ASTEROID, TargetTypePatterns.asteroidal),
         (
-            SSOTargetType.INTERSTELLAR_OBJECT.name,
+            SSOTargetType.INTERSTELLAR_OBJECT,
             TargetTypePatterns.interstellar_object,
         ),
-    ):
+    ]
 
-        m: Union[Match, None] = pattern.match(name)
+    match = ""
+    for target_type, pattern in target_patterns:
+        m = pattern.match(name)
+
         if m is not None:
-            match = m[0]
+            # remove parentheses from queries like (123)
+            match = m[0].strip().lstrip("(").rstrip(")")
             break
-        if m is None:
-            target_type = SSOTargetType.UNKNOWN.name
-            match = ""
+    else:
+        target_type = SSOTargetType.UNKNOWN
 
-    # remove parentheses from queries like (123)
-    return target_type, match.strip().lstrip("(").rstrip(")")
+    if match == "":
+        raise ValueError(
+            "Some target names are ambiguous (e.g., Encke is the name of a comet and "
+            "an asteroid) and thus not supported.  Use the target's designation or "
+            "permanent catalog ID (e.g., 2P or 9134)."
+        )
+
+    return target_type, match

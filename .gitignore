@@ -17,6 +17,7 @@ catch-images
 build/**
 .tox
 .hypothesis
+.coverage
 
 # Flask_MonitorDasboard
 .dashboard.db
