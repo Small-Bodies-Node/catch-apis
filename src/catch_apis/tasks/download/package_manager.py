@@ -10,8 +10,8 @@ import requests
 from astropy.time import Time
 from catch.model import Observation
 
+from ...model import DataProducts
 from ...services.catch_manager import Catch
-from ...services.download import DataProducts
 from ...services.message import Message, TaskStatus
 
 README = """
@@ -46,8 +46,8 @@ class PackageManager:
         self.filenames: list[str] = []
 
     def package(self, catch: Catch, data_products: DataProducts) -> list[str]:
-        observations = self.get_observations(catch, data_products.observation_ids)
-        manifest = self.get_manifest(observations, data_products)
+        self.get_observations(catch, data_products.observation_ids)
+        manifest = self.get_manifest(data_products)
         self.download_and_package(manifest)
         return self.filenames
 
@@ -166,7 +166,7 @@ class PackageManager:
 
                 response = requests.get(url)
                 if response.status_code != 200:
-                    self.error_log(
+                    self.error_log.append(
                         f"Could not download {url}: HTTP status code = {response.status_code}"
                     )
                     errors += 1

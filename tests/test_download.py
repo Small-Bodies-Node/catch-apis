@@ -34,6 +34,8 @@ class SkySurveyWithoutArchive(SkySurvey):
     archive_url = None
     label_url = None
 
+    __mapper_args__ = {"polymorphic_identity": "test_sky_survey_without_archive"}
+
     def cutout_url(self, **kwargs):
         return None
 
@@ -42,8 +44,10 @@ class SkySurveyWithoutFullSize(SkySurvey):
     archive_url = None
     label_url = None
 
+    __mapper_args__ = {"polymorphic_identity": "test_sky_survey_without_full_size"}
+
     def cutout_url(self, ra, dec, size=0.1, format="fits"):
-        product_id = self.product_id[self.product_id.rindex(":") + 1 :]
+        product_id = self.product_id[self.product_id.rindex(":") + 1 :]  # noqa: E203
         url = f"http://testserver/test/data/{product_id}.fits"
 
         if format == "jpeg":
@@ -54,6 +58,8 @@ class SkySurveyWithoutFullSize(SkySurvey):
 
 
 class SkySurveyWithoutCutouts(SkySurvey):
+    __mapper_args__ = {"polymorphic_identity": "test_sky_survey_without_cutouts"}
+
     def cutout_url(self, **kwargs):
         return None
 
@@ -65,7 +71,7 @@ class TestPackageManager:
             packager.get_observations(catch, [0, 1, 2, 3])
             assert packager.error_log[0] == "0: Not found in the CATCH database."
             assert len(packager.observations) == 3
-            assert [obs.observation_id for obs in packager.observations] == [1, 2, 3]
+            assert set(packager.observations.keys()) == {1, 2, 3}
 
     def test_get_manifest(self):
         data_products = DataProducts(

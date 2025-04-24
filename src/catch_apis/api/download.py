@@ -6,6 +6,7 @@ import urllib.parse
 import uuid
 from flask import request
 from ..config import PackagingStatus, get_logger
+from ..model import DataProducts
 from ..services import download
 from ..services.message import (
     Message,
@@ -35,11 +36,11 @@ def package(body: dict) -> dict:
 
     # enqueue the package task
     try:
-        data_products = download.DataProducts(**body)
+        data_products = DataProducts(**body)
         packaging_status = download.package(job_id, data_products)
         result["queued"] = packaging_status == PackagingStatus.QUEUED
         result["queue_full"] = packaging_status == PackagingStatus.QUEUEFULL
-    except:
+    except Exception:
         logger.exception("Unexpected error.")
 
     # form the results URL

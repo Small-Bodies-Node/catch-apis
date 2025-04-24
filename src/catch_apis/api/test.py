@@ -2,20 +2,20 @@
 
 import os
 from flask import send_file, Response
-from .. import services
+from ..services import test
 
 
 def data(filename: str, ra: float | None = None, dec: float | None = None) -> Response:
     if filename.endswith("xml"):
         mime_type = "text/plain"
-        content = services.test.label(filename)
+        content = test.label(filename)
     else:
         if filename.endswith(("fit", "fits")):
             mime_type = "image/fits"
-            content = services.test.fits(ra, dec)
+            content = test.fits(ra, dec)
         elif filename.endswith(("jpeg", "jpg")):
             mime_type = "image/jpeg"
-            content = services.test.jpeg(ra, dec)
+            content = test.jpeg(ra, dec)
 
         if None not in (ra, dec):
             root, ext = os.path.splitext(filename)

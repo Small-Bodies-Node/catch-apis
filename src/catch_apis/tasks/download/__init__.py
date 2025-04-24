@@ -8,7 +8,7 @@ from catch.exceptions import CatchException
 
 from ...config import get_logger
 from ...services.catch_manager import catch_manager
-from ...services.download import DataProducts
+from ...model import DataProducts
 from ...services.message import (
     Message,
     listen_for_task_messages,
