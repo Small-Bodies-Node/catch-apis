@@ -29,3 +29,11 @@ class QueryStatus(enum.Enum):
     QUEUED: str = "queued"
     QUEUEFULL: str = "queue full"
     FAILED: str = "failed"
+
+
+class PackagingStatus(enum.Enum):
+    UNDEFINED: str = "undefined"
+    SUCCESS: str = "success"
+    QUEUED: str = "queued"
+    QUEUEFULL: str = "queue full"
+    FAILED: str = "failed"

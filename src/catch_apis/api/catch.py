@@ -14,6 +14,7 @@ from ..services.message import (
     Message,
     listen_for_task_messages,
     stop_listening_for_task_messages,
+    get_message_stream_url,
 )
 from .. import __version__ as version
 
@@ -40,7 +41,7 @@ def catch_controller(
     uncertainty_ellipse: bool = False,
     padding: float = 0,
     cached: bool = True,
-):
+) -> dict:
     """Controller for moving target queries.
 
     Parameters
@@ -151,7 +152,7 @@ def catch_controller(
                 break
 
         result["queued"] = True
-        result["message_stream"] = message_stream_url
+        result["message_stream"] = get_message_stream_url()
         result["results"] = results_url
         messages.append(
             "Enqueued search.  Listen to task messaging stream until job "

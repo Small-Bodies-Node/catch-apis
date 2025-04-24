@@ -17,7 +17,7 @@ def test_status_sources(test_client: TestClient):
     results = response.json()
 
     (neat_palomar_tricam,) = [
-        row for row in results if row["source"] == "neat_palomar_tricam"
+        row for row in results if row["source"] == "test_sky_survey"
     ]
     assert neat_palomar_tricam["count"] == 49 * 4
     assert neat_palomar_tricam["start_date"].startswith("2012-03-14")
