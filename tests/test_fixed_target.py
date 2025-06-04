@@ -59,7 +59,7 @@ def test_point_full_search(test_client: TestClient):
     assert "test_sky_survey" in results["query"]["sources"]
     assert len(results["data"]) == 4
     assert {
-        obs["product_id"][obs["product_id"].rindex("_") + 1 :]  # noqa E203
+        obs["product_id"][obs["product_id"].rindex(":") + 1 :]  # noqa E203
         for obs in results["data"]
     } == set([str(7 * 4 + 5 + 49 * i) for i in range(4)])
 
@@ -84,8 +84,10 @@ def test_point_full_search(test_client: TestClient):
             for row in results["data"]
         ]
     )
+
+    # expecting product_ids == 5 + 49 * i
     assert {
-        obs["product_id"][obs["product_id"].rindex("_") + 1 :]  # noqa E203
+        obs["product_id"][obs["product_id"].rindex(":") + 1 :]  # noqa E203
         for obs in results["data"]
     } == set([str(5 + 49 * i) for i in range(4)])
 

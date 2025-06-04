@@ -12,7 +12,7 @@ import catch_apis.services.message
 from catch_apis.services.message import Message
 from catch_apis.tasks.download import package, PackageManager
 
-from . import fixture_test_client, SkySurvey
+from . import fixture_test_client, SkySurvey  # noqa: F401
 
 
 class MockedJobsQueue:

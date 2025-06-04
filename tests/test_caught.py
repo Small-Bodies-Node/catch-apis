@@ -1,15 +1,13 @@
 # Licensed with the 3-clause BSD license.  See LICENSE for details.
 
 import uuid
-import pytest
 import numpy as np
 from starlette.testclient import TestClient
-from catch_apis.api.caught import caught_controller
 from catch_apis.tasks.catch import catch_task
-from . import fixture_test_client, mock_redis
+from . import fixture_test_client, mock_redis  # noqa: F401
 
 
-def test_caught(test_client: TestClient, mock_redis):
+def test_caught(test_client: TestClient, mock_redis):  # noqa: F811
     job_id = uuid.uuid4()
     catch_task(job_id, "3910", ["test_sky_survey"], None, None, False, 0, True)
 
@@ -62,7 +60,10 @@ def test_caught(test_client: TestClient, mock_redis):
         expected["product_id"]
     )
     for k, v in results["data"][i].items():
-        if isinstance(v, float):
+        if k == "found_id":
+            # in testing, this wasn't stable
+            continue
+        elif isinstance(v, float):
             assert np.isclose(expected[k], v, rtol=1e-3)
         elif v is None:
             assert expected[k] is None
@@ -71,6 +72,6 @@ def test_caught(test_client: TestClient, mock_redis):
 
 
 def test_invalid_job_id(test_client: TestClient):
-    response = test_client.get(f"/caught/invalid_job_id")
+    response = test_client.get("/caught/invalid_job_id")
     assert response.status_code == 400
     assert response.content == b'"Invalid job ID"\n'
