@@ -49,7 +49,7 @@ RUN ./_build_s2
 COPY . /app/src
 WORKDIR /app/src
 RUN pip install -q -U pip setuptools wheel
-RUN pip install --src=/catchlibs -r requirements.dev.txt
+RUN pip install --src=/catchlibs -r requirements.local.txt
 
 ### Setup app directory
 WORKDIR /app/src

@@ -179,7 +179,7 @@ CATCH-APIs may be developed and run using docker. To develop locally:
     woRQer processes are run via nodemon in dev mode). In prod mode, the
     code-base is installed from github, so changes will not be picked up
     dynamically at run-time.
-  - To run everything in development mode, run `docker compose -f docker-compose.dev.yml up --build`
+  - To run everything in development mode, run `docker compose -f docker-compose.local.yml up --build`
   - To stop everything, enter CTRL+C once to stop processes gracefully;
     sometimes this might fail to properly shutdown everything, in which case you
     can swap `... up --build` with `... down` to re-try shutting everything down
@@ -227,7 +227,7 @@ Whether starting from a blank database, or a working copy, you will probably wan
 
 ## Testing
 
-Unit tests and tests on a live database are available. Requirements are listed in `requirements.dev.txt`. In addition, a running redis server on port 6379 is required.
+Unit tests and tests on a live database are available. Requirements are listed in `requirements.local.txt`. In addition, a running redis server on port 6379 is required.
 
 Unit tests are based on a temporary postgres instance and simulated data.
 First, install the testing requirements using the [test] option:

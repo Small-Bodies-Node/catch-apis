@@ -4,9 +4,9 @@ services:
   apis:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.local
     image: catch-dev
-    container_name: catch-apis-dev
+    container_name: catch-apis-local
     command: ./_entrypoint_webapp
     volumes:
       - app:/app
@@ -20,9 +20,9 @@ services:
   woRQer:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.local
     image: catch-dev
-    container_name: catch-woRQer-dev
+    container_name: catch-woRQer-local
     command: ./_entrypoint_woRQer
     volumes:
       - app:/app
@@ -33,5 +33,6 @@ services:
       - ./.env
   redis-server:
     image: redis:5
+    container_name: catch-redis-local
 volumes:
   app:

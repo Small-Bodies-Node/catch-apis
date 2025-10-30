@@ -19,6 +19,6 @@ PYTHON=${PYTHON_BIN} VIRTUAL_ENV=${VIRTUAL_ENV} bash _build_s2
 export LDFLAGS="-L${VIRTUAL_ENV}/lib -Wl,-rpath=${VIRTUAL_ENV}/lib"
 export CXXFLAGS="-I${VIRTUAL_ENV}/include"
 
-pip install -r requirements.dev.txt
+pip install -r requirements.local.txt
 
 echo -e "\n\nVirtual environment is ready.  'source _activate' to use it.\n\n"
