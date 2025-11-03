@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     image: catch-prod
-    container_name: catch-apis-${DEPLOYMENT_TIER}
     command: ./_entrypoint_webapp_prod
     tty: true
     ports:
@@ -18,11 +17,8 @@ services:
     restart: unless-stopped
   worqer-prod:
     image: catch-prod
-    # Container name is set dynamically based on number of replicas
     deploy:
       replicas: ${CATCH_QUEUE_WORKER_INSTANCES}
-    labels:
-      deployment_tier: ${DEPLOYMENT_TIER}
     command: ./_entrypoint_woRQer_prod
     depends_on:
       - redis-server
@@ -33,4 +29,3 @@ services:
   redis-server:
     image: redis:5
     restart: unless-stopped
-    container_name: catch-redis-${DEPLOYMENT_TIER}
