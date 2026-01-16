@@ -30,6 +30,7 @@ app.add_api(
         "version": version,
         "base_href": ENV.BASE_HREF,
         "sources": allowed_sources,
+        "test_env": ENV.DEPLOYMENT_TIER == "TEST",
     },
 )
 application = app.app

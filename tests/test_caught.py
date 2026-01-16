@@ -11,7 +11,7 @@ from . import fixture_test_client, mock_redis
 
 def test_caught(test_client: TestClient, mock_redis):
     job_id = uuid.uuid4()
-    catch_task(job_id, "3910", ["neat_palomar_tricam"], None, None, False, 0, True)
+    catch_task(job_id, "3910", ["test_sky_survey"], None, None, False, 0, True)
 
     response = test_client.get(f"/caught/{job_id.hex}")
     response.raise_for_status()
@@ -20,39 +20,43 @@ def test_caught(test_client: TestClient, mock_redis):
     assert results["count"] == 4
     assert len(results["status"]) == 1
     assert results["status"][0]["count"] == 4
+
+    # one of the expected results
     expected = {
         "airmass": None,
-        "archive_url": "https://sbnarchive.psi.edu/pds4/surveys/gbo.ast.neat.survey/data_tricam/p20011126/obsdata/66.fit.fz",
-        "cutout_url": "https://sbnsurveys.astro.umd.edu/api/images/urn:nasa:pds:gbo.ast.neat.survey:data_tricam:p20011126_obsdata_66?ra=0.32013&dec=0.10556&size=7.20arcmin&format=fits",
-        "date": "2012-03-14 00:40:20.000",
-        "ddec": 28.58548,
-        "dec": 0.10556,
-        "delta": 3.72202908386062,
+        "archive_url": "http://testserver/test/data/164.fits",
+        "cutout_url": "http://testserver/test/data/164.fits?ra=0.33597&dec=0.11356&size=0.1",
+        "date": "2012-03-14 01:40:46.000",
+        "ddec": 28.58443,
+        "dec": 0.11356,
+        "delta": 3.72217277975446,
         "diff_url": None,
-        "dra": 56.57677,
-        "drh": 2.3627453,
-        "elong": 6.6695,
+        "dra": 56.70584,
+        "drh": 2.3627547,
+        "elong": 6.6455,
         "exposure": None,
         "filter": None,
+        "found_id": 1,
         "fov": "-2.500000:-2.500000,2.500000:-2.500000,2.500000:2.500000,-2.500000:2.500000",
         "maglimit": None,
-        "mjd_start": 56000.027835648034,
-        "mjd_stop": 56000.02818287026,
-        "phase": 2.4201,
-        "preview_url": "https://sbnsurveys.astro.umd.edu/api/images/urn:nasa:pds:gbo.ast.neat.survey:data_tricam:p20011126_obsdata_66?ra=0.32013&dec=0.10556&size=7.20arcmin&format=jpeg",
-        "product_id": "urn:nasa:pds:gbo.ast.neat.survey:data_tricam:p20011126_obsdata_66",
-        "ra": 0.32013,
-        "rh": 2.736984336056,
-        "sangle": 246.81799999999998,
+        "mjd_start": 56000.069803240454,
+        "mjd_stop": 56000.07015046268,
+        "observation_id": 164,
+        "phase": 2.4115,
+        "preview_url": "http://testserver/test/data/164.fits?ra=0.33597&dec=0.11356&size=jpeg",
+        "product_id": "urn:nasa:pds:gbo.ast.tss:data:164",
+        "ra": 0.33597,
+        "rh": 2.737041603991,
+        "sangle": 246.811,
         "seeing": None,
-        "source": "neat_palomar_tricam",
-        "source_name": "NEAT Palomar Tricam",
-        "true_anomaly": 88.5612,
+        "source": "test_sky_survey",
+        "source_name": "Test Sky Survey",
+        "true_anomaly": 88.5703,
         "unc_a": 0.00162,
         "unc_b": 0.00035,
-        "unc_theta": 34.167,
+        "unc_theta": 34.168,
         "vangle": 57.91,
-        "vmag": 17.328,
+        "vmag": 17.327,
     }
     i = [result["product_id"] for result in results["data"]].index(
         expected["product_id"]

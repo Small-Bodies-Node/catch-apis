@@ -61,6 +61,7 @@ def observation(
     """
 
     data: Dict[str, Union[str, float, int, None]] = {
+        "observation_id": obs.observation_id,
         "product_id": obs.product_id,
         "source": obs.source,
         "source_name": obs.__data_source_name__,
@@ -95,13 +96,13 @@ def observation(
     return data
 
 
-def found(f: Found) -> Dict[str, Union[str, float, int, None]]:
+def found(found: Found) -> Dict[str, Union[str, float, int, None]]:
     """Transform found object into a dictionary.
 
 
     Parameters
     ----------
-    f : Found
+    found : Found
         The found object from sqlalchmey.
 
 
@@ -112,23 +113,24 @@ def found(f: Found) -> Dict[str, Union[str, float, int, None]]:
     """
 
     data: Dict[str, Union[str, float, int, None]] = {
-        "date": Time(f.mjd, format="mjd").iso,
-        "rh": f.rh,
-        "delta": f.delta,
-        "phase": f.phase,
-        "drh": f.drh,
-        "true_anomaly": f.true_anomaly,
-        "ra": f.ra,
-        "dec": f.dec,
-        "dra": f.dra,
-        "ddec": f.ddec,
-        "unc_a": f.unc_a,
-        "unc_b": f.unc_b,
-        "unc_theta": f.unc_theta,
-        "elong": f.elong,
-        "sangle": f.sangle,
-        "vangle": f.vangle,
-        "vmag": f.vmag,
+        "found_id": found.found_id,
+        "date": Time(found.mjd, format="mjd").iso,
+        "rh": found.rh,
+        "delta": found.delta,
+        "phase": found.phase,
+        "drh": found.drh,
+        "true_anomaly": found.true_anomaly,
+        "ra": found.ra,
+        "dec": found.dec,
+        "dra": found.dra,
+        "ddec": found.ddec,
+        "unc_a": found.unc_a,
+        "unc_b": found.unc_b,
+        "unc_theta": found.unc_theta,
+        "elong": found.elong,
+        "sangle": found.sangle,
+        "vangle": found.vangle,
+        "vmag": found.vmag,
     }
 
     return data
