@@ -1,8 +1,8 @@
 """
-    Service class for querying SQL-DB
+Service class for querying SQL-DB
 """
 
-from typing import Iterator
+from typing import Generator
 from contextlib import contextmanager
 
 import sqlalchemy
@@ -30,7 +30,7 @@ db_session: scoped_session = scoped_session(sessionmaker(bind=db_engine))
 
 
 @contextmanager
-def data_provider_session() -> Iterator[Session]:
+def data_provider_session() -> Generator[Session, None, None]:
     """Provide a transactional scope around a series of operations."""
     session: Session = db_session()
     try:
