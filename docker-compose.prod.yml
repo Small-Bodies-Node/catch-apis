@@ -27,5 +27,5 @@ services:
     env_file:
       - ./.env
   redis-server:
-    image: redis:5
+    image: redis:8
     restart: unless-stopped

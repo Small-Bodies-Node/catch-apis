@@ -32,7 +32,7 @@ services:
     env_file:
       - ./.env
   redis-server:
-    image: redis:5
+    image: redis:8
     container_name: catch-redis-local
 volumes:
   app:
