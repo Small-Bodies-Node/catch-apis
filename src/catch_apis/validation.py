@@ -173,8 +173,10 @@ def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
 
     """
 
-    name = name.strip()
-    if name == "":
+    # clean up the input string, discard anything after a newline, replace tab with space
+    _name = name.strip().split("\n", 1)[0].replace("\t", " ")
+
+    if _name == "":
         raise ValueError("Invalid target: empty string")
 
     # test target patterns until there is a match
@@ -189,7 +191,7 @@ def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
 
     match = ""
     for target_type, pattern in target_patterns:
-        m = pattern.match(name)
+        m = pattern.match(_name)
 
         if m is not None:
             # remove parentheses from queries like (123)
