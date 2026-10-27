@@ -28,6 +28,7 @@ test = [
     "pytest-cov",
     "requests",
     "sseclient",
+    "starlette[full]",
     "testing.postgresql",
 ]
 
