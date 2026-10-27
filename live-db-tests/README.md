@@ -1,6 +1,6 @@
 # CATCH APIs live database tests
 
-These tests are used on an existing CATCH database. They are designed for the development database (catch_dev on AWS), and may need to be updated as the DEV database changes with time.
+These tests are used on an existing CATCH database. They are designed for the development database (e.g., catch_dev on AWS), and may need to be updated as the DEV database changes with time.
 
 ## Moving target tests with arbitrary queries
 
