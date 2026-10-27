@@ -16,6 +16,7 @@ dependencies = [
     "requests>=2.27.0",
     "rq~=2.2",
     "python-dotenv~=1.0",
+    "boto3~=1.38",
 ]
 dynamic = ["version"]
 
