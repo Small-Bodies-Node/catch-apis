@@ -39,7 +39,7 @@ The API uses the following:
   [connexion](https://connexion.readthedocs.io/),
   [openapi](https://swagger.io/specification/), and
   [gunicorn](https://gunicorn.org/) for the API experience and documentation.
-- [redis](https://redis.io/) for the job queue and user task messaging.
+- [redis >=6.0](https://redis.io/) for the job queue and user task messaging.
 - [docker](https://www.docker.com/) is used for cross-platform development and deployment
 
 ## Features
@@ -207,6 +207,7 @@ docker-compose.prod.yml up --build`
 - `source _activate`
 - Follow `catch` database setup instructions, or start from a previous database
   copy (see Docker notes).
+- Start your redis server.  This could be started with Docker via `docker run -p 6379:6379 -it redis:8`.  Use port 6379 or whatever was specified in the `.env` file.
 - Run the webapp: `_entrypoint_webapp`
 - Run the task workers (woRQers): `_entrypoint_woRQer`
 - Once everything is running in dev mode, visit <http://localhost:5000/ui> to
