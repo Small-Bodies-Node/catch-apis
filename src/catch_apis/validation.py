@@ -173,9 +173,16 @@ def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
 
     """
 
-    name = name.strip()
-    if name == "":
-        raise ValueError("Invalid target: empty string")
+    # clean up the input string, discard anything after a newline, replace tab with space
+    _name = name.strip().split("\n", 1)[0].replace("\t", " ")
+    note = (
+        ""
+        if _name == name
+        else "  (Note: target name was trimmed and/or whitespace removed.)"
+    )
+
+    if _name == "":
+        raise ValueError("Invalid target: empty string." + note)
 
     # test target patterns until there is a match
     target_patterns = [
@@ -189,7 +196,7 @@ def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
 
     match = ""
     for target_type, pattern in target_patterns:
-        m = pattern.match(name)
+        m = pattern.match(_name)
 
         if m is not None:
             # remove parentheses from queries like (123)
@@ -202,7 +209,7 @@ def parse_target_name(name: str) -> tuple[SSOTargetType, str]:
         raise ValueError(
             "Some target names are ambiguous (e.g., Encke is the name of a comet and "
             "an asteroid) and thus not supported.  Use the target's designation or "
-            "permanent catalog ID (e.g., 2P or 9134)."
+            "permanent catalog ID (e.g., 2P or 9134)." + note
         )
 
     return target_type, match

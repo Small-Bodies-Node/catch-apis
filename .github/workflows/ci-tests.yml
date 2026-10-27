@@ -24,6 +24,8 @@ env:
 jobs:
   s2geometry:
     uses: Small-Bodies-Node/sbsearch/.github/workflows/s2geometry-venv.yml@main
+    with:
+      python-version: "3.11"
   test:
     name: CI testing
     needs: [s2geometry]
@@ -44,14 +46,14 @@ jobs:
           - 6379:6379
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
       - name: Restore virtual environment from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         id: cache
         with:
           key: s2geometry-py${{ steps.setup-python.outputs.python-version }}
@@ -69,6 +71,6 @@ jobs:
           pip freeze
           pytest tests -v --cov=catch_apis --cov-report=xml
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
