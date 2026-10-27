@@ -38,7 +38,7 @@ class TestCatchController:
         assert "Invalid stop_date" in result["message"]
 
     def test_queued(self, test_client: TestClient, mock_redis, mock_flask_request):
-        response = test_client.get(f"/catch", params={"target": "2P", "cached": True})
+        response = test_client.get("/catch", params={"target": "2P", "cached": True})
         response.raise_for_status()
         results = response.json()
 
@@ -63,7 +63,7 @@ class TestCatchController:
 
         # re-run, fetching the cached result
         response = test_client.get(
-            f"/catch",
+            "/catch",
             params={
                 "target": "3910",
                 "sources": ["neat_palomar_tricam"],
