@@ -34,6 +34,7 @@ class ENV:
     REDIS_JOBS: str = ""
     CATCH_LOG_FILE: str = os.path.abspath("./logging/catch.log")
     CATCH_APIS_LOG_FILE: str = os.path.abspath("./logging/catch-apis.log")
+    S3_BUCKET: str = ""
 
     # Numeric properties
     GUNICORN_FLASK_INSTANCES: int = -1
