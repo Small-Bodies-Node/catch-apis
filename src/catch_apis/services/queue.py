@@ -13,7 +13,6 @@ class RedisConnection(StrictRedis):
         super().__init__(
             host=ENV.REDIS_HOST,
             port=ENV.REDIS_PORT,
-            charset="utf-8",
         )
 
 
