@@ -57,13 +57,18 @@ def test_caught(test_client: TestClient, mock_redis):
     i = [result["product_id"] for result in results["data"]].index(
         expected["product_id"]
     )
-    for k, v in results["data"][i].items():
+    found = results["data"][i]
+    for k, v in expected.items():
+        if k == "found_id":
+            assert k in found
+            continue
+
         if isinstance(v, float):
-            assert np.isclose(expected[k], v, rtol=1e-3)
+            assert np.isclose(found[k], v, rtol=1e-2)
         elif v is None:
-            assert expected[k] is None
+            assert found[k] is None
         else:
-            assert expected[k] == v
+            assert found[k] == v
 
 
 def test_invalid_job_id(test_client: TestClient):

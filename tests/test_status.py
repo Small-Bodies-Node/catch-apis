@@ -73,8 +73,8 @@ def test_updates(test_client: TestClient):
     # they should all be the same except for days
     for i in range(3):
         assert results[i]["count"] == 196
-        assert results[i]["source"] == "neat_palomar_tricam"
-        assert results[i]["source_name"] == "NEAT Palomar Tricam"
+        assert results[i]["source"] == "test_sky_survey"
+        assert results[i]["source_name"] == "Test Sky Survey"
         assert results[i]["start_date"] == "2012-03-14 00:00:00.000"
         assert results[i]["stop_date"] == "2012-03-14 02:00:45.000"
 
